@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>양식 요소 form</title>
+</head>
+<body>
+  <h1>양식 요소 form</h1>
+  <hr>
+  <form action="/login.html" >
+    <label>
+      아이디 : <input type="text" name="id" value="develckm86">
+    </label>
+    <br><br>
+    <label for="userPw">비밀번호 :</label>
+    <input type="password" id="userPw" name="pw" value="1234">
+    <p>
+      <button>제출</button>
+    </p>
+  </form>
+  <p>http://localhost:63342/login.html?id=develckm86&pw=1234</p>
+  <hr>
+  <h2>양식 데이터를 post로 제출</h2>
+  <form action="/post.html" method="post">
+    <p>
+      <label for="postTitle">제목 : </label>
+      <input type="text" id="postTitle" name="title" value="hello.">
+    </p>
+    <p>
+      <label for="postContents"> 내용 : </label>
+      <textarea name="contents" id="postContents" cols="30" rows="10">
+hellohellohello.
+      </textarea>
+    </p>
+    <p>
+      <button type="submit">제출</button>
+    </p>
+  </form>
+  <p>요청한 url : http://localhost:63342/post.html</p>
+  <p>요청해더의 파라미터 :title=hello.&contents=hellohellohello.%0D%0A++++++</p>
+  <h2>다양한 input 요소</h2>
+  <form action="">
+    <ul>
+      <li>type=email :<input type="email"></li>
+      <li>type=date :<input type="date" value="1986-05-25"></li>
+      <li>type=datetime-local :<input type="datetime-local" value="2026-04-15T11:16:03"></li>
+      <li>type=week :<input type="week" name="weekValue" value="2026-W01"></li>
+      <!--2026-W16-->
+      <li>type=time :<input type="time"></li>
+      <li>type=file :<input type="file"></li>
+      <li>type=number :<input type="number" max="10" min="0"></li>
+      <li>type=range :<input type="range" max="10" min="0"></li>
+      <li>type=color :<input type="color" value="#ff00ff"></li>
+      <li>type=hidden(보이지 않지만 전송됨) :<input type="hidden" value="#ff00ff"></li>
+    </ul>
+    <hr>
+    <h2>옵션이 있는 form 요소 (checkbox,radio,select,datalist)</h2>
+    <ul>
+      <li>
+        <label>html<input type="checkbox" name="skills" value="html"></label>,
+        <label>css<input type="checkbox" name="skills" value="css"></label>,
+        <label>js<input type="checkbox" name="skills" value="js"></label>,
+        <label>java<input type="checkbox" name="skills" value="java" checked></label>,
+        <label>jdbc<input type="checkbox" name="skills" value="jdbc" checked></label>,
+        <label>oracle<input type="checkbox" name="skills" value="oracle"></label>,
+      </li>
+      <!--  ?skills=java&skills=jdbc     -->
+      <li>
+        <label>외국인<input type="radio" name="from" value="foreigner"></label>
+        <label>내국인<input type="radio" name="from" value="national"></label>
+      </li>
+      <li>
+        <!--  ?hobby=write      -->
+        <select name="hobby">
+          <option value="">--취미를 선택하세요--</option>
+          <optgroup label="생산성">
+            <option value="write">글쓰기</option>
+            <option value="run" selected>달리기</option>
+            <option value="paint">그림</option>
+          </optgroup>
+        </select>
+      </li>
+      <li>
+        <input type="text" list="searchList" placeholder="검색할 내용입력">
+        <datalist id="searchList">
+          <option value="말티즈">말티즈</option>
+          <option value="시츄">시츄</option>
+          <option value="비숑">비숑</option>
+          <option value="말티숑">말티숑</option>
+        </datalist>
+      </li>
+    </ul>
+    <button>제출</button>
+  </form>
+  <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+</body>
+</html>
