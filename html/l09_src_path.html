@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>리소스를 참조하는 요소와 경로</title>
+</head>
+<body>
+    <h1 id="title">리소스를 참조하는 요소와 경로</h1>
+    <h2>경로 path</h2>
+    <ul>
+        <li>http:// , jdbc://,  fs:// : 절대경로 (완전히 다른 서버로 접속시 사용)</li>
+        <li> / : 루트 상대경로 (같은 서버의 루트경로)</li>
+        <li> ./, ., "" ( img, .img, ./img) : 현재폴더를 기준으로 상대경로</li>
+        <li> ../ ..  : 이전폴더로 이동</li>
+    </ul>
+<!--   http://localhost:63342/frontend_smu8/html/l09_src_path.html?_ijt=divs7c896gfphghiqki0tkcstl&_ij_reload=RELOAD_ON_SAVE -->
+    <h2>img</h2>
+    <div>
+        <img width="100" src="https://s.pstatic.net/shopping.phinf/20260410_13/1f478da7-1328-4244-a0c8-ade8e37cbe76.jpg?type=f294_378" alt="">
+        <img width="100" src="/src/img/img_1.png" alt="고양이사진">
+    </div>
+    <h2>iframe : 다른 리소스를 해당 리소스(html)에 포함</h2>
+    <iframe width="200" src="l05_box.html"></iframe>
+    <iframe width="200" src="/html/l05_box.html"></iframe>
+    <hr>
+    <iframe width="200" src="https://naver.com"></iframe>
+
+
+    <h2>a : 링크를 만드는 태그 (하이퍼텍스트)</h2>
+    <p>
+        <a href="https://naver.com">네이버</a>
+        <a href="https://naver.com" target="_blank">네이버</a>
+        <a href="">현재내위치</a>
+        <a href="./l08_form.html">l08_form.html</a>
+        <a href="#title">id=title 인 요소를 찾겠다.</a>
+    </p>
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+</body>
+</html>
