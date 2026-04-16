@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>블럭요소 vs 인라인</title>
+</head>
+<body>
+    <h1>제목 블럭요소</h1>
+    <p>내부에 자식으로 블럭을 두지 않는 블럭요소</p>
+    <div>
+        div 블럭요소 (레이아웃을 구성하기 때문에 자식 블럭을 작석 가능)
+    </div>
+    <span>인라인</span>
+    <b>인라인</b>
+    <strong>인라인</strong>
+    <i>인라인</i>
+    <em>인라인</em>
+    <label for="userName">인라인</label>
+    <input type="checkbox" id="userName">
+    <img src="/src/img/img_1.png" alt="고양이" width="20">
+    <hr>
+    <h2>블럭 vs 인라인 너비높이</h2>
+    <p>블럭은 가로의 크기를 지정해서 가로를 가득 채워야하기 때문에 나머지를 마진으로 사용</p>
+    <div style="width: 200px;height: 200px; background-color: #666666">
+        너비 200px
+        높이 200px
+    </div>
+    <div style="display: inline-block; width: 200px;height: 200px; background-color: #666666">
+        너비 200px
+        높이 200px
+    </div>
+
+    <span>임의의 인라인</span>
+    <hr>
+    <p>인라인 요소는 너비 높이가 컨텐츠의 크기로 지정할 수 없다!</p>
+    <p>인라인 블럭은 너비 높이를 지정할 수 있다.(box-model)</p>
+    <span style="width: 200px; height: 200px; background-color: red">text</span>
+    <span style="display: inline-block; width: 200px; height: 200px; background-color: red">text</span>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+</body>
+</html>
