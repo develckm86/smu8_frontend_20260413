@@ -1,6 +1,9 @@
+
 function sum(a,b){
     return a+b;
 } //함수 : 기능의 묶음
+
+
 let result=sum(10,20);
 console.log(result)
 

@@ -23,7 +23,8 @@ console.log( "a" in obj);
 console.log( "e" in obj);
 console.log( Object.hasOwn(obj, "b") );
 let user={name:"경민"};
-let user2={...user, age:40 }; //객체 복제
+let user2=
+    {...user, age:40 }; //객체 복제
 console.log(user,user2)
 user2.name="km";
 console.log(user,user2)
