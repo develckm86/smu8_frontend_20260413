@@ -5,7 +5,7 @@ let age=19; //Boundary Value Analysis 경계값분석
 //성인 (19~64) 1500
 //나머지 (5세 이하, 65세이상) 0
 function checkBus( age ){
-    if(isNaN(age)){
+    if(isNaN(age) && (age>=0 && age<=140)){
         console.log("나이는 수(0~140)만 입력하세요~")
         return; //함수는 return 하면 종료
     }
