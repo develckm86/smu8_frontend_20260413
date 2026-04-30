@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l32_dom 돔탐색</title>
+</head>
+<body>
+  <h1>돔 탐색으로 노드개체를 수정해보자!</h1>
+  <hr>
+  <h2 id="changeColor" style="color: blue">html 렌더링 이후 js 로 색바꾸기!</h2>
+  <hr>
+  <style>
+    #changeUnderline{
+      text-decoration :green wavy overline;
+    }
+  </style>
+  <h2 id="changeUnderline">렌더링 이후 텍스트 스타일을 언더라인으로 변경</h2>
+  <script>
+    //찾아서 수정하려는 노드 개체보다 나중에 실행되어야 노드개체가 생성되어 있음
+    //id 를 지정한 노드 개체는 id와 똑같은 이름의 식별자를 js에서 찾을 수 있다.
+    console.log(changeColor);
+    let h2=document.getElementById("changeColor");
+    console.log(h2)
+    h2.style.color="red";
+    h2=document.querySelector("#changeUnderline");
+    console.log(h2);
+    h2.style.textDecoration="blue wavy underline"
+    //querySelector: 무조건 처음찾은 요소 1개를 반환!
+    console.log(document.querySelector("h1"))
+  </script>
+
+  <h2>복수의 돔 탐색</h2>
+  <ul>
+    <li class="color">blue</li>
+    <li class="color">green</li>
+    <li class="color">red</li>
+    <li class="color">purple</li>
+    <li class="color">gray</li>
+  </ul>
+  <script>
+    //console.log(color)
+    let liColors=document.getElementsByClassName("color");
+    console.log(liColors);//배열로 반환
+    // console.log(liColors[0].innerText);
+    // liColors[0].style.color=liColors[0].innerText;
+    // liColors[1].style.color=liColors[1].innerText;
+    // liColors[2].style.color=liColors[2].innerText;
+    for(let li of liColors){
+      li.style.color=li.innerText;
+    }
+  </script>
+  <hr>
+  <h2>selectorAll 로 css 선택자 찾기</h2>
+  <ul id="bgUl">
+    <li class="bg">green</li>
+    <li class="bg">blue</li>
+    <li class="bg">red</li>
+    <li class="bg">purple</li>
+    <li class="bg">orange</li>
+  </ul>
+  <p class="bg">orange</p>
+  <script>
+    const liBgs=document.querySelectorAll("#bgUl>.bg");
+    console.log(liBgs)
+    liBgs.forEach((li)=>{
+      li.style.color="#fff";
+      li.style.backgroundColor=li.innerText;
+    });
+    //getElementsBy* (class,Tag,Name ..)
+    // Array 가 아닌 HTMLCollection 을 반환
+    //HTMLCollection 순서가 있는 배열이긴한데(문자열처럼)
+    //Array 의 유용한 메서드가 한개도 없다!!
+    const h2Arr=document.getElementsByTagName("h2");
+    console.log(h2Arr);
+    Array.from(h2Arr).forEach((h2)=>{
+        h2.style.color="#555";
+        h2.style.backgroundColor="#ddd";
+    });
+  </script>
+  <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+</body>
+</html>
