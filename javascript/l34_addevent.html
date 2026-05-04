@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l34_addevent 한개의 요소에 복수의 이벤트 정의</title>
+</head>
+<body>
+  <h1 id="title"> 한개의 요소에 복수의 이벤트 정의</h1>
+  <script>
+    const title=document.getElementById("title");
+    const clickHandler1=function (e){
+      e.target.style.backgroundColor="blue";
+    }
+    const clickHandler2=function (e){
+      e.target.style.color="red";
+    }
+    //title.onclick=clickHandler1;
+    //title.onclick=clickHandler2;
+    //요소 직접 이벤를 적요하면 한개만 적용
+    // title.onclick=function (e){
+    //   //this==title
+    //   clickHandler1(e);
+    //   clickHandler2(e);
+    // }
+    //여러 이벤트를 실행하는 방식으로 정의하면 복수의 함수를 정의할 수 있음
+    title.addEventListener("click",clickHandler1);
+    title.addEventListener("click",clickHandler2);
+    //addEventListener 로 복수의 함수를 이벤트에 정의
+
+  </script>
+</body>
+</html>

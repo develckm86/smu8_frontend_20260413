@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l35_class_attribute 클래스 속정 제어</title>
+  <style>
+    .hilight{background-color: yellow;}
+    .underline{text-decoration: underline;}
+  </style>
+</head>
+<body>
+  <h1>클래스 속정 제어</h1>
+  <p id="node" class="underline">클래스를 스타일 변수처럼 사용</p>
+  <script>
+    class A{}
+    const node=document.getElementById("node");
+    node.addEventListener("click",()=>{
+      //node.className+=" hilight"; //js 의 타입예약어로 class가 존재함
+      //classList :DOMTokenList 배열
+      //add : 클래스 추가
+      //remove : 클래스 제거
+      //toggle : 클래스가 있으면 제거 없으면 추가
+      //node.classList.toggle("hilight");
+      if(node.classList.contains("hilight")){
+        node.classList.remove("hilight");
+      }else{
+        node.classList.add("hilight");
+      }
+    });
+  </script>
+
+</body>
+</html>
