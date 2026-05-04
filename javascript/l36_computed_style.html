@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>l36_computed_style 내가 적용하지 않은 스타일 불러오기</title>
+    <style>
+        #box{
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+    <h1>자바스크립트로 스타일 찾고 적용하기</h1>
+    <div style="width: 25%" id="box">너비 높이</div>
+    <h2>자바스크립트의 스타일 속성</h2>
+    <ul>
+        <li>js.style 은 요소에 직접 작성한 스타일</li>
+        <li>window.getComputedStyle()은 요소에 적용된 스타일</li>
+        <li></li>
+    </ul>
+    <script>
+        const box=document.getElementById("box");
+        console.log(box.style.display)
+        console.log(box.style.width)
+        console.log(box.style.height)
+        const boxStyle=window.getComputedStyle(box);
+        console.log(boxStyle)
+        console.log(boxStyle.width)
+        console.log(boxStyle.height)
+    </script>
+</body>
+</html>
