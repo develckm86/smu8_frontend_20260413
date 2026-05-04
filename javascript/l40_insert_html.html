@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>l40_insert_html 노드를 추가해보자</title>
+</head>
+<body>
+    <h1>노드를 추가해보자</h1>
+    <h2>노드의 자식을 변경 innerHTML, innerText</h2>
+    <hr>
+    <div id="ex1"></div>
+    <hr>
+    <button onclick="ex1.innerHTML='안녕'">innerHTML로 추가</button>
+    <button onclick="ex1.innerHTML='<i>안녕</i>'">innerHTML로 추가</button>
+    <button onclick="ex1.innerText='<i>안녕</i>'">innerText로 추가</button>
+    <h2>노드의 자식을 추가 insertAdjacentHTML </h2>
+    <hr>
+    <div id="ex2">
+        <b>ex2입니다.</b>
+    </div>
+    <hr>
+    <button id="btn1">beforebegin앞쪽형제</button>
+    <button id="btn2">afterend뒤쪽형제</button>
+    <button id="btn3">afterbegin앞쪽자식</button>
+    <button id="btn4">beforeend뒤쪽자식</button>
+    <script>
+        let btnHtml="<button>안녕!</button>"
+        btn1.onclick=()=>{ex2.insertAdjacentHTML("beforebegin",btnHtml);}
+        btn2.onclick=()=>{ex2.insertAdjacentHTML("afterend",btnHtml);}
+        btn3.onclick=()=>{ex2.insertAdjacentHTML("afterbegin",btnHtml);}
+        btn4.onclick=()=>{ex2.insertAdjacentHTML("beforeend",btnHtml);}
+    </script>
+    <hr>
+    <h2>노드 개체를 만들어서 추가하자 </h2>
+    <hr>
+    <div id="ex3">
+        <b>자식요소</b>
+    </div>
+    <hr>
+    <button id="appendBtn">자식중에 뒤</button>
+    <button id="prependBtn">자식중에 앞</button>
+    <button id="afterBtn">형제 뒤</button>
+    <button id="beforeBtn">형 앞</button>
+    <script>
+        function createBtn(){
+            let btn=document.createElement("button");
+            //let text=document.createTextNode("버튼");
+            btn.innerText="버튼";
+            btn.onclick=()=>{alert("aa")}
+            return btn;
+        }
+        appendBtn.onclick=()=>{ex3.append(createBtn());}
+        prependBtn.onclick=()=>{ex3.prepend(createBtn());}
+        afterBtn.onclick=()=>{ex3.after(createBtn());}
+        beforeBtn.onclick=()=>{ex3.before(createBtn());}
+    </script>
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+</body>
+</html>

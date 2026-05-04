@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>l38_event_propagation 이벤트 전파</title>
+  <style>
+    .container{
+      width: 200px;
+      height: 200px;
+      background-color: lightblue;
+    }
+    .box{
+      width: 150px;
+      height: 150px;
+      background-color: coral;
+    }
+    .target{
+      width: 100px;
+      height: 100px;
+      background-color: mediumpurple;
+    }
+  </style>
+</head>
+<body>
+  <h1>이벤트 전파와 버블링 캡처링</h1>
+  <h2>이벤트 전파 확인 taget vs currentTarget</h2>
+  <p>taget : 부모에게 이벤트를 정의해도
+    자식에게 이벤트가 발생한것이 부모에게 전바되어 실행됨</p>
+  <div id="ex1" class="container">
+    <div class="box">
+      <div class="target"></div>
+    </div>
+  </div>
+  <script>
+    const ex1=document.getElementById("ex1");
+    ex1.addEventListener("click",function (e){
+      e.target.style.backgroundColor="red";
+      e.currentTarget.style.backgroundColor="blue";
+    })
+  </script>
+  <hr>
+  <h2>부모 자식이 동일한 이벤트로 정의되 있을때</h2>
+  <p>자식에게 발생한 이벤트가 부모에게도 발생 => 이벤트 전파</p>
+  <div id="ex2" class="container">
+    <div class="box">
+      <div class="target"></div>
+    </div>
+  </div>
+  <script>
+    const container=document.querySelector("#ex2.container");
+    const box=document.querySelector("#ex2.container>.box");
+    const target=document.querySelector("#ex2.container>.box>.target");
+    //console.log(container,box,target);
+    container.addEventListener("click",function (e) {
+      console.log("컨테이너입니다.")
+      //e.stopPropagation();
+    },true);
+    box.addEventListener("click",function (e) {
+      console.log("박스입니다.")
+      //e.stopPropagation();
+    },true);
+    target.addEventListener("click",function (e) {
+      console.log("타겟입니다.")
+      //e.stopPropagation();//이벤트 전파 막기 (자식->부모 버블링)
+    },true);
+
+  </script>
+</body>
+</html>

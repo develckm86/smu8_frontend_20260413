@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>l39_mouse_over_enter 마우스 오버와 엔터의 차이</title>
+  <style>
+    .container{
+      width: 200px;
+      height: 200px;
+      background-color: lightblue;
+    }
+    .box{
+      width: 150px;
+      height: 150px;
+      background-color: coral;
+    }
+    .target{
+      width: 100px;
+      height: 100px;
+      background-color: mediumpurple;
+    }
+    .light{
+      background-color: yellow !important;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>이벤트 전파로 보는 마우스 오버와 엔터의 차이</h1>
+  <hr>
+  <div class="container" id="ex1">
+    <div class="box">
+      <div class="target"></div>
+    </div>
+  </div>
+  <hr>
+  <div class="container" id="ex2">
+    <div class="box">
+      <div class="target"></div>
+    </div>
+  </div>
+  <script>
+
+    ex1.addEventListener("mouseover",()=>{
+      console.log("마우스오버로 마우스가 올라감");
+      ex1.classList.toggle("light")
+    });
+    //이벤트 전파에서 버블링이 막혀있어서
+    //한번만 동작
+    ex2.addEventListener("mouseenter",()=>{
+      console.log("마우스엔터로 마우스가 올라감")
+      ex2.classList.toggle("light")
+    });
+  </script>
+</body>
+</html>

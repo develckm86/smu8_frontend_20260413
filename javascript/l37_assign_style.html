@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>l37_assign_style 객체 복사와 style</title>
+</head>
+<body>
+  <h1>객체 복사와 style</h1>
+  <div id="box">박스</div>
+  <script>
+    const box=document.getElementById("box");
+    const boxStyle={
+      width:"100px",
+      height:"100px",
+      color:"red",
+      backgroundColor:"blue",
+      textAlign:"center",
+      lineHeight:"100px"
+    };
+    box.addEventListener("click",function (){
+      //1.style 은 이미 정의된 객체기 때문에 스프레드로 복제 불가능
+      //2.style 속성은 읽기 전용이라 부분 수정만 가능
+      Object.assign(box.style,boxStyle);
+      //기존 객체를 다른 객체로 바꾸는 방법
+      //box.style={...boxStyle};
+      //box.style=boxStyle; //전체수정
+      //box.style.color=""  //부분수정
+
+
+      // box.style.width="100px";
+      // box.style.height="100px";
+      // box.style.backgroundColor="red";
+      // box.style.color="#fff"
+    });
+    //객체 복사1
+    //assign 은 이미 선언된 객체에 새로운 객체를 복제할때
+    let a={color:"red"};
+    let b={backgroundColor: "#fff"};
+
+    Object.assign(a,b);
+    b.backgroundColor="#000";
+    console.log(a);
+    //{color: 'red', backgroundColor: '#fff'}
+    //backgroundColor: '#fff' 인것은 복제 증명
+
+    //객체 복사2
+    //스프레드문법으로 객체복제 : 새로운 객체를 선언하면서 복제
+    let c={align:"center",...a,...b}
+    a.color="blue";
+    console.log(c)
+
+    //얕은 복제
+    //객체 안에 객체가 존재하면 복제하지 못하고 참조만 함
+    let user={a:{name:"경민"}};
+    let obj=Object.assign({},user);
+    //user.name="철수";
+    user.a.name="철수";
+    console.log(obj)
+  </script>
+</body>
+</html>
