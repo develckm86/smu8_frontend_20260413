@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l41_review 계산된스타일, 이벤트전파, 객체복사, 노드추가</title>
+</head>
+<body>
+  <h1>계산된스타일, 객체복사, 이벤트전파, 노드추가</h1>
+  <h2>js style vs computedStyle</h2>
+  <div style="width: 50%; color: red" id="ex1">예제1</div>
+  <script>
+    //요소.style == 요소에 작성한 스타일
+    console.log("ex1의 너비",ex1.style.width);
+    console.log("ex1의 폰트색",ex1.style.color);
+    //computedStyle == 브라우저가 출력하고 있는 노드개체의 실제 스타일
+    //보통 크기는 px, 색은 rgb(255, 0, 0) or rgba(0, 0, 0, 0)
+    let ex1Width=window.getComputedStyle(ex1).width;
+    let ex1Color=window.getComputedStyle(ex1).color;
+    console.log(ex1Width)
+    console.log(ex1Color)
+  </script>
+  <hr>
+  <h2>객체 복사와 스타일 적용</h2>
+  <div id="ex2">예제2</div>
+  <div id="ex3">예제3</div>
+  <script>
+    ex2.style.color="blue";
+    ex2.style.backgroundColor="lightblue";
+    ex2.style.height="3em";
+    ex2.style.lineHeight="3em";
+
+    Object.assign(ex3.style,{
+      color:"red",
+      border:"1px solid",
+      height:"4em",
+      textAlign:"center"
+    });
+    //복사 : 똑같이 생긴 새로운것을 만드는 것
+    let o1={a:10}
+    let o2={b:20}
+    let o3={c:30}
+    Object.assign(o1,o2,o3);
+    console.log(o1)
+    let o4={...o2,...o3}
+    console.log(o4)
+    //js의 모든 객체복사는 얕은 복사만 가능
+    //얕은복사 : 복사가 아닌 참조
+    let obj={user:{name:"경민"},age:40};
+    let obj2={};
+    Object.assign(obj2,obj);
+    obj.age=20;
+    obj.user.name="경만코딩";
+    console.log(obj);
+    console.log(obj2);
+  </script>
+  <h2>이벤트 전파와 캡처링 버블링</h2>
+  <p>캡처링 :이벤트가 발생한 노드개체를 찾는것</p>
+  <p>버블링 :이벤트가 발생한 노드개체를 부모에게 알려주는 것(기본값)</p>
+  <table id="ex5" border="1">
+    <tr><td>01</td><td>02</td><td>03</td></tr>
+    <tr><td>04</td><td>05</td><td>06</td></tr>
+  </table>
+  <script>
+    const ex5=document.getElementById("ex5");
+    console.log(ex5)
+    ex5.addEventListener("click",(e)=>{
+      let target=e.target; //이벤트가 발생한요소
+      let el=e.currentTarget; // 이벤트를 정의한 요소
+      console.log(target);
+      console.log(el);
+    });
+  </script>
+  <hr>
+  <table id="ex6" border="1">
+    <tbody>
+      <tr><td>01</td><td>02</td><td>03</td></tr>
+      <tr><td>04</td><td>05</td><td>06</td></tr>
+    </tbody>
+  </table>
+  <script>
+    const ex6=document.querySelector("#ex6");
+    //const ex6Tr=ex6.querySelectorAll("tr");
+    const ex6TrArr=document.querySelectorAll("#ex6>tbody>tr");
+    const ex6TdArr=ex6.querySelectorAll("td");
+    ex6.addEventListener("click",()=>{
+      alert("ex6테이블이야!")
+    });
+    ex6TrArr.forEach((tr)=>{
+      tr.addEventListener("click",()=>{
+        alert("ex6 tr이야!")
+      });
+    });
+    ex6TdArr.forEach((td,i,arr)=>{
+      td.addEventListener("click",(e)=>{
+        alert(i+"번째 td 야!!");
+        //e.stopPropagation(); //버블링을 멈출거야
+        //부모요소의 이벤트를 실행하지 않을거야!
+      })
+    });
+    ///이벤트를 찾으러 가는 캡처링에서 이벤트정의
+    ex6.addEventListener("click",(e)=>{
+      alert("캡처링때 실행되는 ex6 테이블이야!!");
+      e.stopPropagation();
+    },true);
+    ex6TrArr.forEach((tr)=>{
+      tr.addEventListener("click",()=>{
+        alert("캡처링때 실행되는 tr 이야!!");
+      },{capture:true});
+    })
+    ex6TdArr.forEach((td)=>{
+      td.addEventListener("click",()=>{
+        alert("캡처링때 실행되는 td 이야!!");
+      },{capture:true})
+    })
+  </script>
+  <style>
+    #ex7{background-color: lightblue}
+    #ex8{background-color: coral; padding: 1em}
+  </style>
+  <hr>
+  <b id="ex7">예제7</b>
+  <hr>
+  <button id="moveBtn">예제7을 예제8로 이동</button>
+  <hr>
+  <div id="ex8">예제8</div>
+  <hr>
+  <script>
+    moveBtn.addEventListener("click",()=>{
+      ex8.append(ex7);
+    });
+  </script>
+  <hr>
+  <div id="ex9">
+    <b>예제9</b>
+  </div>
+  <script>
+    const ex9=document.getElementById("ex9");
+    console.log(ex9.innerHTML);//자식요소를 문자열로 반환
+    console.log(ex9.innerText);//자식요소중 텍스트 노드 반환
+    console.log(ex9.textContent);//자식요소중 숨겨진 텍스트 노드 포함 반환
+    ex9.innerText="<i>바뀐 ex9</i>";
+    ex9.innerHTML="<i>바뀐 ex9</i>";
+    //insertAdjacentHTML : 특정위치에 요소를 문자열로 추가
+    ex9.insertAdjacentHTML("afterbegin","<b onclick='this.remove()'>자식 앞 추가</b>")
+    ex9.insertAdjacentHTML("beforeend","<b onclick='event.currentTarget.remove()'>자식 뒤 추가</b>")
+
+    ex9.insertAdjacentHTML("beforebegin","<b>형제 앞</b>")
+    ex9.insertAdjacentHTML("afterend","<b>형제 뒤</b>")
+    //문자열을 노드개체로 변경(파싱)
+    //"십일" => 11 (x) , "11"=>11 파싱 (연산이 복잡함, 오류를 동반)
+  </script>
+  <hr>
+
+  <div id="ex10"
+       style="
+       height: 3em;
+       line-height: 3em;
+       padding: 1em; background-color: lavender">
+    <b>예제10</b>
+  </div>
+  <script>
+    //노드개체를 직접 만들어서 추가
+    function createINode(text="추가"){
+      const iNode=document.createElement("i");
+      const textNode=document.createTextNode(text);
+      iNode.append(textNode);
+      Object.assign(iNode.style,{
+        color:"red"
+      })
+      console.log(iNode);
+      iNode.addEventListener("click",(e)=>{
+        //iNode.remove();
+        e.currentTarget.remove();
+      });
+      return iNode;
+    }
+
+    ex10.prepend(createINode(" 자식앞 "));
+    ex10.append(createINode(" 자식뒤 "));
+    ex10.before(createINode(" 형제앞 "));
+    ex10.after(createINode(" 형제뒤 "));
+  </script>
+
+
+  <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+</body>
+</html>
