@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l44_interval 주기가 있는 함수 작성</title>
+</head>
+<body>
+  <h1>주기가 있는 함수 작성</h1>
+  <div id="clock">시계</div>
+  <script>
+    // while (true){
+    //   clock.innerText=new Date();
+    // }
+    //window.setInterval(()=>{},1000); :
+    // 1초에 한번식 함수를 실행하는 무한반복문(인터벌 : 주기가 있는 반복)
+    window.setInterval(()=>{
+      //clock.innerText=new Date();
+      let date=new Date();
+      let h=date.getHours();
+      let m=String(date.getMinutes()).padStart(2,"0");
+      let s=String(date.getSeconds()).padStart(2,"0");
+      let str=`${h}:${m}:${s}`;
+      clock.innerText=str;
+    },1000);
+    window.setTimeout(()=>{
+      alert("10초뒤 경고!")
+    },10000);
+
+
+    let now=Temporal.Now.plainDateTimeISO("Asia/Seoul");
+    console.log(now.toString())
+
+
+  </script>
+</body>
+</html>
