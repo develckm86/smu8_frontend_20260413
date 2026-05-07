@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l46_window_this 브라우저에서 this 바인딩</title>
+</head>
+<body>
+    <h1 id="title">브라우저에서 this 바인딩</h1>
+    <script>
+        //console.log(this);
+        //스크립트를 실행하는 브라우저(window)
+        function a(){
+            console.log("a()",this);
+            this.style.color="red";
+        }
+        //a();
+        title.onclick=a;
+    </script>
+    <h2 id="ex1">화살표함수의 this</h2>
+    <script>
+        const ex1Handler=(event)=>{
+            //this.style.color="red";
+            //화살표함수의 this 는 선언된 위치와 가장 가까운
+            //타입의 this를 캡처
+            //ex1.style.color="purple";
+            event.currentTarget.style.color="blue";
+        }//.bind(ex1); 화살표함수는 bind 불가능
+        ex1.onclick=ex1Handler;
+    </script>
+    <hr>
+    <div id="clock"></div>
+    <hr>
+    <button id="clockBnt">시계 시작</button>
+    <button id="clockBnt2">시계 시작(화살표함수)</button>
+    <script>
+        class Clock{
+            constructor() {
+                this.clockNode=document.getElementById("clock");
+                this.btnNode=document.getElementById("clockBnt");
+                this.btnNode2=document.getElementById("clockBnt2");
+                this.btnNode.onclick=this.clockHandler.bind(this);
+                //this.btnNode.onclick=this.clockHandler;
+                this.btnNode2.onclick=this.clockHandler2;
+            }
+            clockHandler(){
+                console.log(this)
+                this.clockNode.innerText=new Date();
+                setInterval(function (){
+                    this.clockNode.innerText=new Date();
+                }.bind(this),1000)
+            }
+            clockHandler2=()=>{
+                console.log(this)
+                this.clockNode.innerText="화살표:"+new Date();
+                setInterval(()=>{
+                    this.clockNode.innerText="화살표:"+new Date();
+                },1000)
+            }
+        }
+        let digClock=new Clock();
+
+    </script>
+</body>
+</html>
