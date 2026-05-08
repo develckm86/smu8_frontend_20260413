@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l52_xmlhttprequest 로 비동기식 통신을 하자</title>
+</head>
+<body>
+  <h1>XMLHttpRequest 비동기식실행, 비동기식통신</h1>
+  <p>오래걸리거나 무한히 반복하는 일이 있으면 브라우저 렌더링이 안되기 때문에
+    비동기식 실행이 존재함 (WebAPIs, EventLoop)
+  </p>
+  <p>통신(AJAX)은 오래걸리는 일이기 때문에 비동기식으로 실행됨</p>
+  <hr>
+  <table border="1" width="400">
+    <thead>
+      <tr>
+        <th>index</th>
+        <th>이름</th>
+        <th>나이</th>
+      </tr>
+    </thead>
+    <tbody id="usersTbody">
+    </tbody>
+  </table>
+  <script>
+    const usersTbody=document.getElementById("usersTbody");
+
+    //비동기식 실행(비동기함수)
+    let str="안녕";
+    //setTimeout,setInterval,XMLHttpRequest,fetch -> Web APIs
+    // setTimeout(()=>{
+    //   str+="하세요";
+    //   console.log("실행종료",str)
+    // },2000);
+    console.log(str);//동기적으로 실행시  "안녕하세요"
+    //setTimeout 비동기적으로(따로) 실행되기 때문에 "안녕"
+    //setTimeout(()=>{console.log(str);},10)
+
+    let users;
+
+    const req=new XMLHttpRequest();
+    req.open("GET","./l51_users.json");
+    req.send(); //통신
+    users=req.responseText;
+    //통신이 언제 끝날지 모르기 때문에 (비동기실행)
+    //통신이 끝나는 시점에 동작하는 함수 onload를 제공
+    req.onload=function (){
+      users=req.responseText;
+      console.log("onload users",users);
+      // "{\"users\":[]}" : json 문자열로된 객체명세서
+      //"11" => Number("11")=>11
+      //*** 객체를 바로 통신에 사용할 수 없다!!
+      const usersObj=JSON.parse(users);
+      console.log(usersObj);
+      // let html="";
+      // let i=0;
+      // for(let u of usersObj){
+      //   html+=`
+      //   <tr>
+      //          <td>${i++}</td>
+      //          <td>${u.name}</td>
+      //          <td>${u["age"]}</td>
+      //   </tr>
+      //   `;
+      // }
+      // usersTbody.innerHTML=html;
+      usersObj.forEach((u,i)=>{
+        const tr=document.createElement("tr");
+        const td1=document.createElement("td");
+        const td2=document.createElement("td");
+        const td3=document.createElement("td");
+      });
+    }
+    console.log("users",users);
+  </script>
+
+</body>
+</html>
