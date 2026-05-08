@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l51_ajax</title>
+</head>
+<body>
+  <h1>비동기로 통신해서 데이터를 불러오자!</h1>
+  <h2>동기식 통신</h2>
+  <p><a href="./l51_users.json">유저 리스트 불러오기</a></p>
+  <h2>비동기식 통신 ajax</h2>
+  <p>
+    <button id="loadUsersBtn">유저 리스트 비동기적으로 불러오기</button>
+  </p>
+  <div id="usersContainer"></div>
+  <script>
+    const usersContainer=document.getElementById("usersContainer");
+
+    const loadUsers=function (){
+      const req=new XMLHttpRequest();
+      //Get vs Post
+      //Get : 쿼리스트링으로 파라미터를 url 포함 (일반적)
+      //Post : 양식제출시 파라미터를 요청해더에 숨기는 방식
+      req.open("GET","./l51_users.json"); //통신준비
+      req.send(); //통신시작
+      //send() 비동기식 통신이면서 비동기식 실행!
+      //비동기식 실행 : 따로 통신한다 (Web APIs)
+      setTimeout(()=>{
+        console.log(req.responseText);
+      },1000);
+      const users=req.responseText;
+      // //통신에 성공해서 받아오는 users
+      console.log(users)
+      // 비동기적으로 실행되기 때문에 users가 없음
+      //통신이 성공하면 실행되는 함수 onload
+      req.onload=function (){
+        const users=req.responseText;
+        console.log("onload",users)
+        usersContainer.innerText=users;
+      }
+    }
+    const loadUsersBtn=document.getElementById("loadUsersBtn");
+    console.log(loadUsersBtn)
+    loadUsersBtn.onclick=loadUsers;
+
+
+  </script>
+</body>
+</html>
