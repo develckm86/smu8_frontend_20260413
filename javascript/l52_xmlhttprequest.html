@@ -52,18 +52,18 @@
       //*** 객체를 바로 통신에 사용할 수 없다!!
       const usersObj=JSON.parse(users);
       console.log(usersObj);
-      // let html="";
-      // let i=0;
-      // for(let u of usersObj){
-      //   html+=`
-      //   <tr>
-      //          <td>${i++}</td>
-      //          <td>${u.name}</td>
-      //          <td>${u["age"]}</td>
-      //   </tr>
-      //   `;
-      // }
-      // usersTbody.innerHTML=html;
+      let html="";
+      let i=0;
+      for(let u of usersObj){
+        html+=`
+        <tr>
+               <td>${i++}</td>
+               <td>${u.name}</td>
+               <td>${u["age"]}</td>
+        </tr>
+        `;
+      }
+      usersTbody.innerHTML=html;
       usersObj.forEach((u,i)=>{
         const tr=document.createElement("tr");
         const td1=document.createElement("td");
