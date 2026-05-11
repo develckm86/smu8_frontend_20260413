@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l56_fetch fetch API 로 비동기 통신</title>
+</head>
+<body>
+  <h1>fetch API 로 비동기 통신</h1>
+  <hr>
+  <div>
+    <p>
+      <button id="ex1">fetch 로 Users 불러오기</button>
+      <button id="ex2">XMLHttpRequest 로 Users 불러오기</button>
+    </p>
+    <div id="ex1Container"></div>
+    <div id="ex2Container"></div>
+  </div>
+  <script>
+    ex1.addEventListener("click",()=>{
+       fetch("./l51_users.json").
+       then((res)=>{
+         console.log(res);
+         return res.json()
+       }).then((users)=>{
+         console.log(users)
+         ex1Container.innerText= JSON.stringify(users);
+       })
+    });
+    ex2.addEventListener("click",()=>{
+      const req=new XMLHttpRequest();
+      req.open("GET","./l51_users.json");
+      req.send();
+      req.onload=function (){
+        const usersObj=JSON.parse(req.responseText);
+        ex2Container.innerText= JSON.stringify(usersObj,null,2)
+      }
+    })
+  </script>
+</body>
+</html>
