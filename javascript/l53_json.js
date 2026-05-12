@@ -10,9 +10,13 @@ console.log(str);
 console.log(arr);
 console.log(str[0]);
 console.log(arr[0]);
+str="안녕"; //['안','녕']
 let obj=[11,22,33]; //리터럴표기법
 obj=new Array();
 obj[0]=11;
 obj[1]=22;
 obj[2]=33;
+obj=new Object();
+obj["key"]="value"
+obj={key:"value"};
 

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l59_promise_fetch fetch와 프라미스화</title>
+</head>
+<body>
+  <h1>fetch API(통신 규칙)와 프라미스화</h1>
+  <button id="ex1">l51_users.json 불러오기</button>
+  <ul id="usersUl"></ul>
+  <script>
+    const loadUsers=function (){
+      fetch("./l51_users.json").
+        then((res)=>res.json()).
+        then((users)=>{
+          for(let u of users){
+            let li=document.createElement("li");
+            li.innerText=`이름은 ${u.name} 나이는 ${u.age}`;
+            usersUl.append(li);
+          }
+      });
+    }
+    ex1.onclick=loadUsers;
+  </script>
+  <hr>
+  <button id="ex2">request 프라미스화로 불러오기</button>
+  <table width="400" border="1">
+    <thead><tr><th>번호</th><th>이름</th><th>나이</th></tr></thead>
+    <tbody id="usersTbody"></tbody>
+  </table>
+  <script>
+    //통신완료시 완료된 시점에 데이터 반환
+    function request(url,opt){
+      return new Promise((resolve)=>{
+        const req=new XMLHttpRequest();
+        req.open(opt.method,url);
+        req.send();
+        req.onload=function (){
+          const res=req.responseText;
+          resolve(res);
+        }
+      });
+    }
+    function jsonParse(json){
+      return new Promise((resolve)=>{
+        const obj=JSON.parse(json);
+        resolve(obj);
+      })
+    }
+    ex2.onclick=function (){
+      request("./l51_users.json",{method:"GET"}).
+      then( res => jsonParse(res)).
+      then((users)=>{
+        //usersTbody.innerHTML="";
+        usersTbody.replaceChildren();
+        const trUsers=users.map((u,i)=>{
+          const tr=document.createElement("tr");
+          const td1=document.createElement("td");
+          const td2=document.createElement("td");
+          const td3=document.createElement("td");
+          td1.innerText=i;
+          td2.innerText=u.name;
+          td3.innerText=u.age;
+          tr.append(td1);
+          tr.append(td2);
+          tr.append(td3);
+          //usersTbody.append(tr);
+          return tr;
+        });
+        console.log(users)
+        console.log(trUsers)
+        usersTbody.replaceChildren(...trUsers)
+      });
+    }
+  </script>
+</body>
+</html>

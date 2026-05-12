@@ -4,7 +4,7 @@
 //json 으로 변환가능한 데이터
 let user={
     name:'경민',
-    birth: "1986-5-25",
+    birth: 1986-5-25,
     age: 40.01,
     isMarried: true,
     children: null,
@@ -13,7 +13,7 @@ let user={
     say:()=>{console.log(this.name+"안녕~")},
     birthDate: new Date(1986,4,25)
 };
-let str=JSON.stringify(user,null,2)
+let str=JSON.stringify(user,null)
 console.log(user)
 console.log(str)
 //key 는 무조건 "" 문자열로 취급

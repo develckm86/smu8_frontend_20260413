@@ -16,7 +16,12 @@ new Promise((resolve)=>{
     },1000);
 }).then((isLogin)=>{
     console.log(isLogin)
-    return fetchUser();
+    return new Promise((resolve)=>{
+        setTimeout(()=>{
+            console.log("유저로딩 성공!")
+            resolve({name:"경민"});
+        },2000);
+    });
 }).then((user)=>{
     console.log("로딩된유저",user)
 })

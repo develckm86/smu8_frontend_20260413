@@ -20,7 +20,7 @@
        fetch("./l51_users.json").
        then((res)=>{
          console.log(res);
-         return res.json()
+         return res.json();
        }).then((users)=>{
          console.log(users)
          ex1Container.innerText= JSON.stringify(users);
@@ -29,7 +29,10 @@
     ex2.addEventListener("click",()=>{
       const req=new XMLHttpRequest();
       req.open("GET","./l51_users.json");
+      console.log("send()이전",req.responseText); //responseText: 통신에서 받아온데이터를 문자열로
       req.send();
+      console.log("send()이후",req.responseText);
+      //통신한 데이터의 값이 있으면 동기적으로 실행, 데이터가 없으면 통신은 비동기적으로 실행
       req.onload=function (){
         const usersObj=JSON.parse(req.responseText);
         ex2Container.innerText= JSON.stringify(usersObj,null,2)
