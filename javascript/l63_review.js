@@ -16,7 +16,8 @@ try {
 //throw new Error();
 function loadUser(){
     //throw new Error("찾는페이지가 없습니다!");
-    return fetch("./l51_usersㅇㅇㅇㅇ.json").
+
+    return fetch("./l51_users.json").
         then((res)=>{
         console.log(res.status); //100,200,300,400,500
         if(res.status!==200){
