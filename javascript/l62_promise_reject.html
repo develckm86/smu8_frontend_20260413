@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l62_promise_reject Promise의 예외발생</title>
+</head>
+<body>
+  <h1>Promise의 예외발생</h1>
+
+  <script>
+    new Promise((resolve,reject)=>{
+      const req=new XMLHttpRequest();
+      req.open("GET","./l51_users.json")
+      req.send();
+      //주소가 틀린것은 오류가 아님
+      //오류인 상태인 404를 반환
+      req.onload=function (){
+        let statusCode=req.status;
+        if(statusCode===200){//통신성공
+          resolve(JSON.parse(req.responseText));
+          //then()실행
+        }else{//실패
+          reject(new Error(statusCode));//catch()
+        }
+      }
+    }).then((arr)=>{
+      console.log("then:",arr);
+    }).catch((err)=>{
+      console.log("catch:",err.message);
+    }).finally(()=>{
+      console.log("then,catch 상관없이 무조건 실행되는 fianlly")
+    });
+
+
+
+  </script>
+
+</body>
+</html>
