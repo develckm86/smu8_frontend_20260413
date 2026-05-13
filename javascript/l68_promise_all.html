@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l68_promise_all 비동기 실행을 동시에 동기화하자!</title>
+</head>
+<body>
+  <h1>비동기 실행을 동시에 동기화하자!</h1>
+  <button id="btn">3개 문서 불러오기</button>
+  <script>
+    //임의의 데어터 3개
+    async function loadDom(){
+      let dom1=await fetch("./l65_async_resolve.html").then(res=>res.text());
+      let dom2=await fetch("./l63_review.html").then(res=>res.text());
+      let dom3=await fetch("./l56_fetch.html").then(res=>res.text());
+      console.log(dom1,dom2,dom3)
+      const domArr=Promise.all([
+        fetch("./l65_async_resolve.html").then(res=>res.text()),
+        fetch("./l63_review.html").then(res=>res.text()),
+        fetch("./l56_fetch.html").then(res=>res.text())
+      ])
+      console.log(domArr)
+
+    }
+    btn.onclick=loadDom;
+  </script>
+</body>
+</html>
