@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>l06_browser_module  브라우저에서 모듈</title>
+    <script type="module" src="l05_module_import.js"></script>
+</head>
+<body>
+    <h1>브라우저에서 모듈</h1>
+    <p>브라우저는 node.js와 전혀 상관없다. 브라우저에서 js를 실행하는 엔진이 따로 존재!</p>
+    <p>npm은 브라우저와 상관이 있나 : npm 으로 다운받은 js 라이브러리를 브라우저에서
+        참조하면 상관이 있어진다!
+    </p>
+    <p>module로 지정된 스크립트는 비동기적으로 로딩(WebAPIs)
+        실행을 일반 script 실행에 양보 (async)
+    </p>
+    <script type="module"> //import를 하려면 꼭 type=module
+        import {sum} from "./l04_module_export.js"
+        console.log(sum(10,20,30));
+        console.log("모듈 this:",this);
+        await import("./l04_module_export.js")
+    </script>
+    <script>
+        console.log("안녕1")
+        console.log("script this :",this)
+        //await import("./l04_module_export.js")
+        console.log(Temporal.Now.zonedDateTimeISO().toString())
+
+    </script>
+    <script>
+        console.log("안녕2");
+    </script>
+</body>
+</html>
