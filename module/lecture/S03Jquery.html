@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jQuery 기초</title>
+  <style>
+:root {
+  --text: #222;
+  --muted: #666;
+  --line: #d9d9d9;
+  --soft: #f6f8fa;
+  --accent: #1f4e79;
+  --code-bg: #f3f4f6;
+  --quote-bg: #f7fbff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif;
+  line-height: 1.75;
+  background: #fff;
+}
+.page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 48px 28px 80px;
+}
+h1, h2, h3 {
+  line-height: 1.35;
+  color: #111;
+  letter-spacing: -0.02em;
+}
+h1 {
+  margin: 0 0 28px;
+  padding-bottom: 18px;
+  border-bottom: 3px solid var(--accent);
+  font-size: 2rem;
+}
+h2 {
+  margin: 48px 0 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.45rem;
+}
+h3 {
+  margin: 32px 0 12px;
+  font-size: 1.15rem;
+}
+p { margin: 0 0 16px; }
+blockquote {
+  margin: 22px 0;
+  padding: 16px 18px;
+  border-left: 5px solid var(--accent);
+  background: var(--quote-bg);
+  color: #1c3448;
+}
+table {
+  width: 100%;
+  margin: 20px 0 28px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.96rem;
+}
+th, td {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  vertical-align: top;
+  word-break: keep-all;
+}
+th {
+  background: var(--soft);
+  font-weight: 700;
+  text-align: left;
+}
+pre {
+  margin: 16px 0 24px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: var(--code-bg);
+  line-height: 1.55;
+}
+code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.95em;
+}
+p code, li code, td code {
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: var(--code-bg);
+}
+ul, ol {
+  margin: 0 0 18px 22px;
+  padding: 0;
+}
+li { margin: 4px 0; }
+.toc {
+  margin: 0 0 36px;
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fafafa;
+}
+.toc strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+.toc a {
+  color: var(--text);
+  text-decoration: none;
+}
+.toc a:hover { text-decoration: underline; }
+.note {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.question {
+  margin: 18px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+.question strong { color: var(--accent); }
+@media print {
+  .page { max-width: none; padding: 24mm 18mm; }
+  h1, h2 { page-break-after: avoid; }
+  pre, table, blockquote, .question { page-break-inside: avoid; }
+  a { color: inherit; text-decoration: none; }
+}
+</style>
+</head>
+<body>
+  <main class="page">
+    <h1 id="chapter-1">제1장. jQuery 기초</h1>
+    
+<section class="toc" aria-label="목차">
+  <strong>목차</strong>
+  <ol>
+    <li><a href="#section-1">jQuery란?</a></li>
+    <li><a href="#section-2">jQuery를 모듈로 사용하는 방법</a></li>
+    <li><a href="#section-3">CDN으로 jQuery 불러오기</a></li>
+    <li><a href="#section-4">jQuery 기본 문법</a></li>
+    <li><a href="#section-5">선택자</a></li>
+    <li><a href="#section-6">DOM 조작</a></li>
+    <li><a href="#section-7">이벤트 처리</a></li>
+    <li><a href="#section-8">요소 추가와 삭제</a></li>
+    <li><a href="#section-9">효과와 애니메이션</a></li>
+    <li><a href="#section-10">메서드 체이닝</a></li>
+    <li><a href="#section-11">Ajax 기초</a></li>
+    <li><a href="#section-12">종합 예제</a></li>
+    <li><a href="#section-13">jQuery 사용 시 주의할 점</a></li>
+    <li><a href="#questions">연습 문제</a></li>
+    <li><a href="#answers">정답</a></li>
+  </ol>
+</section>
+
+    <section id="section-1">
+<h2>1. jQuery란?</h2>
+
+<p>jQuery는 JavaScript를 더 짧고 간단하게 작성할 수 있도록 도와주는 JavaScript 라이브러리이다. HTML 요소 선택, DOM 조작, 이벤트 처리, 애니메이션, Ajax 작업을 간단한 문법으로 처리할 수 있도록 만들어졌다.</p>
+<p>JavaScript만 사용하면 다음과 같이 작성해야 하는 코드를,</p>
+<pre><code class="language-javascript">document.querySelector(&quot;#title&quot;).textContent = &quot;안녕하세요&quot;;</code></pre>
+<p>jQuery를 사용하면 다음과 같이 줄여 쓸 수 있다.</p>
+<pre><code class="language-javascript">$(&quot;#title&quot;).text(&quot;안녕하세요&quot;);</code></pre>
+<p>jQuery는 오래된 웹 프로젝트, 관리자 페이지, 간단한 프론트엔드 기능 구현, 기존 유지보수 프로젝트에서 많이 사용된다. 최신 웹 개발에서는 React, Vue, Svelte 같은 프레임워크나 순수 JavaScript의 기능도 많이 사용되므로, jQuery는 기존 코드 이해와 빠른 DOM 조작을 위한 도구로 이해하는 것이 좋다.</p>
+<blockquote>jQuery의 핵심은 “HTML 요소를 쉽게 선택하고, 쉽게 바꾸고, 쉽게 이벤트를 연결하는 것”이다.</blockquote>
+
+</section>
+    <section id="section-2">
+<h2>2. jQuery를 모듈로 사용하는 방법</h2>
+
+<p>jQuery는 CDN으로 불러와 전역 변수처럼 사용할 수도 있고, npm으로 설치한 뒤 모듈 방식으로 사용할 수도 있다. 모듈 방식은 Vite, Webpack, Parcel 같은 번들러를 사용하는 프로젝트에서 적합하다.</p>
+
+<h3>2.1. 모듈 방식의 기본 흐름</h3>
+<p>모듈 방식에서는 HTML 파일에서 jQuery CDN을 직접 불러오지 않는다. 대신 npm으로 jQuery를 설치하고, JavaScript 파일에서 <code>import</code> 문으로 jQuery를 가져온다.</p>
+<table>
+  <thead>
+    <tr>
+      <th>구분</th>
+      <th>CDN 방식</th>
+      <th>모듈 방식</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>불러오는 위치</td>
+      <td>HTML의 <code>script</code> 태그</td>
+      <td>JavaScript 파일의 <code>import</code> 문</td>
+    </tr>
+    <tr>
+      <td>설치 여부</td>
+      <td>별도 설치 없이 CDN 주소 사용</td>
+      <td><code>npm install jquery</code> 필요</td>
+    </tr>
+    <tr>
+      <td>주요 사용 환경</td>
+      <td>간단한 HTML 예제, 정적 페이지</td>
+      <td>Vite, Webpack 같은 빌드 도구 기반 프로젝트</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>2.2. Vite 프로젝트에서 jQuery 사용하기</h3>
+<p>Vite 프로젝트를 만든 뒤 jQuery를 설치한다.</p>
+<pre><code class="language-bash">npm create vite@latest jquery-module-demo
+cd jquery-module-demo
+npm install
+npm install jquery</code></pre>
+
+<p>HTML 파일에서는 모듈 JavaScript 파일을 연결한다.</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;title&gt;jQuery 모듈 사용&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1 id=&quot;title&quot;&gt;jQuery 모듈 예제&lt;/h1&gt;
+  &lt;button id=&quot;btn&quot;&gt;변경&lt;/button&gt;
+
+  &lt;script type=&quot;module&quot; src=&quot;/src/main.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p><code>src/main.js</code> 파일에서 jQuery를 가져와 사용한다.</p>
+<pre><code class="language-javascript">import $ from &quot;jquery&quot;;
+
+$(&quot;#btn&quot;).on(&quot;click&quot;, function() {
+  $(&quot;#title&quot;).text(&quot;jQuery를 모듈로 불러왔습니다.&quot;);
+});</code></pre>
+
+<p>개발 서버를 실행한다.</p>
+<pre><code class="language-bash">npm run dev</code></pre>
+
+<p>브라우저에서 버튼을 클릭하면 제목이 변경된다. 이 방식에서는 jQuery가 전역으로 자동 등록되는 것이 아니라, <code>import $ from "jquery"</code>로 가져온 파일 안에서 사용된다.</p>
+
+<h3>2.3. 전역 변수로 등록해야 하는 경우</h3>
+<p>일부 오래된 플러그인이나 기존 코드는 <code>window.$</code> 또는 <code>window.jQuery</code>가 있어야 동작한다. 이런 경우에는 jQuery를 import한 뒤 전역 객체에 등록할 수 있다.</p>
+<pre><code class="language-javascript">import $ from &quot;jquery&quot;;
+
+window.$ = $;
+window.jQuery = $;
+
+$(&quot;#title&quot;).text(&quot;전역 jQuery 등록 완료&quot;);</code></pre>
+
+<blockquote>모듈 방식에서는 필요한 파일에서 jQuery를 직접 import하는 것이 기본이다. 기존 플러그인 호환이 필요할 때만 <code>window.$</code>, <code>window.jQuery</code>에 등록한다.</blockquote>
+
+<h3>2.4. 브라우저에서 import만 바로 사용하면 안 되는 경우</h3>
+<p>HTML에서 다음과 같이 작성하는 방식은 일반적인 브라우저 환경에서 바로 동작하지 않을 수 있다.</p>
+<pre><code class="language-html">&lt;script type=&quot;module&quot;&gt;
+  import $ from &quot;jquery&quot;;
+&lt;/script&gt;</code></pre>
+<p>브라우저는 기본적으로 <code>"jquery"</code>라는 패키지 이름만 보고 npm 패키지를 자동으로 찾아오지 않는다. 따라서 npm 패키지를 모듈로 사용하려면 Vite 같은 빌드 도구를 사용하거나, import map 같은 별도 설정이 필요하다.</p>
+
+</section>
+    <section id="section-3">
+<h2>3. CDN으로 jQuery 불러오기</h2>
+
+<p>CDN 방식은 별도의 설치 없이 HTML 문서에 jQuery 파일 주소를 연결하는 방식이다. 기초 예제나 간단한 정적 페이지에서 사용하기 쉽다.</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;title&gt;jQuery 기초&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1 id=&quot;title&quot;&gt;jQuery 시작하기&lt;/h1&gt;
+
+  &lt;script src=&quot;https://code.jquery.com/jquery-3.7.1.min.js&quot;&gt;&lt;/script&gt;
+  &lt;script&gt;
+    $(&quot;#title&quot;).text(&quot;jQuery가 연결되었습니다.&quot;);
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>jQuery 코드는 보통 HTML 요소가 모두 만들어진 뒤 실행해야 한다. 가장 단순한 방법은 <code>script</code> 태그를 <code>body</code>의 마지막 부분에 작성하는 것이다.</p>
+<pre><code class="language-html">&lt;body&gt;
+  &lt;button id=&quot;btn&quot;&gt;버튼&lt;/button&gt;
+
+  &lt;script src=&quot;https://code.jquery.com/jquery-3.7.1.min.js&quot;&gt;&lt;/script&gt;
+  &lt;script&gt;
+    $(&quot;#btn&quot;).text(&quot;클릭 버튼&quot;);
+  &lt;/script&gt;
+&lt;/body&gt;</code></pre>
+<p>또 다른 방법은 <code>$(function() { ... })</code> 문법을 사용하는 것이다. 이 문법은 DOM이 준비된 뒤 내부 코드를 실행한다.</p>
+<pre><code class="language-javascript">$(function() {
+  $(&quot;#btn&quot;).text(&quot;클릭 버튼&quot;);
+});</code></pre>
+<blockquote><code>$(function() { ... })</code>는 “HTML 요소가 준비되면 이 코드를 실행하라”는 의미로 이해할 수 있다.</blockquote>
+
+</section>
+    <section id="section-4">
+<h2>4. jQuery 기본 문법</h2>
+
+<h3>4.1. 기본 형태</h3>
+<p>jQuery의 기본 문법은 다음과 같다.</p>
+<pre><code class="language-javascript">$(&quot;선택자&quot;).기능();</code></pre>
+<p>예를 들어 아이디가 <code>title</code>인 요소의 글자를 변경하려면 다음과 같이 작성한다.</p>
+<pre><code class="language-javascript">$(&quot;#title&quot;).text(&quot;제목이 변경되었습니다.&quot;);</code></pre>
+<table>
+  <thead>
+    <tr>
+      <th>구성 요소</th>
+      <th>의미</th>
+      <th>예시</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>$</code></td>
+      <td>jQuery 함수를 의미</td>
+      <td><code>$()</code></td>
+    </tr>
+    <tr>
+      <td><code>"선택자"</code></td>
+      <td>어떤 HTML 요소를 선택할지 지정</td>
+      <td><code>"#title"</code></td>
+    </tr>
+    <tr>
+      <td><code>.기능()</code></td>
+      <td>선택한 요소에 적용할 동작</td>
+      <td><code>.text()</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>4.2. JavaScript와 jQuery 비교</h3>
+<p>순수 JavaScript로 HTML 요소의 글자를 변경하는 코드는 다음과 같다.</p>
+<pre><code class="language-javascript">document.querySelector(&quot;#title&quot;).textContent = &quot;변경된 제목&quot;;</code></pre>
+<p>같은 작업을 jQuery로 작성하면 다음과 같다.</p>
+<pre><code class="language-javascript">$(&quot;#title&quot;).text(&quot;변경된 제목&quot;);</code></pre>
+<p>jQuery는 선택과 조작을 짧게 작성할 수 있게 해 준다. 특히 여러 요소에 같은 작업을 적용할 때 코드가 간결해진다.</p>
+<pre><code class="language-javascript">$(&quot;.item&quot;).text(&quot;같은 문구 적용&quot;);</code></pre>
+
+</section>
+    <section id="section-5">
+<h2>5. 선택자</h2>
+
+<h3>5.1. 기본 선택자</h3>
+<p>jQuery 선택자는 CSS 선택자와 비슷하다. 태그, 아이디, 클래스, 속성 등을 기준으로 HTML 요소를 선택할 수 있다.</p>
+<table>
+  <thead>
+    <tr>
+      <th>선택자</th>
+      <th>의미</th>
+      <th>예시</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>$("p")</code></td>
+      <td>모든 <code>&lt;p&gt;</code> 요소 선택</td>
+      <td><code>$("p").hide()</code></td>
+    </tr>
+    <tr>
+      <td><code>$("#title")</code></td>
+      <td><code>id="title"</code> 요소 선택</td>
+      <td><code>$("#title").text("제목")</code></td>
+    </tr>
+    <tr>
+      <td><code>$(".box")</code></td>
+      <td><code>class="box"</code> 요소 선택</td>
+      <td><code>$(".box").css("color", "red")</code></td>
+    </tr>
+    <tr>
+      <td><code>$("*")</code></td>
+      <td>모든 요소 선택</td>
+      <td><code>$("*").css("font-size", "16px")</code></td>
+    </tr>
+    <tr>
+      <td><code>$("input")</code></td>
+      <td>모든 <code>&lt;input&gt;</code> 요소 선택</td>
+      <td><code>$("input").val()</code></td>
+    </tr>
+  </tbody>
+</table>
+<pre><code class="language-html">&lt;h1 id=&quot;title&quot;&gt;제목&lt;/h1&gt;
+&lt;p class=&quot;desc&quot;&gt;설명 문장입니다.&lt;/p&gt;
+&lt;p class=&quot;desc&quot;&gt;두 번째 설명입니다.&lt;/p&gt;
+
+&lt;script&gt;
+  $(&quot;#title&quot;).text(&quot;jQuery 선택자&quot;);
+  $(&quot;.desc&quot;).css(&quot;color&quot;, &quot;blue&quot;);
+&lt;/script&gt;</code></pre>
+
+<h3>5.2. 조합 선택자</h3>
+<p>여러 조건을 조합해서 선택할 수도 있다.</p>
+<pre><code class="language-javascript">$(&quot;ul li&quot;).css(&quot;color&quot;, &quot;green&quot;);
+$(&quot;.menu .active&quot;).css(&quot;font-weight&quot;, &quot;bold&quot;);
+$(&quot;input[type=&#x27;text&#x27;]&quot;).css(&quot;border&quot;, &quot;1px solid black&quot;);</code></pre>
+<table>
+  <thead>
+    <tr>
+      <th>선택자</th>
+      <th>의미</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>$("ul li")</code></td>
+      <td><code>&lt;ul&gt;</code> 안에 있는 모든 <code>&lt;li&gt;</code> 요소</td>
+    </tr>
+    <tr>
+      <td><code>$(".menu .active")</code></td>
+      <td><code>menu</code> 클래스 내부의 <code>active</code> 클래스 요소</td>
+    </tr>
+    <tr>
+      <td><code>$("input[type='text']")</code></td>
+      <td><code>type="text"</code>인 <code>&lt;input&gt;</code> 요소</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>5.3. 자주 사용하는 특수 선택자</h3>
+<pre><code class="language-javascript">$(&quot;li:first&quot;).css(&quot;color&quot;, &quot;red&quot;);
+$(&quot;li:last&quot;).css(&quot;color&quot;, &quot;blue&quot;);
+$(&quot;li:even&quot;).css(&quot;background-color&quot;, &quot;#eee&quot;);
+$(&quot;li:odd&quot;).css(&quot;background-color&quot;, &quot;#ddd&quot;);</code></pre>
+<table>
+  <thead>
+    <tr>
+      <th>선택자</th>
+      <th>의미</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>:first</code></td><td>첫 번째 요소</td></tr>
+    <tr><td><code>:last</code></td><td>마지막 요소</td></tr>
+    <tr><td><code>:even</code></td><td>짝수 인덱스 요소</td></tr>
+    <tr><td><code>:odd</code></td><td>홀수 인덱스 요소</td></tr>
+  </tbody>
+</table>
+<p><code>:even</code>, <code>:odd</code>는 화면에서 보이는 순서의 1번째, 2번째가 아니라 JavaScript 인덱스 기준으로 동작한다. JavaScript 인덱스는 0부터 시작한다.</p>
+
+</section>
+    <section id="section-6">
+<h2>6. DOM 조작</h2>
+
+<p>DOM 조작은 HTML 요소의 내용, 속성, 스타일, 클래스를 변경하는 작업이다. jQuery는 DOM 조작을 위한 여러 메서드를 제공한다.</p>
+
+<h3>6.1. 텍스트 변경</h3>
+<pre><code class="language-javascript">$(&quot;#title&quot;).text(&quot;새로운 제목&quot;);</code></pre>
+<p><code>text()</code>는 요소 안의 글자 내용을 변경하거나 가져올 때 사용한다.</p>
+<pre><code class="language-html">&lt;h1 id=&quot;title&quot;&gt;기존 제목&lt;/h1&gt;
+&lt;button id=&quot;btn&quot;&gt;변경&lt;/button&gt;
+
+&lt;script&gt;
+  $(&quot;#btn&quot;).on(&quot;click&quot;, function() {
+    $(&quot;#title&quot;).text(&quot;버튼을 클릭했습니다.&quot;);
+  });
+&lt;/script&gt;</code></pre>
+
+<h3>6.2. HTML 내용 변경</h3>
+<pre><code class="language-javascript">$(&quot;#content&quot;).html(&quot;&lt;strong&gt;강조된 문장&lt;/strong&gt;&quot;);</code></pre>
+<p><code>.html()</code>은 선택한 요소의 HTML 내용을 가져오거나 설정하는 메서드이다.</p>
+<pre><code class="language-html">&lt;div id=&quot;content&quot;&gt;기존 내용&lt;/div&gt;
+
+&lt;script&gt;
+  $(&quot;#content&quot;).html(&quot;&lt;strong&gt;새로운 HTML 내용&lt;/strong&gt;&quot;);
+&lt;/script&gt;</code></pre>
+<p>사용자가 입력한 값을 그대로 <code>.html()</code>에 넣으면 보안 문제가 생길 수 있다. 외부 입력값을 화면에 출력할 때는 가능하면 <code>.text()</code>를 사용하는 것이 안전하다.</p>
+<pre><code class="language-javascript">// 권장
+$(&quot;#result&quot;).text(userInput);
+
+// 주의 필요
+$(&quot;#result&quot;).html(userInput);</code></pre>
+
+<h3>6.3. 입력값 가져오기</h3>
+<p>폼 요소의 값을 가져올 때는 <code>.val()</code>을 사용한다.</p>
+<pre><code class="language-html">&lt;input type=&quot;text&quot; id=&quot;username&quot;&gt;
+&lt;button id=&quot;checkBtn&quot;&gt;확인&lt;/button&gt;
+&lt;p id=&quot;result&quot;&gt;&lt;/p&gt;
+
+&lt;script&gt;
+  $(&quot;#checkBtn&quot;).on(&quot;click&quot;, function() {
+    const name = $(&quot;#username&quot;).val();
+    $(&quot;#result&quot;).text(name + &quot;님, 환영합니다.&quot;);
+  });
+&lt;/script&gt;</code></pre>
+<p>값을 직접 설정할 수도 있다.</p>
+<pre><code class="language-javascript">$(&quot;#username&quot;).val(&quot;홍길동&quot;);</code></pre>
+
+<h3>6.4. 속성 변경</h3>
+<p>HTML 속성을 가져오거나 변경할 때는 <code>.attr()</code>을 사용한다.</p>
+<pre><code class="language-html">&lt;img id=&quot;photo&quot; src=&quot;before.jpg&quot; alt=&quot;기존 이미지&quot;&gt;
+&lt;button id=&quot;changeImg&quot;&gt;이미지 변경&lt;/button&gt;
+
+&lt;script&gt;
+  $(&quot;#changeImg&quot;).on(&quot;click&quot;, function() {
+    $(&quot;#photo&quot;).attr(&quot;src&quot;, &quot;after.jpg&quot;);
+    $(&quot;#photo&quot;).attr(&quot;alt&quot;, &quot;변경된 이미지&quot;);
+  });
+&lt;/script&gt;</code></pre>
+<p>여러 속성을 한 번에 변경할 수도 있다.</p>
+<pre><code class="language-javascript">$(&quot;#photo&quot;).attr({
+  src: &quot;after.jpg&quot;,
+  alt: &quot;변경된 이미지&quot;
+});</code></pre>
+
+<h3>6.5. CSS 변경</h3>
+<p>CSS 속성을 변경할 때는 <code>.css()</code>를 사용한다.</p>
+<pre><code class="language-javascript">$(&quot;#title&quot;).css(&quot;color&quot;, &quot;red&quot;);
+$(&quot;#title&quot;).css(&quot;font-size&quot;, &quot;32px&quot;);</code></pre>
+<p>여러 스타일을 한 번에 적용할 수도 있다.</p>
+<pre><code class="language-javascript">$(&quot;#title&quot;).css({
+  color: &quot;red&quot;,
+  fontSize: &quot;32px&quot;,
+  backgroundColor: &quot;yellow&quot;
+});</code></pre>
+
+<h3>6.6. 클래스 추가와 제거</h3>
+<p>클래스를 다룰 때는 <code>.addClass()</code>, <code>.removeClass()</code>, <code>.toggleClass()</code>를 사용한다.</p>
+<pre><code class="language-html">&lt;style&gt;
+  .active {
+    color: white;
+    background-color: navy;
+  }
+&lt;/style&gt;
+
+&lt;button id=&quot;btn&quot;&gt;클래스 적용&lt;/button&gt;
+&lt;p id=&quot;message&quot;&gt;클래스 예제입니다.&lt;/p&gt;
+
+&lt;script&gt;
+  $(&quot;#btn&quot;).on(&quot;click&quot;, function() {
+    $(&quot;#message&quot;).addClass(&quot;active&quot;);
+  });
+&lt;/script&gt;</code></pre>
+<table>
+  <thead>
+    <tr>
+      <th>메서드</th>
+      <th>의미</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>.addClass()</code></td><td>클래스 추가</td></tr>
+    <tr><td><code>.removeClass()</code></td><td>클래스 제거</td></tr>
+    <tr><td><code>.toggleClass()</code></td><td>클래스가 없으면 추가, 있으면 제거</td></tr>
+    <tr><td><code>.hasClass()</code></td><td>클래스가 있는지 확인</td></tr>
+  </tbody>
+</table>
+<pre><code class="language-javascript">$(&quot;#message&quot;).addClass(&quot;active&quot;);
+$(&quot;#message&quot;).removeClass(&quot;active&quot;);
+$(&quot;#message&quot;).toggleClass(&quot;active&quot;);
+$(&quot;#message&quot;).hasClass(&quot;active&quot;);</code></pre>
+
+</section>
+    <section id="section-7">
+<h2>7. 이벤트 처리</h2>
+
+<h3>7.1. 이벤트란?</h3>
+<p>이벤트는 사용자의 행동이나 브라우저에서 발생하는 특정 상황을 의미한다. 예를 들어 버튼 클릭, 키보드 입력, 마우스 이동, 폼 제출 등이 이벤트이다.</p>
+<p>jQuery에서는 <code>.on()</code> 메서드를 사용해 이벤트를 연결한다.</p>
+<pre><code class="language-javascript">$(&quot;선택자&quot;).on(&quot;이벤트이름&quot;, function() {
+  실행할 코드
+});</code></pre>
+
+<h3>7.2. 클릭 이벤트</h3>
+<pre><code class="language-html">&lt;button id=&quot;btn&quot;&gt;클릭&lt;/button&gt;
+&lt;p id=&quot;result&quot;&gt;&lt;/p&gt;
+
+&lt;script&gt;
+  $(&quot;#btn&quot;).on(&quot;click&quot;, function() {
+    $(&quot;#result&quot;).text(&quot;버튼을 클릭했습니다.&quot;);
+  });
+&lt;/script&gt;</code></pre>
+
+<h3>7.3. 입력 이벤트</h3>
+<pre><code class="language-html">&lt;input type=&quot;text&quot; id=&quot;keyword&quot;&gt;
+&lt;p id=&quot;preview&quot;&gt;&lt;/p&gt;
+
+&lt;script&gt;
+  $(&quot;#keyword&quot;).on(&quot;input&quot;, function() {
+    const value = $(this).val();
+    $(&quot;#preview&quot;).text(value);
+  });
+&lt;/script&gt;</code></pre>
+<p><code>$(this)</code>는 현재 이벤트가 발생한 요소를 의미한다. 위 코드에서는 사용자가 입력하고 있는 <code>#keyword</code> 요소를 가리킨다.</p>
+
+<h3>7.4. 폼 제출 이벤트</h3>
+<pre><code class="language-html">&lt;form id=&quot;loginForm&quot;&gt;
+  &lt;input type=&quot;text&quot; id=&quot;userId&quot; placeholder=&quot;아이디&quot;&gt;
+  &lt;button type=&quot;submit&quot;&gt;로그인&lt;/button&gt;
+&lt;/form&gt;
+&lt;p id=&quot;message&quot;&gt;&lt;/p&gt;
+
+&lt;script&gt;
+  $(&quot;#loginForm&quot;).on(&quot;submit&quot;, function(event) {
+    event.preventDefault();
+
+    const userId = $(&quot;#userId&quot;).val();
+
+    if (userId === &quot;&quot;) {
+      $(&quot;#message&quot;).text(&quot;아이디를 입력하세요.&quot;);
+      return;
+    }
+
+    $(&quot;#message&quot;).text(userId + &quot;님, 로그인 처리 중입니다.&quot;);
+  });
+&lt;/script&gt;</code></pre>
+<p><code>event.preventDefault()</code>는 브라우저의 기본 동작을 막는다. 폼의 기본 동작은 페이지 새로고침과 서버 전송이므로, JavaScript로 직접 검사를 하려면 기본 제출 동작을 막아야 한다.</p>
+
+<h3>7.5. 이벤트 위임</h3>
+<p>동적으로 추가되는 요소에는 일반적인 이벤트 연결이 동작하지 않을 수 있다. 이때 이벤트 위임을 사용한다.</p>
+<pre><code class="language-html">&lt;button id=&quot;addBtn&quot;&gt;항목 추가&lt;/button&gt;
+&lt;ul id=&quot;list&quot;&gt;
+  &lt;li&gt;기존 항목&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script&gt;
+  $(&quot;#addBtn&quot;).on(&quot;click&quot;, function() {
+    $(&quot;#list&quot;).append(&quot;&lt;li&gt;새 항목&lt;/li&gt;&quot;);
+  });
+
+  $(&quot;#list&quot;).on(&quot;click&quot;, &quot;li&quot;, function() {
+    $(this).remove();
+  });
+&lt;/script&gt;</code></pre>
+<p>위 코드에서 <code>#list</code>는 처음부터 존재하는 요소이고, <code>li</code>는 나중에 추가될 수도 있는 요소이다. 따라서 <code>#list</code>에 이벤트를 걸고, 그 안에서 클릭된 <code>li</code>를 처리한다.</p>
+<blockquote>동적으로 추가되는 요소를 다룰 때는 이벤트 위임을 사용한다.</blockquote>
+
+</section>
+    <section id="section-8">
+<h2>8. 요소 추가와 삭제</h2>
+
+<h3>8.1. 요소 추가</h3>
+<p>jQuery에서는 HTML 요소를 쉽게 추가할 수 있다.</p>
+<pre><code class="language-javascript">$(&quot;#list&quot;).append(&quot;&lt;li&gt;마지막에 추가&lt;/li&gt;&quot;);
+$(&quot;#list&quot;).prepend(&quot;&lt;li&gt;처음에 추가&lt;/li&gt;&quot;);</code></pre>
+<table>
+  <thead>
+    <tr>
+      <th>메서드</th>
+      <th>의미</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>.append()</code></td><td>선택한 요소의 내부 마지막에 추가</td></tr>
+    <tr><td><code>.prepend()</code></td><td>선택한 요소의 내부 처음에 추가</td></tr>
+    <tr><td><code>.before()</code></td><td>선택한 요소의 앞에 추가</td></tr>
+    <tr><td><code>.after()</code></td><td>선택한 요소의 뒤에 추가</td></tr>
+  </tbody>
+</table>
+<pre><code class="language-html">&lt;button id=&quot;addBtn&quot;&gt;추가&lt;/button&gt;
+&lt;ul id=&quot;list&quot;&gt;&lt;/ul&gt;
+
+&lt;script&gt;
+  $(&quot;#addBtn&quot;).on(&quot;click&quot;, function() {
+    $(&quot;#list&quot;).append(&quot;&lt;li&gt;새로운 항목&lt;/li&gt;&quot;);
+  });
+&lt;/script&gt;</code></pre>
+
+<h3>8.2. 요소 삭제</h3>
+<p>선택한 요소 자체를 삭제할 때는 <code>.remove()</code>를 사용한다.</p>
+<pre><code class="language-javascript">$(&quot;#target&quot;).remove();</code></pre>
+<p>선택한 요소는 남기고 내부 내용만 비우고 싶을 때는 <code>.empty()</code>를 사용한다.</p>
+<pre><code class="language-javascript">$(&quot;#list&quot;).empty();</code></pre>
+<table>
+  <thead>
+    <tr>
+      <th>메서드</th>
+      <th>의미</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>.remove()</code></td><td>선택한 요소 자체를 삭제</td></tr>
+    <tr><td><code>.empty()</code></td><td>선택한 요소는 남기고 내부 내용만 삭제</td></tr>
+  </tbody>
+</table>
+
+</section>
+    <section id="section-9">
+<h2>9. 효과와 애니메이션</h2>
+
+<p>jQuery는 요소를 보이거나 숨기고, 간단한 애니메이션을 적용하는 메서드를 제공한다.</p>
+<pre><code class="language-javascript">$(&quot;#box&quot;).hide();
+$(&quot;#box&quot;).show();
+$(&quot;#box&quot;).toggle();</code></pre>
+<p>예시는 다음과 같다.</p>
+<pre><code class="language-html">&lt;button id=&quot;hideBtn&quot;&gt;숨기기&lt;/button&gt;
+&lt;button id=&quot;showBtn&quot;&gt;보이기&lt;/button&gt;
+&lt;div id=&quot;box&quot;&gt;박스입니다.&lt;/div&gt;
+
+&lt;script&gt;
+  $(&quot;#hideBtn&quot;).on(&quot;click&quot;, function() {
+    $(&quot;#box&quot;).hide();
+  });
+
+  $(&quot;#showBtn&quot;).on(&quot;click&quot;, function() {
+    $(&quot;#box&quot;).show();
+  });
+&lt;/script&gt;</code></pre>
+<p>시간을 지정할 수도 있다.</p>
+<pre><code class="language-javascript">$(&quot;#box&quot;).hide(500);
+$(&quot;#box&quot;).show(500);
+$(&quot;#box&quot;).toggle(500);</code></pre>
+<table>
+  <thead>
+    <tr>
+      <th>메서드</th>
+      <th>의미</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>.hide()</code></td><td>숨김</td></tr>
+    <tr><td><code>.show()</code></td><td>표시</td></tr>
+    <tr><td><code>.toggle()</code></td><td>보이면 숨기고, 숨겨져 있으면 표시</td></tr>
+    <tr><td><code>.fadeIn()</code></td><td>서서히 나타남</td></tr>
+    <tr><td><code>.fadeOut()</code></td><td>서서히 사라짐</td></tr>
+    <tr><td><code>.slideDown()</code></td><td>아래로 펼쳐짐</td></tr>
+    <tr><td><code>.slideUp()</code></td><td>위로 접힘</td></tr>
+  </tbody>
+</table>
+<pre><code class="language-javascript">$(&quot;#box&quot;).fadeOut(500);
+$(&quot;#box&quot;).fadeIn(500);
+$(&quot;#menu&quot;).slideToggle(300);</code></pre>
+
+</section>
+    <section id="section-10">
+<h2>10. 메서드 체이닝</h2>
+
+<p>jQuery는 여러 메서드를 이어서 호출할 수 있다. 이를 메서드 체이닝이라고 한다.</p>
+<pre><code class="language-javascript">$(&quot;#title&quot;)
+  .text(&quot;새 제목&quot;)
+  .css(&quot;color&quot;, &quot;red&quot;)
+  .addClass(&quot;active&quot;);</code></pre>
+<p>위 코드는 <code>#title</code> 요소를 선택한 뒤, 텍스트 변경, CSS 변경, 클래스 추가를 순서대로 실행한다. 체이닝을 사용하면 코드를 간결하게 작성할 수 있다. 다만 너무 길게 이어 쓰면 가독성이 떨어질 수 있으므로, 여러 줄로 나누어 작성하는 것이 좋다.</p>
+
+</section>
+    <section id="section-11">
+<h2>11. Ajax 기초</h2>
+
+<h3>11.1. Ajax란?</h3>
+<p>Ajax는 페이지 전체를 새로고침하지 않고 서버와 데이터를 주고받는 방식이다. 예를 들어 검색어 자동완성, 댓글 목록 불러오기, 좋아요 버튼 처리, 게시글 목록 추가 로딩 등에 사용할 수 있다.</p>
+
+<h3>11.2. GET 요청</h3>
+<p>GET 요청은 보통 데이터를 조회할 때 사용한다.</p>
+<pre><code class="language-javascript">$.ajax({
+  url: &quot;/api/users&quot;,
+  method: &quot;GET&quot;,
+  success: function(data) {
+    console.log(data);
+  },
+  error: function() {
+    console.log(&quot;요청 실패&quot;);
+  }
+});</code></pre>
+<p>간단한 GET 요청은 <code>$.get()</code>으로 작성할 수도 있다.</p>
+<pre><code class="language-javascript">$.get(&quot;/api/users&quot;, function(data) {
+  console.log(data);
+});</code></pre>
+
+<h3>11.3. POST 요청</h3>
+<p>POST 요청은 보통 데이터를 서버에 등록하거나 전송할 때 사용한다.</p>
+<pre><code class="language-javascript">$.ajax({
+  url: &quot;/api/users&quot;,
+  method: &quot;POST&quot;,
+  data: {
+    name: &quot;홍길동&quot;,
+    age: 20
+  },
+  success: function(result) {
+    console.log(&quot;등록 성공&quot;, result);
+  },
+  error: function() {
+    console.log(&quot;등록 실패&quot;);
+  }
+});</code></pre>
+<p>간단한 POST 요청은 <code>$.post()</code>로 작성할 수도 있다.</p>
+<pre><code class="language-javascript">$.post(&quot;/api/users&quot;, {
+  name: &quot;홍길동&quot;,
+  age: 20
+}, function(result) {
+  console.log(result);
+});</code></pre>
+
+<h3>11.4. Ajax 사용 시 주의사항</h3>
+<p>Ajax는 아무 주소로나 요청을 보낼 수 있는 것이 아니다. 브라우저에는 동일 출처 정책이 있기 때문에, 다른 도메인으로 요청할 때는 서버에서 CORS 설정을 허용해야 한다.</p>
+<p>또한 Ajax 요청은 서버가 있어야 정상적으로 테스트할 수 있다. HTML 파일을 더블 클릭해서 여는 방식보다는 로컬 서버나 백엔드 서버와 함께 실행하는 것이 좋다.</p>
+
+</section>
+    <section id="section-12">
+<h2>12. 종합 예제</h2>
+
+<p>다음 예제는 입력값을 받아 목록에 추가하고, 목록 항목을 클릭하면 완료 상태를 표시하며, 더블클릭하면 삭제하는 간단한 jQuery 예제이다.</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;title&gt;jQuery 종합 예제&lt;/title&gt;
+  &lt;style&gt;
+    .done {
+      color: gray;
+      text-decoration: line-through;
+    }
+
+    li {
+      cursor: pointer;
+      margin: 6px 0;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;할 일 목록&lt;/h1&gt;
+
+  &lt;input type=&quot;text&quot; id=&quot;todoInput&quot; placeholder=&quot;할 일을 입력하세요&quot;&gt;
+  &lt;button id=&quot;addBtn&quot;&gt;추가&lt;/button&gt;
+
+  &lt;ul id=&quot;todoList&quot;&gt;&lt;/ul&gt;
+
+  &lt;script src=&quot;https://code.jquery.com/jquery-3.7.1.min.js&quot;&gt;&lt;/script&gt;
+  &lt;script&gt;
+    $(function() {
+      $(&quot;#addBtn&quot;).on(&quot;click&quot;, function() {
+        const todo = $(&quot;#todoInput&quot;).val();
+
+        if (todo.trim() === &quot;&quot;) {
+          alert(&quot;할 일을 입력하세요.&quot;);
+          return;
+        }
+
+        $(&quot;#todoList&quot;).append(&quot;&lt;li&gt;&quot; + todo + &quot;&lt;/li&gt;&quot;);
+        $(&quot;#todoInput&quot;).val(&quot;&quot;);
+      });
+
+      $(&quot;#todoList&quot;).on(&quot;click&quot;, &quot;li&quot;, function() {
+        $(this).toggleClass(&quot;done&quot;);
+      });
+
+      $(&quot;#todoList&quot;).on(&quot;dblclick&quot;, &quot;li&quot;, function() {
+        $(this).remove();
+      });
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<table>
+  <thead>
+    <tr>
+      <th>기능</th>
+      <th>사용 코드</th>
+      <th>의미</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>문서 준비 후 실행</td><td><code>$(function() { ... })</code></td><td>DOM이 준비된 뒤 코드 실행</td></tr>
+    <tr><td>클릭 이벤트</td><td><code>.on("click", function() { ... })</code></td><td>버튼 클릭 처리</td></tr>
+    <tr><td>입력값 읽기</td><td><code>.val()</code></td><td>input 값 가져오기</td></tr>
+    <tr><td>요소 추가</td><td><code>.append()</code></td><td>목록에 새 항목 추가</td></tr>
+    <tr><td>클래스 토글</td><td><code>.toggleClass()</code></td><td>완료 상태 표시</td></tr>
+    <tr><td>요소 삭제</td><td><code>.remove()</code></td><td>더블클릭한 항목 삭제</td></tr>
+    <tr><td>이벤트 위임</td><td><code>$("#todoList").on("click", "li", ...)</code></td><td>나중에 추가된 <code>li</code>에도 이벤트 적용</td></tr>
+  </tbody>
+</table>
+
+</section>
+    <section id="section-13">
+<h2>13. jQuery 사용 시 주의할 점</h2>
+
+<p>jQuery는 편리하지만 모든 상황에서 반드시 필요한 것은 아니다. 최신 JavaScript는 <code>querySelector</code>, <code>addEventListener</code>, <code>fetch</code>, <code>classList</code> 같은 기능을 기본으로 제공하므로, 간단한 작업은 순수 JavaScript로도 충분히 처리할 수 있다.</p>
+<p>하지만 기존 프로젝트가 jQuery로 작성되어 있다면 jQuery 문법을 이해해야 유지보수할 수 있다. 특히 관리자 페이지, 오래된 웹사이트, 템플릿 기반 프로젝트에서는 jQuery 코드가 자주 등장한다.</p>
+<table>
+  <thead>
+    <tr>
+      <th>주의사항</th>
+      <th>설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>요소가 준비된 뒤 실행</td><td>요소가 만들어지기 전에 선택하면 동작하지 않을 수 있다.</td></tr>
+    <tr><td>동적 요소에는 이벤트 위임 사용</td><td>나중에 추가되는 요소는 부모 요소에 이벤트를 위임한다.</td></tr>
+    <tr><td>사용자 입력을 <code>.html()</code>에 직접 넣지 않기</td><td>XSS 같은 보안 문제가 생길 수 있다.</td></tr>
+    <tr><td>하나의 프로젝트에서 버전 관리</td><td>여러 jQuery 버전을 동시에 불러오지 않는다.</td></tr>
+    <tr><td>최신 프로젝트에서는 필요성 검토</td><td>순수 JavaScript나 프레임워크로 해결 가능한지 판단한다.</td></tr>
+  </tbody>
+</table>
+
+</section>
+    <section id="questions">
+<h2>jQuery 기초 문제</h2>
+
+<div class="question"><strong>문제1.</strong> jQuery가 무엇인지 설명하시오.</div>
+<div class="question"><strong>문제2.</strong> jQuery를 CDN 방식으로 사용하는 방법과 모듈 방식으로 사용하는 방법의 차이를 설명하시오.</div>
+<div class="question"><strong>문제3.</strong> npm 프로젝트에서 jQuery를 설치하는 명령어와 JavaScript 파일에서 jQuery를 import하는 코드를 작성하시오.</div>
+<div class="question"><strong>문제4.</strong> jQuery의 기본 문법 <code>$("선택자").기능()</code>에서 <code>$</code>, <code>선택자</code>, <code>기능()</code>이 각각 무엇을 의미하는지 설명하시오.</div>
+<div class="question"><strong>문제5.</strong> 아이디가 <code>title</code>인 요소의 글자를 “안녕하세요”로 변경하는 jQuery 코드를 작성하시오.</div>
+<div class="question"><strong>문제6.</strong> 클래스가 <code>box</code>인 모든 요소의 글자 색을 빨간색으로 변경하는 코드를 작성하시오.</div>
+<div class="question"><strong>문제7.</strong> <code>text()</code>와 <code>html()</code>의 차이를 설명하시오.</div>
+<div class="question"><strong>문제8.</strong> 입력 요소의 값을 가져올 때 사용하는 jQuery 메서드를 작성하시오.</div>
+<div class="question"><strong>문제9.</strong> 버튼을 클릭했을 때 <code>#result</code> 요소에 “클릭했습니다”라고 출력하는 코드를 작성하시오.</div>
+<div class="question"><strong>문제10.</strong> 동적으로 추가되는 <code>li</code> 요소에 클릭 이벤트를 적용하려면 어떤 방식을 사용해야 하는지 설명하시오.</div>
+<div class="question"><strong>문제11.</strong> <code>.addClass()</code>, <code>.removeClass()</code>, <code>.toggleClass()</code>의 차이를 설명하시오.</div>
+<div class="question"><strong>문제12.</strong> Ajax가 무엇인지 설명하시오.</div>
+
+</section>
+    <section id="answers">
+<h2>jQuery 기초 문제 정답</h2>
+
+<div class="question">
+  <p><strong>문제1.</strong> jQuery는 JavaScript를 더 간단하게 작성할 수 있도록 도와주는 JavaScript 라이브러리이다. HTML 요소 선택, DOM 조작, 이벤트 처리, 애니메이션, Ajax 작업을 간단한 문법으로 처리할 수 있다.</p>
+</div>
+
+<div class="question">
+  <p><strong>문제2.</strong> CDN 방식은 HTML의 <code>script</code> 태그로 jQuery 파일 주소를 연결해 사용하는 방식이다. 모듈 방식은 npm으로 jQuery를 설치한 뒤 JavaScript 파일에서 <code>import</code> 문으로 jQuery를 가져와 사용하는 방식이다. 모듈 방식은 보통 Vite, Webpack 같은 빌드 도구 기반 프로젝트에서 사용한다.</p>
+</div>
+
+<div class="question">
+  <p><strong>문제3.</strong></p>
+  <pre><code class="language-bash">npm install jquery</code></pre>
+  <pre><code class="language-javascript">import $ from &quot;jquery&quot;;</code></pre>
+</div>
+
+<div class="question">
+  <p><strong>문제4.</strong> <code>$</code>는 jQuery 함수를 의미한다. <code>선택자</code>는 어떤 HTML 요소를 선택할지 지정하는 부분이다. <code>기능()</code>은 선택한 요소에 적용할 동작을 의미한다.</p>
+</div>
+
+<div class="question">
+  <p><strong>문제5.</strong></p>
+  <pre><code class="language-javascript">$(&quot;#title&quot;).text(&quot;안녕하세요&quot;);</code></pre>
+</div>
+
+<div class="question">
+  <p><strong>문제6.</strong></p>
+  <pre><code class="language-javascript">$(&quot;.box&quot;).css(&quot;color&quot;, &quot;red&quot;);</code></pre>
+</div>
+
+<div class="question">
+  <p><strong>문제7.</strong> <code>text()</code>는 요소 안의 글자만 다룬다. HTML 태그를 넣어도 태그로 해석하지 않고 일반 문자로 처리한다. <code>html()</code>은 요소 안의 HTML 내용을 다루며, 태그를 넣으면 실제 HTML 구조로 해석된다.</p>
+</div>
+
+<div class="question">
+  <p><strong>문제8.</strong></p>
+  <pre><code class="language-javascript">.val()</code></pre>
+  <p>예시는 다음과 같다.</p>
+  <pre><code class="language-javascript">const value = $(&quot;#username&quot;).val();</code></pre>
+</div>
+
+<div class="question">
+  <p><strong>문제9.</strong></p>
+  <pre><code class="language-javascript">$(&quot;#btn&quot;).on(&quot;click&quot;, function() {
+  $(&quot;#result&quot;).text(&quot;클릭했습니다&quot;);
+});</code></pre>
+</div>
+
+<div class="question">
+  <p><strong>문제10.</strong> 이벤트 위임을 사용해야 한다. 처음부터 존재하는 부모 요소에 이벤트를 연결하고, 두 번째 인수로 자식 선택자를 지정한다.</p>
+  <pre><code class="language-javascript">$(&quot;#list&quot;).on(&quot;click&quot;, &quot;li&quot;, function() {
+  console.log($(this).text());
+});</code></pre>
+</div>
+
+<div class="question">
+  <p><strong>문제11.</strong> <code>.addClass()</code>는 클래스를 추가한다. <code>.removeClass()</code>는 클래스를 제거한다. <code>.toggleClass()</code>는 클래스가 없으면 추가하고, 있으면 제거한다.</p>
+</div>
+
+<div class="question">
+  <p><strong>문제12.</strong> Ajax는 페이지 전체를 새로고침하지 않고 서버와 데이터를 주고받는 방식이다. 검색 결과 불러오기, 댓글 등록, 목록 추가 로딩처럼 화면 일부만 갱신할 때 사용할 수 있다.</p>
+</div>
+
+</section>
+  </main>
+</body>
+</html>

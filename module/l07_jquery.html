@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>l07_jquery 제이쿼리 기초</title>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@4.0.0/dist/jquery.js"></script>
+</head>
+<body>
+  <h1>$ 제이쿼리 기초</h1>
+  <hr>
+  <button id="btn1">버튼1</button>
+  <ul id="ex1">
+    <li>01</li>
+    <li>02</li>
+    <li>03</li>
+    <li>04</li>
+    <li>05</li>
+  </ul>
+  <hr>
+  <ul id="ex2">
+    <li>01</li>
+    <li>02</li>
+    <li>03</li>
+    <li>04</li>
+    <li>05</li>
+  </ul>
+
+  <script>
+    const btn1=document.getElementById("btn1");
+    console.log(btn1)
+    const jBtn1=$("#btn1"); //jquery dom 탐색
+    console.log(jBtn1)
+    const ex1Lis=(document.querySelectorAll("#ex1>li"));
+    ex1Lis.forEach((li)=>{
+      li.innerText="잘가!";
+    })
+    //jquery는 반복문없이 배열탐색
+    const lis=$("#ex2>li");
+    console.log(lis)
+    lis.text("안녕");
+    // lis.text((i,li)=>{
+    //   console.log($(lis.get(i)).text(li+"안녕!"));
+    // });
+  </script>
+</body>
+</html>
