@@ -34,6 +34,11 @@
     ex1Lis.forEach((li)=>{
       li.innerText="잘가!";
     })
+    ex1Lis.forEach((li)=>{
+      li.addEventListener("click",()=>{
+        li.style.color="red";
+      });
+    })
     //jquery는 반복문없이 배열탐색
     const lis=$("#ex2>li");
     console.log(lis)
@@ -41,6 +46,11 @@
     // lis.text((i,li)=>{
     //   console.log($(lis.get(i)).text(li+"안녕!"));
     // });
+    lis.on("click",function (e){
+      //console.log(e);
+        $(e.currentTarget).css({color:"blue",
+          backgroundColor:"red"});
+    });
   </script>
 </body>
 </html>
