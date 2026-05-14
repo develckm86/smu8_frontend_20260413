@@ -1,10 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>l69_review 비동기실행의 동기화와 async 함수</title>
 </head>
 <body>
-$END$
+  <h1>비동기실행의 동기화와 async 함수</h1>
+  <h2>유저3의 할일 목록</h2>
+  <p id="userInfo"></p>
+  <ul id="todoUl"></ul>
+  <script>
+    ///setTime, setInterval, XMLHttpRequest ... -> 비동기실행되는 WebAPIs를 특정시점에 동기화
+    // fetch, import(fetch 처럼 js(모듈) 파일을 동적으로 로딩) :비동기실행을 Promisification
+    //Promise.then().then() => async function
+    function request(){
+      return new Promise();
+    } //함수를 프라미스객체처럼 사용가능
+    //request().then()
+    fetch("https://jsonplaceholder.typicode.com/user/3/todos")
+      .then((res)=>{
+        if(res.status===200){
+          return  res.json();
+        }else{
+          throw new Error("페이지가 존재하지 않습니다.");
+        }
+      }).then((todoArr)=>{
+        console.log(todoArr)
+        let html="";
+        for(let todo of todoArr){
+          html+=`<li>
+                    ${todo.id} :
+                    ${todo.title} /
+                    ${todo.completed}
+                </li>`;
+        }
+        todoUl.innerHTML=html;
+      }).catch((err)=>{
+          alert(err.message);
+      });
+    //https://jsonplaceholder.typicode.com/users/3
+    async function loadUser(userId){
+      let url="https://jsonplaceholder.typicode.com/use222rs/"+userId
+      let res=await fetch(url);
+      if(res.status!==200){
+        //return Promise.reject()
+        throw new Error("요청이 잘못되었습니다"); //함수 종료
+      }
+      let user=await res.json();
+      console.log(user);
+      return user; //Promise.resovle(user)=new Promise
+    }
+    loadUser(3).then((user)=>{
+      let html=` 이름: ${user.username} / 이메일:${user.email} `;
+      userInfo.innerHTML=html;
+    }).catch((err)=>{
+      alert("오류:"+err.message);
+    })
+
+  </script>
+
+
 </body>
 </html>
