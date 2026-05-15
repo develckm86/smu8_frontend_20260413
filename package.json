@@ -3,6 +3,7 @@
     "temporal-polyfill": "^0.3.2"
   },
   "devDependencies": {
+    "nodemon": "^3.1.14",
     "typescript": "^6.0.3"
   },
   "name": "frontend_smu8",
@@ -19,7 +20,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/develckm86/smu8_frontend_20260413/issues"
   },
