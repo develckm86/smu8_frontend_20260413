@@ -1,6 +1,27 @@
 {
-  "type": "module",
   "dependencies": {
     "temporal-polyfill": "^0.3.2"
-  }
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "name": "frontend_smu8",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/develckm86/smu8_frontend_20260413.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/develckm86/smu8_frontend_20260413/issues"
+  },
+  "homepage": "https://github.com/develckm86/smu8_frontend_20260413#readme"
 }
