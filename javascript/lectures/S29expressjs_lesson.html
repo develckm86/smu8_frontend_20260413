@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Express.js 서버 수업 교안</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --paper: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #16a34a;
+      --primary-soft: #ecfdf5;
+      --border: #e5e7eb;
+      --code-bg: #111827;
+      --code-text: #e5e7eb;
+      --note-bg: #fffbeb;
+      --note-border: #f59e0b;
+      --info-bg: #eff6ff;
+      --info-border: #2563eb;
+      --danger-bg: #fef2f2;
+      --danger-border: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      gap: 28px;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    aside {
+      position: sticky;
+      top: 20px;
+      height: calc(100vh - 40px);
+      overflow: auto;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    aside h2 {
+      font-size: 18px;
+      margin: 0 0 14px;
+    }
+
+    aside a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 7px 0;
+      border-bottom: 1px dashed #eef2f7;
+    }
+
+    aside a:hover {
+      color: var(--primary);
+    }
+
+    main {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 42px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+      min-width: 0;
+    }
+
+    header {
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 26px;
+      margin-bottom: 36px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: var(--primary-soft);
+      color: var(--primary);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 38px;
+      line-height: 1.25;
+      margin: 0 0 10px;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 18px;
+      margin: 0;
+    }
+
+    h2 {
+      margin-top: 54px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 28px;
+      line-height: 1.35;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      margin-top: 34px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    h4 {
+      margin-top: 24px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 12px 0;
+    }
+
+    ul, ol {
+      padding-left: 26px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .goal-box,
+    .note,
+    .practice,
+    .summary,
+    .problem,
+    .answer,
+    .info,
+    .warning {
+      border-radius: 16px;
+      padding: 20px 22px;
+      margin: 22px 0;
+    }
+
+    .goal-box {
+      background: var(--primary-soft);
+      border: 1px solid #bbf7d0;
+    }
+
+    .note {
+      background: var(--note-bg);
+      border-left: 6px solid var(--note-border);
+    }
+
+    .info {
+      background: var(--info-bg);
+      border-left: 6px solid var(--info-border);
+    }
+
+    .warning {
+      background: var(--danger-bg);
+      border-left: 6px solid var(--danger-border);
+    }
+
+    .practice {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .summary {
+      background: var(--primary-soft);
+      border-left: 6px solid var(--primary);
+    }
+
+    .problem {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+    }
+
+    .answer {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+    }
+
+    .diagram {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 18px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      white-space: pre-wrap;
+      color: #334155;
+    }
+
+    code.inline {
+      background: #dcfce7;
+      color: #166534;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 18px;
+      border-radius: 14px;
+      overflow-x: auto;
+      margin: 16px 0 22px;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    pre code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 18px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 800;
+    }
+
+    .chapter-label {
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .test-url {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin: 12px 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      color: #0f172a;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 56px;
+      padding-top: 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+
+      aside {
+        position: static;
+        height: auto;
+      }
+
+      main {
+        padding: 26px 20px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .layout {
+        display: block;
+        max-width: none;
+        padding: 0;
+      }
+
+      aside {
+        display: none;
+      }
+
+      main {
+        border: 0;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 18mm;
+      }
+
+      pre {
+        white-space: pre-wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <h2>목차</h2>
+      <a href="#goal">수업 목표</a>
+      <a href="#chapter1">제1장. Express.js란 무엇인가</a>
+      <a href="#chapter2">제2장. Node.js 기본 서버와 Express 비교</a>
+      <a href="#chapter3">제3장. Express 프로젝트 생성</a>
+      <a href="#chapter4">제4장. 첫 번째 Express 서버 만들기</a>
+      <a href="#chapter5">제5장. Express 라우팅</a>
+      <a href="#chapter6">제6장. Query String 처리</a>
+      <a href="#chapter7">제7장. URL Parameter 처리</a>
+      <a href="#chapter8">제8장. HTML 응답하기</a>
+      <a href="#chapter9">제9장. JSON 응답하기</a>
+      <a href="#chapter10">제10장. POST 요청 처리</a>
+      <a href="#chapter11">제11장. 상태 코드 응답</a>
+      <a href="#chapter12">제12장. 미들웨어</a>
+      <a href="#chapter13">제13장. 에러 처리 미들웨어</a>
+      <a href="#chapter14">제14장. 최종 실습</a>
+      <a href="#test">테스트 주소 정리</a>
+      <a href="#problems">문제</a>
+      <a href="#answers">문제 정답</a>
+      <a href="#summary">수업 마무리</a>
+    </aside>
+
+    <main>
+      <header>
+        <span class="eyebrow">Express.js Backend Basic</span>
+        <h1>Express.js 서버 수업 교안</h1>
+        <p class="subtitle">Node.js 기본 HTTP 서버 다음 단계로, Express.js를 사용하여 라우팅, Query String, URL Parameter, HTML 응답, JSON 응답, POST 요청, 미들웨어를 학습한다.</p>
+      </header>
+
+      <section id="goal">
+        <h2>수업 목표</h2>
+        <div class="goal-box">
+          <ol>
+            <li>Express.js가 무엇인지 설명할 수 있다.</li>
+            <li>Node.js 기본 HTTP 서버와 Express 서버의 차이를 이해할 수 있다.</li>
+            <li>Express 프로젝트를 생성하고 서버를 실행할 수 있다.</li>
+            <li><code class="inline">app.get()</code>, <code class="inline">app.post()</code>로 라우팅을 처리할 수 있다.</li>
+            <li><code class="inline">req.query</code>, <code class="inline">req.params</code>, <code class="inline">req.body</code>를 사용할 수 있다.</li>
+            <li><code class="inline">res.send()</code>, <code class="inline">res.json()</code>, <code class="inline">res.status()</code>로 응답할 수 있다.</li>
+            <li>HTML 문자열 응답과 HTML 파일 응답을 구현할 수 있다.</li>
+            <li>간단한 REST API 서버를 만들 수 있다.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="chapter1">
+        <h2><span class="chapter-label">Chapter 01</span><br />Express.js란 무엇인가</h2>
+
+        <h3>1. Express.js의 개념</h3>
+        <p>Express.js는 <strong>Node.js에서 서버를 더 쉽고 간단하게 만들 수 있게 해주는 웹 프레임워크</strong>이다.</p>
+        <p>이전 수업에서는 Node.js 기본 <code class="inline">http</code> 모듈로 서버를 만들었다.</p>
+
+        <pre><code>import http from &quot;http&quot;;
+
+const server = http.createServer((req, res) =&gt; {
+    res.end(&quot;Hello Node.js&quot;);
+});
+
+server.listen(3000);</code></pre>
+
+        <p>Node.js 기본 서버는 URL 처리, JSON 처리, POST 데이터 처리, 라우팅 처리를 직접 작성해야 한다.</p>
+        <p>Express를 사용하면 서버 코드를 훨씬 간단하게 만들 수 있다.</p>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+
+app.get(&quot;/&quot;, (req, res) =&gt; {
+    res.send(&quot;Hello Express&quot;);
+});
+
+app.listen(3000);</code></pre>
+
+        <div class="note">
+          <strong>핵심 정리</strong>
+          <p>Express.js는 Node.js 서버 개발을 쉽게 해주는 도구이다.</p>
+        </div>
+      </section>
+
+      <section id="chapter2">
+        <h2><span class="chapter-label">Chapter 02</span><br />Node.js 기본 서버와 Express 비교</h2>
+
+        <h3>1. Node.js 기본 HTTP 서버</h3>
+        <p>Node.js 기본 서버에서는 URL을 직접 분석해야 한다.</p>
+
+        <pre><code>import http from &quot;http&quot;;
+
+const server = http.createServer((req, res) =&gt; {
+    const url = new URL(req.url, &quot;http://localhost:3000&quot;);
+
+    if (url.pathname === &quot;/&quot;) {
+        res.end(&quot;메인 페이지&quot;);
+    } else if (url.pathname === &quot;/user&quot;) {
+        res.end(&quot;유저 페이지&quot;);
+    } else {
+        res.statusCode = 404;
+        res.end(&quot;페이지 없음&quot;);
+    }
+});
+
+server.listen(3000);</code></pre>
+
+        <h3>2. Express 서버</h3>
+        <p>Express에서는 라우팅을 더 간단하게 작성할 수 있다.</p>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+
+app.get(&quot;/&quot;, (req, res) =&gt; {
+    res.send(&quot;메인 페이지&quot;);
+});
+
+app.get(&quot;/user&quot;, (req, res) =&gt; {
+    res.send(&quot;유저 페이지&quot;);
+});
+
+app.listen(3000);</code></pre>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>Node.js 기본 HTTP 서버</th>
+                <th>Express 서버</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>서버 생성</td>
+                <td><code class="inline">http.createServer()</code></td>
+                <td><code class="inline">express()</code></td>
+              </tr>
+              <tr>
+                <td>라우팅</td>
+                <td>직접 조건문 작성</td>
+                <td><code class="inline">app.get()</code>, <code class="inline">app.post()</code></td>
+              </tr>
+              <tr>
+                <td>Query String</td>
+                <td><code class="inline">new URL()</code> 사용</td>
+                <td><code class="inline">req.query</code> 사용</td>
+              </tr>
+              <tr>
+                <td>JSON 응답</td>
+                <td><code class="inline">JSON.stringify()</code></td>
+                <td><code class="inline">res.json()</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="diagram">Node 기본 서버:
+직접 URL 분석
+직접 조건문 작성
+직접 응답 처리
+
+Express 서버:
+app.get("/주소", 함수)
+app.post("/주소", 함수)
+res.send()
+res.json()</div>
+      </section>
+
+      <section id="chapter3">
+        <h2><span class="chapter-label">Chapter 03</span><br />Express 프로젝트 생성</h2>
+
+        <h3>1. 프로젝트 폴더 만들기</h3>
+
+        <pre><code>mkdir express-server-study
+cd express-server-study</code></pre>
+
+        <h3>2. package.json 생성</h3>
+
+        <pre><code>npm init -y</code></pre>
+
+        <h3>3. Express 설치</h3>
+
+        <pre><code>npm install express</code></pre>
+
+        <h3>4. ES Module 설정</h3>
+        <p>이전 Node.js 수업과 연결하기 위해 이번 수업도 <code class="inline">import</code> 문법을 사용한다.</p>
+        <p><code class="inline">package.json</code>에 다음 내용을 추가한다.</p>
+
+        <pre><code>{
+  &quot;type&quot;: &quot;module&quot;
+}</code></pre>
+
+        <p>예시:</p>
+
+        <pre><code>{
+  &quot;name&quot;: &quot;express-server-study&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;main&quot;: &quot;app.js&quot;,
+  &quot;scripts&quot;: {},
+  &quot;dependencies&quot;: {
+    &quot;express&quot;: &quot;^5.1.0&quot;
+  }
+}</code></pre>
+
+        <h3>5. app.js 파일 만들기</h3>
+        <p>프로젝트 구조는 다음과 같다.</p>
+
+        <pre><code>express-server-study
+├── package.json
+├── package-lock.json
+└── app.js</code></pre>
+      </section>
+
+      <section id="chapter4">
+        <h2><span class="chapter-label">Chapter 04</span><br />첫 번째 Express 서버 만들기</h2>
+
+        <h3>1. 기본 서버 코드</h3>
+        <p><code class="inline">app.js</code> 파일에 다음 코드를 작성한다.</p>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.get(&quot;/&quot;, (req, res) =&gt; {
+    res.send(&quot;Hello Express&quot;);
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+
+        <h3>2. 서버 실행</h3>
+
+        <pre><code>node app.js</code></pre>
+
+        <p>실행 결과:</p>
+
+        <pre><code>서버 실행 중: http://localhost:3000</code></pre>
+
+        <p>브라우저에서 접속한다.</p>
+
+        <div class="test-url">http://localhost:3000</div>
+
+        <p>결과:</p>
+
+        <pre><code>Hello Express</code></pre>
+      </section>
+
+      <section id="chapter5">
+        <h2><span class="chapter-label">Chapter 05</span><br />Express 라우팅</h2>
+
+        <h3>1. 라우팅이란?</h3>
+        <p>라우팅은 <strong>주소와 요청 방식에 따라 다른 응답을 보내는 것</strong>이다.</p>
+
+        <div class="diagram">GET /          → 메인 페이지
+GET /user      → 유저 페이지
+GET /product   → 상품 페이지</div>
+
+        <h3>2. app.get()</h3>
+        <p><code class="inline">GET</code> 요청을 처리할 때는 <code class="inline">app.get()</code>을 사용한다.</p>
+
+        <pre><code>app.get(&quot;/&quot;, (req, res) =&gt; {
+    res.send(&quot;메인 페이지&quot;);
+});</code></pre>
+
+        <h3>3. 여러 주소 처리하기</h3>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.get(&quot;/&quot;, (req, res) =&gt; {
+    res.send(&quot;메인 페이지&quot;);
+});
+
+app.get(&quot;/user&quot;, (req, res) =&gt; {
+    res.send(&quot;유저 페이지&quot;);
+});
+
+app.get(&quot;/product&quot;, (req, res) =&gt; {
+    res.send(&quot;상품 페이지&quot;);
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+
+        <h3>4. 테스트 주소</h3>
+
+        <div class="test-url">http://localhost:3000</div>
+        <p>결과:</p>
+        <pre><code>메인 페이지</code></pre>
+
+        <div class="test-url">http://localhost:3000/user</div>
+        <p>결과:</p>
+        <pre><code>유저 페이지</code></pre>
+
+        <div class="test-url">http://localhost:3000/product</div>
+        <p>결과:</p>
+        <pre><code>상품 페이지</code></pre>
+      </section>
+
+      <section id="chapter6">
+        <h2><span class="chapter-label">Chapter 06</span><br />Query String 처리하기</h2>
+
+        <h3>1. Query String 복습</h3>
+        <p>Query String은 URL 뒤에 데이터를 붙여서 보내는 방식이다.</p>
+
+        <pre><code>http://localhost:3000/user?name=aaa&amp;age=20</code></pre>
+
+        <p>데이터 구조:</p>
+
+        <pre><code>name = aaa
+age = 20</code></pre>
+
+        <h3>2. Node 기본 서버에서 Query String 읽기</h3>
+        <p>이전 수업에서는 이렇게 작성했다.</p>
+
+        <pre><code>const url = new URL(req.url, &quot;http://localhost:3000&quot;);
+
+const name = url.searchParams.get(&quot;name&quot;);</code></pre>
+
+        <h3>3. Express에서 Query String 읽기</h3>
+        <p>Express에서는 <code class="inline">req.query</code>를 사용한다.</p>
+
+        <pre><code>app.get(&quot;/user&quot;, (req, res) =&gt; {
+    const name = req.query.name;
+    const age = req.query.age;
+
+    res.send(`name: ${name}, age: ${age}`);
+});</code></pre>
+
+        <h3>4. 전체 코드</h3>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.get(&quot;/user&quot;, (req, res) =&gt; {
+    const name = req.query.name;
+    const age = req.query.age;
+
+    console.log(&quot;name:&quot;, name);
+    console.log(&quot;age:&quot;, age);
+
+    res.send(`name은 ${name}, age는 ${age}`);
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+
+        <h3>5. 테스트</h3>
+
+        <div class="test-url">http://localhost:3000/user?name=aaa&amp;age=20</div>
+
+        <p>브라우저 결과:</p>
+        <pre><code>name은 aaa, age는 20</code></pre>
+
+        <p>터미널 결과:</p>
+        <pre><code>name: aaa
+age: 20</code></pre>
+      </section>
+
+      <section id="chapter7">
+        <h2><span class="chapter-label">Chapter 07</span><br />URL Parameter 처리하기</h2>
+
+        <h3>1. URL Parameter란?</h3>
+        <p>URL Parameter는 주소 자체에 값을 포함하는 방식이다.</p>
+
+        <pre><code>http://localhost:3000/user/1
+http://localhost:3000/user/2
+http://localhost:3000/user/3</code></pre>
+
+        <p>여기서 <code class="inline">1</code>, <code class="inline">2</code>, <code class="inline">3</code>이 데이터가 된다.</p>
+
+        <h3>2. req.params 사용하기</h3>
+        <p>Express에서는 URL Parameter를 <code class="inline">req.params</code>로 읽는다.</p>
+
+        <pre><code>app.get(&quot;/user/:id&quot;, (req, res) =&gt; {
+    const id = req.params.id;
+
+    res.send(`유저 ID: ${id}`);
+});</code></pre>
+
+        <h3>3. 전체 코드</h3>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.get(&quot;/user/:id&quot;, (req, res) =&gt; {
+    const id = req.params.id;
+
+    res.send(`유저 ID는 ${id}입니다.`);
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+
+        <h3>4. 테스트</h3>
+
+        <div class="test-url">http://localhost:3000/user/1</div>
+        <p>결과:</p>
+        <pre><code>유저 ID는 1입니다.</code></pre>
+
+        <div class="test-url">http://localhost:3000/user/100</div>
+        <p>결과:</p>
+        <pre><code>유저 ID는 100입니다.</code></pre>
+      </section>
+
+      <section id="chapter8">
+        <h2><span class="chapter-label">Chapter 08</span><br />HTML 응답하기</h2>
+
+        <h3>1. res.send()로 HTML 문자열 응답하기</h3>
+        <p>Express에서는 <code class="inline">res.send()</code>로 문자열이나 HTML을 응답할 수 있다.</p>
+
+        <pre><code>app.get(&quot;/html&quot;, (req, res) =&gt; {
+    res.send(&quot;&lt;h1&gt;안녕하세요&lt;/h1&gt;&quot;);
+});</code></pre>
+
+        <h3>2. HTML 문자열 응답 전체 코드</h3>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.get(&quot;/html&quot;, (req, res) =&gt; {
+    res.send(`
+        &lt;!DOCTYPE html&gt;
+        &lt;html lang=&quot;ko&quot;&gt;
+        &lt;head&gt;
+            &lt;meta charset=&quot;UTF-8&quot;&gt;
+            &lt;title&gt;Express HTML&lt;/title&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+            &lt;h1&gt;Express HTML 응답&lt;/h1&gt;
+            &lt;p&gt;Express 서버에서 보낸 HTML 문자열입니다.&lt;/p&gt;
+        &lt;/body&gt;
+        &lt;/html&gt;
+    `);
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+
+        <div class="info">
+          <strong>추가 설명</strong>
+          <p>HTML 문자열을 직접 응답하는 방식은 간단한 예제에는 좋다. 하지만 실제 화면이 길어지면 문자열 안에 HTML을 모두 작성하기 불편하다. 이럴 때는 HTML 파일을 따로 만들고, 서버가 그 파일을 응답하게 만들 수 있다.</p>
+        </div>
+
+        <h3>3. HTML 파일 응답하기</h3>
+        <p>이번에는 <code class="inline">index.html</code> 파일을 만들고, Express 서버가 그 파일을 브라우저에 보내도록 한다.</p>
+
+        <h4>프로젝트 구조</h4>
+
+        <pre><code>express-server-study
+├── package.json
+├── app.js
+└── index.html</code></pre>
+
+        <h4>index.html</h4>
+
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;Express HTML 파일&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;HTML 파일 응답&lt;/h1&gt;
+    &lt;p&gt;이 문서는 index.html 파일에서 읽어온 내용입니다.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <h4>app.js</h4>
+        <p><code class="inline">res.sendFile()</code>을 사용하면 HTML 파일을 응답할 수 있다.</p>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.get(&quot;/file&quot;, (req, res) =&gt; {
+    res.sendFile(&quot;index.html&quot;, {
+        root: process.cwd()
+    });
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+
+        <div class="note">
+          <strong>코드 설명</strong>
+          <ul>
+            <li><code class="inline">res.sendFile()</code>: 파일을 브라우저로 응답한다.</li>
+            <li><code class="inline">"index.html"</code>: 응답할 파일 이름이다.</li>
+            <li><code class="inline">root: process.cwd()</code>: 현재 프로젝트 폴더를 기준으로 파일을 찾겠다는 의미이다.</li>
+          </ul>
+        </div>
+
+        <h4>테스트</h4>
+
+        <div class="test-url">http://localhost:3000/file</div>
+
+        <p>브라우저 결과:</p>
+
+        <pre><code>HTML 파일 응답
+이 문서는 index.html 파일에서 읽어온 내용입니다.</code></pre>
+
+        <div class="warning">
+          <strong>주의</strong>
+          <p>터미널에서 서버를 실행할 때는 <code class="inline">index.html</code> 파일이 있는 프로젝트 폴더에서 <code class="inline">node app.js</code>를 실행해야 한다.</p>
+        </div>
+      </section>
+
+      <section id="chapter9">
+        <h2><span class="chapter-label">Chapter 09</span><br />JSON 응답하기</h2>
+
+        <h3>1. res.json()</h3>
+        <p>JSON 데이터를 응답할 때는 <code class="inline">res.json()</code>을 사용한다.</p>
+        <p>Node 기본 서버에서는 다음처럼 작성했다.</p>
+
+        <pre><code>res.setHeader(&quot;Content-Type&quot;, &quot;application/json&quot;);
+res.end(JSON.stringify(user));</code></pre>
+
+        <p>Express에서는 다음처럼 작성한다.</p>
+
+        <pre><code>res.json(user);</code></pre>
+
+        <h3>2. JSON 객체 응답</h3>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.get(&quot;/api/user&quot;, (req, res) =&gt; {
+    const user = {
+        name: &quot;aaa&quot;,
+        age: 20
+    };
+
+    res.json(user);
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+
+        <p>테스트 주소:</p>
+        <div class="test-url">http://localhost:3000/api/user</div>
+
+        <p>결과:</p>
+        <pre><code>{
+  &quot;name&quot;: &quot;aaa&quot;,
+  &quot;age&quot;: 20
+}</code></pre>
+
+        <h3>3. JSON 배열 응답</h3>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.get(&quot;/api/users&quot;, (req, res) =&gt; {
+    const users = [
+        { id: 1, name: &quot;aaa&quot;, age: 10 },
+        { id: 2, name: &quot;bbb&quot;, age: 20 },
+        { id: 3, name: &quot;ccc&quot;, age: 30 }
+    ];
+
+    res.json(users);
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+
+        <p>테스트 주소:</p>
+        <div class="test-url">http://localhost:3000/api/users</div>
+
+        <p>결과:</p>
+        <pre><code>[
+  {
+    &quot;id&quot;: 1,
+    &quot;name&quot;: &quot;aaa&quot;,
+    &quot;age&quot;: 10
+  },
+  {
+    &quot;id&quot;: 2,
+    &quot;name&quot;: &quot;bbb&quot;,
+    &quot;age&quot;: 20
+  },
+  {
+    &quot;id&quot;: 3,
+    &quot;name&quot;: &quot;ccc&quot;,
+    &quot;age&quot;: 30
+  }
+]</code></pre>
+      </section>
+
+      <section id="chapter10">
+        <h2><span class="chapter-label">Chapter 10</span><br />POST 요청 처리하기</h2>
+
+        <h3>1. GET과 POST 차이</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>방식</th>
+                <th>특징</th>
+                <th>주 사용 목적</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>GET</td>
+                <td>주소에 데이터를 붙여서 보냄</td>
+                <td>조회</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td>요청 body에 데이터를 담아서 보냄</td>
+                <td>등록</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="diagram">GET /users
+사용자 목록 조회
+
+POST /users
+새 사용자 등록</div>
+
+        <h3>2. express.json() 사용하기</h3>
+        <p>POST 요청으로 JSON 데이터를 받을 때는 다음 코드가 필요하다.</p>
+
+        <pre><code>app.use(express.json());</code></pre>
+
+        <p><code class="inline">express.json()</code>은 요청 body에 들어온 JSON 데이터를 읽어서 <code class="inline">req.body</code>에 넣어준다.</p>
+
+        <h3>3. POST 요청 코드</h3>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.use(express.json());
+
+app.post(&quot;/users&quot;, (req, res) =&gt; {
+    console.log(req.body);
+
+    const name = req.body.name;
+    const age = req.body.age;
+
+    res.json({
+        message: &quot;사용자 등록 완료&quot;,
+        user: {
+            name: name,
+            age: age
+        }
+    });
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+
+        <h3>4. 요청 JSON 예시</h3>
+        <p>Postman, Thunder Client, REST Client 같은 도구에서 다음처럼 요청한다.</p>
+
+        <pre><code>POST http://localhost:3000/users</code></pre>
+
+        <p>Body:</p>
+
+        <pre><code>{
+  &quot;name&quot;: &quot;aaa&quot;,
+  &quot;age&quot;: 20
+}</code></pre>
+
+        <p>응답:</p>
+
+        <pre><code>{
+  &quot;message&quot;: &quot;사용자 등록 완료&quot;,
+  &quot;user&quot;: {
+    &quot;name&quot;: &quot;aaa&quot;,
+    &quot;age&quot;: 20
+  }
+}</code></pre>
+      </section>
+
+      <section id="chapter11">
+        <h2><span class="chapter-label">Chapter 11</span><br />상태 코드 응답하기</h2>
+
+        <h3>1. 상태 코드란?</h3>
+        <p>상태 코드는 서버 응답의 상태를 숫자로 표현한 것이다.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>상태 코드</th>
+                <th>의미</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>200</td>
+                <td>정상</td>
+              </tr>
+              <tr>
+                <td>201</td>
+                <td>생성 완료</td>
+              </tr>
+              <tr>
+                <td>400</td>
+                <td>잘못된 요청</td>
+              </tr>
+              <tr>
+                <td>404</td>
+                <td>찾을 수 없음</td>
+              </tr>
+              <tr>
+                <td>500</td>
+                <td>서버 오류</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>2. res.status()</h3>
+        <p>Express에서는 <code class="inline">res.status()</code>로 상태 코드를 설정한다.</p>
+
+        <pre><code>res.status(404).send(&quot;페이지 없음&quot;);</code></pre>
+
+        <p>JSON 응답과 함께 사용할 수도 있다.</p>
+
+        <pre><code>res.status(201).json({
+    message: &quot;등록 완료&quot;
+});</code></pre>
+
+        <h3>3. 404 응답 처리</h3>
+
+        <pre><code>app.get(&quot;/user&quot;, (req, res) =&gt; {
+    res.send(&quot;유저 페이지&quot;);
+});
+
+app.use((req, res) =&gt; {
+    res.status(404).send(&quot;페이지를 찾을 수 없습니다.&quot;);
+});</code></pre>
+
+        <p>404 처리는 보통 모든 라우트 아래쪽에 작성한다.</p>
+      </section>
+
+      <section id="chapter12">
+        <h2><span class="chapter-label">Chapter 12</span><br />미들웨어 Middleware</h2>
+
+        <h3>1. 미들웨어란?</h3>
+        <p>미들웨어는 <strong>요청과 응답 사이에서 실행되는 함수</strong>이다.</p>
+
+        <div class="diagram">요청
+ ↓
+미들웨어
+ ↓
+라우터
+ ↓
+응답</div>
+
+        <p>미들웨어에서는 다음과 같은 작업을 할 수 있다.</p>
+
+        <ul>
+          <li>요청 로그 출력</li>
+          <li>JSON body 처리</li>
+          <li>로그인 검사</li>
+          <li>에러 처리</li>
+          <li>정적 파일 제공</li>
+        </ul>
+
+        <h3>2. app.use()</h3>
+        <p>미들웨어는 보통 <code class="inline">app.use()</code>로 등록한다.</p>
+
+        <pre><code>app.use((req, res, next) =&gt; {
+    console.log(&quot;요청 들어옴&quot;);
+    next();
+});</code></pre>
+
+        <p><code class="inline">next()</code>를 호출해야 다음 미들웨어나 라우터로 넘어간다.</p>
+
+        <h3>3. 요청 로그 미들웨어</h3>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.use((req, res, next) =&gt; {
+    console.log(&quot;요청 방식:&quot;, req.method);
+    console.log(&quot;요청 주소:&quot;, req.url);
+    next();
+});
+
+app.get(&quot;/&quot;, (req, res) =&gt; {
+    res.send(&quot;메인 페이지&quot;);
+});
+
+app.get(&quot;/user&quot;, (req, res) =&gt; {
+    res.send(&quot;유저 페이지&quot;);
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+      </section>
+
+      <section id="chapter13">
+        <h2><span class="chapter-label">Chapter 13</span><br />에러 처리 미들웨어</h2>
+
+        <h3>1. 에러 처리 미들웨어 구조</h3>
+        <p>Express의 에러 처리 미들웨어는 인자가 4개이다.</p>
+
+        <pre><code>app.use((err, req, res, next) =&gt; {
+    res.status(500).send(&quot;서버 오류&quot;);
+});</code></pre>
+
+        <h3>2. 에러 처리 예제</h3>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.get(&quot;/&quot;, (req, res) =&gt; {
+    res.send(&quot;메인 페이지&quot;);
+});
+
+app.get(&quot;/error&quot;, (req, res) =&gt; {
+    throw new Error(&quot;강제 에러 발생&quot;);
+});
+
+app.use((err, req, res, next) =&gt; {
+    console.error(err.message);
+
+    res.status(500).json({
+        message: &quot;서버 내부 오류가 발생했습니다.&quot;
+    });
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+
+        <p>테스트 주소:</p>
+        <div class="test-url">http://localhost:3000/error</div>
+
+        <p>결과:</p>
+
+        <pre><code>{
+  &quot;message&quot;: &quot;서버 내부 오류가 발생했습니다.&quot;
+}</code></pre>
+      </section>
+
+      <section id="chapter14">
+        <h2><span class="chapter-label">Chapter 14</span><br />최종 실습: 간단한 사용자 API 만들기</h2>
+
+        <p>이번에는 Express로 간단한 사용자 API 서버를 만든다.</p>
+
+        <h3>1. 기능</h3>
+
+        <div class="diagram">GET    /              메인 페이지
+GET    /html          HTML 문자열 응답
+GET    /file          HTML 파일 응답
+GET    /users         사용자 목록 조회
+GET    /users/:id     특정 사용자 조회
+POST   /users         사용자 등록</div>
+
+        <h3>2. 프로젝트 구조</h3>
+
+        <pre><code>express-server-study
+├── package.json
+├── app.js
+└── index.html</code></pre>
+
+        <h3>3. index.html</h3>
+
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;Express 파일 응답&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Express index.html&lt;/h1&gt;
+    &lt;p&gt;Express 서버가 HTML 파일을 응답했습니다.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <h3>4. app.js</h3>
+
+        <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+const PORT = 3000;
+
+app.use(express.json());
+
+let users = [
+    { id: 1, name: &quot;aaa&quot;, age: 10 },
+    { id: 2, name: &quot;bbb&quot;, age: 20 },
+    { id: 3, name: &quot;ccc&quot;, age: 30 }
+];
+
+app.get(&quot;/&quot;, (req, res) =&gt; {
+    res.send(&quot;Express 사용자 API 서버&quot;);
+});
+
+app.get(&quot;/html&quot;, (req, res) =&gt; {
+    res.send(`
+        &lt;!DOCTYPE html&gt;
+        &lt;html lang=&quot;ko&quot;&gt;
+        &lt;head&gt;
+            &lt;meta charset=&quot;UTF-8&quot;&gt;
+            &lt;title&gt;HTML 문자열 응답&lt;/title&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+            &lt;h1&gt;Express HTML 문자열 응답&lt;/h1&gt;
+            &lt;p&gt;서버에서 HTML 문자열을 직접 보냈습니다.&lt;/p&gt;
+        &lt;/body&gt;
+        &lt;/html&gt;
+    `);
+});
+
+app.get(&quot;/file&quot;, (req, res) =&gt; {
+    res.sendFile(&quot;index.html&quot;, {
+        root: process.cwd()
+    });
+});
+
+app.get(&quot;/users&quot;, (req, res) =&gt; {
+    res.json(users);
+});
+
+app.get(&quot;/users/:id&quot;, (req, res) =&gt; {
+    const id = Number(req.params.id);
+
+    const user = users.find((item) =&gt; item.id === id);
+
+    if (!user) {
+        return res.status(404).json({
+            message: &quot;사용자를 찾을 수 없습니다.&quot;
+        });
+    }
+
+    res.json(user);
+});
+
+app.post(&quot;/users&quot;, (req, res) =&gt; {
+    const name = req.body.name;
+    const age = req.body.age;
+
+    if (!name || !age) {
+        return res.status(400).json({
+            message: &quot;name과 age를 입력해야 합니다.&quot;
+        });
+    }
+
+    const newUser = {
+        id: users.length + 1,
+        name: name,
+        age: age
+    };
+
+    users.push(newUser);
+
+    res.status(201).json({
+        message: &quot;사용자 등록 완료&quot;,
+        user: newUser
+    });
+});
+
+app.use((req, res) =&gt; {
+    res.status(404).json({
+        message: &quot;페이지를 찾을 수 없습니다.&quot;
+    });
+});
+
+app.listen(PORT, () =&gt; {
+    console.log(`서버 실행 중: http://localhost:${PORT}`);
+});</code></pre>
+      </section>
+
+      <section id="test">
+        <h2>테스트 주소 정리</h2>
+
+        <div class="practice">
+          <h3>1. 메인 페이지</h3>
+          <div class="test-url">GET http://localhost:3000</div>
+          <p>응답:</p>
+          <pre><code>Express 사용자 API 서버</code></pre>
+        </div>
+
+        <div class="practice">
+          <h3>2. HTML 문자열 응답</h3>
+          <div class="test-url">GET http://localhost:3000/html</div>
+          <p>응답:</p>
+          <pre><code>Express HTML 문자열 응답</code></pre>
+        </div>
+
+        <div class="practice">
+          <h3>3. HTML 파일 응답</h3>
+          <div class="test-url">GET http://localhost:3000/file</div>
+          <p>응답:</p>
+          <pre><code>Express index.html
+Express 서버가 HTML 파일을 응답했습니다.</code></pre>
+        </div>
+
+        <div class="practice">
+          <h3>4. 사용자 목록 조회</h3>
+          <div class="test-url">GET http://localhost:3000/users</div>
+          <p>응답:</p>
+          <pre><code>[
+  {
+    &quot;id&quot;: 1,
+    &quot;name&quot;: &quot;aaa&quot;,
+    &quot;age&quot;: 10
+  },
+  {
+    &quot;id&quot;: 2,
+    &quot;name&quot;: &quot;bbb&quot;,
+    &quot;age&quot;: 20
+  },
+  {
+    &quot;id&quot;: 3,
+    &quot;name&quot;: &quot;ccc&quot;,
+    &quot;age&quot;: 30
+  }
+]</code></pre>
+        </div>
+
+        <div class="practice">
+          <h3>5. 특정 사용자 조회</h3>
+          <div class="test-url">GET http://localhost:3000/users/1</div>
+          <p>응답:</p>
+          <pre><code>{
+  &quot;id&quot;: 1,
+  &quot;name&quot;: &quot;aaa&quot;,
+  &quot;age&quot;: 10
+}</code></pre>
+        </div>
+
+        <div class="practice">
+          <h3>6. 없는 사용자 조회</h3>
+          <div class="test-url">GET http://localhost:3000/users/100</div>
+          <p>응답:</p>
+          <pre><code>{
+  &quot;message&quot;: &quot;사용자를 찾을 수 없습니다.&quot;
+}</code></pre>
+        </div>
+
+        <div class="practice">
+          <h3>7. 사용자 등록</h3>
+          <div class="test-url">POST http://localhost:3000/users</div>
+          <p>Body:</p>
+          <pre><code>{
+  &quot;name&quot;: &quot;ddd&quot;,
+  &quot;age&quot;: 40
+}</code></pre>
+          <p>응답:</p>
+          <pre><code>{
+  &quot;message&quot;: &quot;사용자 등록 완료&quot;,
+  &quot;user&quot;: {
+    &quot;id&quot;: 4,
+    &quot;name&quot;: &quot;ddd&quot;,
+    &quot;age&quot;: 40
+  }
+}</code></pre>
+        </div>
+      </section>
+
+      <section id="problems" class="page-break">
+        <h2>Express.js 문제</h2>
+
+        <div class="problem">
+          <h3>문제 1</h3>
+          <p>Express를 설치하는 명령어를 작성하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 2</h3>
+          <p>3000번 포트에서 실행되는 Express 서버를 만드시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 3</h3>
+          <p><code class="inline">/user</code> 요청 시 다음 문장이 출력되도록 하시오.</p>
+          <pre><code>유저 페이지</code></pre>
+        </div>
+
+        <div class="problem">
+          <h3>문제 4</h3>
+          <p>다음 주소에서 Query String의 <code class="inline">name</code> 값을 읽어 출력하시오.</p>
+          <pre><code>http://localhost:3000/user?name=aaa</code></pre>
+        </div>
+
+        <div class="problem">
+          <h3>문제 5</h3>
+          <p>다음 주소에서 URL Parameter의 <code class="inline">id</code> 값을 읽어 출력하시오.</p>
+          <pre><code>http://localhost:3000/user/10</code></pre>
+        </div>
+
+        <div class="problem">
+          <h3>문제 6</h3>
+          <p>다음 JSON을 응답하시오.</p>
+          <pre><code>{
+  &quot;name&quot;: &quot;aaa&quot;,
+  &quot;age&quot;: 20
+}</code></pre>
+        </div>
+
+        <div class="problem">
+          <h3>문제 7</h3>
+          <p>POST <code class="inline">/users</code> 요청에서 JSON body의 <code class="inline">name</code>, <code class="inline">age</code> 값을 읽어 응답하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 8</h3>
+          <p><code class="inline">/html</code> 요청 시 HTML 문자열을 응답하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 9</h3>
+          <p><code class="inline">/file</code> 요청 시 <code class="inline">index.html</code> 파일을 응답하시오.</p>
+        </div>
+      </section>
+
+      <section id="answers" class="page-break">
+        <h2>Express.js 문제 정답</h2>
+
+        <div class="answer">
+          <h3>문제 1 정답</h3>
+          <pre><code>npm install express</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 2 정답</h3>
+          <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+
+app.listen(3000, () =&gt; {
+    console.log(&quot;서버 실행 중&quot;);
+});</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 3 정답</h3>
+          <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+
+app.get(&quot;/user&quot;, (req, res) =&gt; {
+    res.send(&quot;유저 페이지&quot;);
+});
+
+app.listen(3000);</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 4 정답</h3>
+          <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+
+app.get(&quot;/user&quot;, (req, res) =&gt; {
+    const name = req.query.name;
+
+    res.send(`name: ${name}`);
+});
+
+app.listen(3000);</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 5 정답</h3>
+          <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+
+app.get(&quot;/user/:id&quot;, (req, res) =&gt; {
+    const id = req.params.id;
+
+    res.send(`id: ${id}`);
+});
+
+app.listen(3000);</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 6 정답</h3>
+          <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+
+app.get(&quot;/api/user&quot;, (req, res) =&gt; {
+    res.json({
+        name: &quot;aaa&quot;,
+        age: 20
+    });
+});
+
+app.listen(3000);</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 7 정답</h3>
+          <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+
+app.use(express.json());
+
+app.post(&quot;/users&quot;, (req, res) =&gt; {
+    const name = req.body.name;
+    const age = req.body.age;
+
+    res.json({
+        name: name,
+        age: age
+    });
+});
+
+app.listen(3000);</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 8 정답</h3>
+          <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+
+app.get(&quot;/html&quot;, (req, res) =&gt; {
+    res.send(`
+        &lt;h1&gt;안녕하세요&lt;/h1&gt;
+        &lt;p&gt;Express 서버입니다.&lt;/p&gt;
+    `);
+});
+
+app.listen(3000);</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 9 정답</h3>
+          <p>먼저 프로젝트 폴더에 <code class="inline">index.html</code> 파일을 만든다.</p>
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;파일 응답&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;index.html 파일입니다&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+          <p>그 다음 <code class="inline">app.js</code>를 작성한다.</p>
+          <pre><code>import express from &quot;express&quot;;
+
+const app = express();
+
+app.get(&quot;/file&quot;, (req, res) =&gt; {
+    res.sendFile(&quot;index.html&quot;, {
+        root: process.cwd()
+    });
+});
+
+app.listen(3000);</code></pre>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2>수업 마무리 정리</h2>
+
+        <div class="summary">
+          <ul>
+            <li>Express.js는 Node.js 서버 개발을 쉽게 해주는 프레임워크이다.</li>
+            <li><code class="inline">express()</code>로 Express 앱을 만든다.</li>
+            <li><code class="inline">app.listen()</code>으로 서버를 실행한다.</li>
+            <li><code class="inline">app.get()</code>은 GET 요청을 처리한다.</li>
+            <li><code class="inline">app.post()</code>는 POST 요청을 처리한다.</li>
+            <li><code class="inline">req.query</code>는 Query String 값을 읽을 때 사용한다.</li>
+            <li><code class="inline">req.params</code>는 URL Parameter 값을 읽을 때 사용한다.</li>
+            <li><code class="inline">req.body</code>는 POST 요청 body 값을 읽을 때 사용한다.</li>
+            <li>POST JSON 데이터를 읽으려면 <code class="inline">app.use(express.json())</code>이 필요하다.</li>
+            <li><code class="inline">res.send()</code>는 문자열이나 HTML을 응답할 때 사용한다.</li>
+            <li><code class="inline">res.sendFile()</code>은 HTML 파일 같은 실제 파일을 응답할 때 사용한다.</li>
+            <li><code class="inline">res.json()</code>은 JSON 데이터를 응답할 때 사용한다.</li>
+            <li><code class="inline">res.status()</code>는 상태 코드를 설정할 때 사용한다.</li>
+            <li><code class="inline">app.use()</code>는 미들웨어를 등록할 때 사용한다.</li>
+          </ul>
+        </div>
+
+        <h3>다음 수업 예고</h3>
+        <p>다음 단계는 <strong>Express Router 분리 수업</strong>으로 가면 좋다.</p>
+
+        <div class="diagram">project
+├── app.js
+├── routes
+│   └── userRouter.js
+└── controllers
+    └── userController.js</div>
+
+        <p>다음 수업에서는 라우터, 컨트롤러, 프로젝트 폴더 구조를 나누는 방법을 배울 수 있다.</p>
+      </section>
+
+      <footer>
+        <p>Express.js 서버 수업 교안 · HTML 버전</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

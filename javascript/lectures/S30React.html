@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>React 기초 수업 교안 - JSX와 Babel 포함</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --paper: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #0891b2;
+      --primary-dark: #0e7490;
+      --primary-soft: #ecfeff;
+      --border: #e5e7eb;
+      --code-bg: #111827;
+      --code-text: #e5e7eb;
+      --note-bg: #fffbeb;
+      --note-border: #f59e0b;
+      --info-bg: #eff6ff;
+      --info-border: #2563eb;
+      --success-bg: #ecfdf5;
+      --success-border: #10b981;
+      --danger-bg: #fef2f2;
+      --danger-border: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 28px;
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    aside {
+      position: sticky;
+      top: 20px;
+      height: calc(100vh - 40px);
+      overflow: auto;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    aside h2 {
+      font-size: 18px;
+      margin: 0 0 14px;
+    }
+
+    aside a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 7px 0;
+      border-bottom: 1px dashed #eef2f7;
+    }
+
+    aside a:hover {
+      color: var(--primary);
+    }
+
+    main {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 42px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+      min-width: 0;
+    }
+
+    header {
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 26px;
+      margin-bottom: 36px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 38px;
+      line-height: 1.25;
+      margin: 0 0 10px;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 18px;
+      margin: 0;
+    }
+
+    h2 {
+      margin-top: 54px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 28px;
+      line-height: 1.35;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      margin-top: 34px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    h4 {
+      margin-top: 24px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 12px 0;
+    }
+
+    ul, ol {
+      padding-left: 26px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .goal-box,
+    .note,
+    .info,
+    .summary,
+    .problem,
+    .answer,
+    .practice,
+    .warning {
+      border-radius: 16px;
+      padding: 20px 22px;
+      margin: 22px 0;
+    }
+
+    .goal-box {
+      background: var(--primary-soft);
+      border: 1px solid #a5f3fc;
+    }
+
+    .note {
+      background: var(--note-bg);
+      border-left: 6px solid var(--note-border);
+    }
+
+    .info {
+      background: var(--info-bg);
+      border-left: 6px solid var(--info-border);
+    }
+
+    .summary {
+      background: var(--success-bg);
+      border-left: 6px solid var(--success-border);
+    }
+
+    .warning {
+      background: var(--danger-bg);
+      border-left: 6px solid var(--danger-border);
+    }
+
+    .practice {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .problem {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+    }
+
+    .answer {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+    }
+
+    .diagram {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 18px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      white-space: pre-wrap;
+      color: #334155;
+      margin: 16px 0;
+    }
+
+    code.inline {
+      background: #cffafe;
+      color: #155e75;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 18px;
+      border-radius: 14px;
+      overflow-x: auto;
+      margin: 16px 0 22px;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    pre code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 18px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 800;
+    }
+
+    .chapter-label {
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .test-url {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin: 12px 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      color: #0f172a;
+      overflow-x: auto;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-size: 12px;
+      font-weight: 800;
+      margin-right: 6px;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 56px;
+      padding-top: 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    footer a {
+      color: var(--primary-dark);
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+
+      aside {
+        position: static;
+        height: auto;
+      }
+
+      main {
+        padding: 26px 20px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .layout {
+        display: block;
+        max-width: none;
+        padding: 0;
+      }
+
+      aside {
+        display: none;
+      }
+
+      main {
+        border: 0;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 18mm;
+      }
+
+      pre {
+        white-space: pre-wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <h2>목차</h2>
+      <a href="#goal">수업 목표</a>
+      <a href="#chapter1">제1장. React란 무엇인가</a>
+      <a href="#chapter2">제2장. 개발사와 등장 배경</a>
+      <a href="#chapter3">제3장. 컴포넌트와 선언형 UI</a>
+      <a href="#chapter4">제4장. JSX</a>
+      <a href="#chapter5">제5장. Virtual DOM</a>
+      <a href="#chapter6">제6장. SPA vs MPA</a>
+      <a href="#chapter7">제7장. React를 라이브러리처럼 사용</a>
+      <a href="#chapter8">제8장. 웹에서 Babel이란?</a>
+      <a href="#chapter9">제9장. Expo 프로젝트</a>
+      <a href="#chapter10">제10장. Hook 기본 규칙</a>
+      <a href="#chapter11">제11장. useState</a>
+      <a href="#chapter12">제12장. useEffect</a>
+      <a href="#chapter13">제13장. useRef</a>
+      <a href="#chapter14">제14장. useMemo</a>
+      <a href="#chapter15">제15장. useCallback</a>
+      <a href="#chapter16">제16장. useContext</a>
+      <a href="#chapter17">제17장. Custom Hook</a>
+      <a href="#practice1">최종 실습 1. 웹 React</a>
+      <a href="#practice2">최종 실습 2. Expo</a>
+      <a href="#problems">문제</a>
+      <a href="#answers">문제 정답</a>
+      <a href="#summary">수업 마무리</a>
+      <a href="#references">참고 자료</a>
+    </aside>
+
+    <main>
+      <header>
+        <span class="eyebrow">React Basic Lesson</span>
+        <h1>React 기초 수업 교안</h1>
+        <p class="subtitle">React 개발 배경, JSX, Babel, Virtual DOM, SPA와 MPA, HTML에서 라이브러리처럼 사용하는 방법, Expo 프로젝트 생성, Hook 사용법을 학습한다.</p>
+      </header>
+
+      <section id="goal">
+        <h2>수업 목표</h2>
+        <div class="goal-box">
+          <ol>
+            <li>React가 무엇인지 설명할 수 있다.</li>
+            <li>React가 어떤 배경에서 만들어졌는지 이해할 수 있다.</li>
+            <li>JSX가 무엇이고 HTML과 무엇이 다른지 설명할 수 있다.</li>
+            <li>웹에서 Babel이 왜 필요한지 설명할 수 있다.</li>
+            <li>Virtual DOM의 개념을 설명할 수 있다.</li>
+            <li>SPA와 MPA의 차이를 설명할 수 있다.</li>
+            <li>React를 기존 HTML 페이지에 라이브러리처럼 추가할 수 있다.</li>
+            <li>Expo를 사용해 React Native 프로젝트를 만들 수 있다.</li>
+            <li>함수 컴포넌트에서 Hook을 사용할 수 있다.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="chapter1">
+        <h2><span class="chapter-label">Chapter 01</span><br />React란 무엇인가</h2>
+
+        <h3>1. React의 개념</h3>
+        <p>React는 <strong>사용자 인터페이스 UI를 만들기 위한 JavaScript 라이브러리</strong>이다.</p>
+        <p>React의 핵심은 화면을 여러 개의 <strong>컴포넌트 Component</strong>로 나누어 관리하는 것이다.</p>
+
+        <div class="diagram">전체 페이지
+├── Header 컴포넌트
+├── Menu 컴포넌트
+├── Content 컴포넌트
+├── Button 컴포넌트
+└── Footer 컴포넌트</div>
+
+        <p>React에서는 이런 조각들을 함수로 만들 수 있다.</p>
+
+        <pre><code>function Header() {
+    return &lt;h1&gt;React 수업&lt;/h1&gt;;
+}
+
+function Button() {
+    return &lt;button&gt;클릭&lt;/button&gt;;
+}</code></pre>
+
+        <h3>2. React는 프레임워크인가, 라이브러리인가?</h3>
+        <p>React는 보통 <strong>라이브러리</strong>라고 부른다. React 자체가 전체 웹 애플리케이션의 모든 구조를 강제하지 않고, 주로 UI를 만드는 역할을 담당하기 때문이다.</p>
+
+        <div class="diagram">React가 주로 담당하는 것:
+화면 UI 만들기
+
+React가 직접 강제하지 않는 것:
+라우팅
+서버 통신 방식
+프로젝트 구조
+상태 관리 방식
+빌드 방식</div>
+
+        <p>그래서 React는 필요에 따라 다른 도구와 함께 사용한다.</p>
+
+        <div class="diagram">React + Vite          → 웹 프로젝트
+React + Next.js       → 풀스택 / SSR 웹 프로젝트
+React + Expo          → 모바일 앱 / 웹 앱 프로젝트
+React + React Router  → SPA 라우팅</div>
+      </section>
+
+      <section id="chapter2">
+        <h2><span class="chapter-label">Chapter 02</span><br />React 개발사와 나오게 된 배경</h2>
+
+        <h3>1. React의 출발</h3>
+        <p>React는 처음에 <strong>Facebook, 현재 Meta</strong> 내부에서 만들어졌다. 복잡한 화면을 더 예측 가능하게 만들고, 데이터 변화에 따라 UI를 효율적으로 업데이트하기 위해 만들어졌다.</p>
+
+        <div class="info">
+          <strong>현재 거버넌스 참고</strong>
+          <p>2026년 2월 24일 React Foundation이 Linux Foundation 산하에 공식 출범했고, Meta가 React 프로젝트를 Linux Foundation에 기여했다. 수업에서는 “처음 개발은 Facebook/Meta, 현재는 React Foundation 중심의 오픈 거버넌스 체계로 이동”이라고 설명하면 좋다.</p>
+        </div>
+
+        <h3>2. React가 나오게 된 배경</h3>
+        <p>React가 나오기 전에는 화면을 바꿀 때 개발자가 직접 DOM을 조작하는 경우가 많았다.</p>
+
+        <pre><code>const title = document.querySelector(&quot;#title&quot;);
+title.textContent = &quot;변경된 제목&quot;;</code></pre>
+
+        <p>작은 화면에서는 괜찮지만, Facebook처럼 화면이 복잡하고 데이터가 자주 바뀌는 서비스에서는 문제가 생긴다.</p>
+
+        <div class="diagram">데이터가 자주 바뀜
+화면도 자주 바뀜
+DOM을 직접 조작해야 함
+코드가 복잡해짐
+버그가 많아짐</div>
+
+        <p>React는 이런 문제를 줄이기 위해 등장했다.</p>
+
+        <div class="summary">
+          <strong>React의 핵심 생각</strong>
+          <p>개발자는 현재 상태에 맞는 화면을 선언한다. 실제 DOM을 어떻게 바꿀지는 React가 처리한다.</p>
+        </div>
+      </section>
+
+      <section id="chapter3">
+        <h2><span class="chapter-label">Chapter 03</span><br />컴포넌트와 선언형 UI</h2>
+
+        <h3>1. 컴포넌트 기반</h3>
+        <p>React는 화면을 컴포넌트 단위로 나눈다.</p>
+
+        <pre><code>function App() {
+    return (
+        &lt;div&gt;
+            &lt;Header /&gt;
+            &lt;Content /&gt;
+            &lt;Footer /&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <p>컴포넌트 기반으로 만들면 코드를 나누기 쉽고, 재사용하기 쉽고, 화면 구조를 이해하기 쉽다.</p>
+
+        <h3>2. 선언형 UI</h3>
+        <p>React는 선언형 방식으로 화면을 만든다.</p>
+
+        <div class="diagram">명령형 방식:
+1. 버튼을 찾는다.
+2. 글자를 찾는다.
+3. 값을 바꾼다.
+4. 색상을 바꾼다.
+
+선언형 방식:
+현재 count 값이 0이면 화면에 0을 보여준다.
+count 값이 1이면 화면에 1을 보여준다.</div>
+
+        <p>React에서는 상태가 바뀌면 화면이 다시 렌더링된다.</p>
+
+        <pre><code>function Counter() {
+    const [count, setCount] = React.useState(0);
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;{count}&lt;/h1&gt;
+            &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+                증가
+            &lt;/button&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+      </section>
+
+      <section id="chapter4">
+        <h2><span class="chapter-label">Chapter 04</span><br />JSX</h2>
+
+        <h3>1. JSX란?</h3>
+        <p><strong>JSX</strong>는 JavaScript 코드 안에서 HTML과 비슷한 마크업을 작성할 수 있게 해주는 문법 확장이다.</p>
+
+        <pre><code>const element = &lt;h1&gt;안녕하세요&lt;/h1&gt;;</code></pre>
+
+        <p>위 코드는 문자열도 아니고 일반 HTML도 아니다. JavaScript 안에 작성된 JSX 문법이다.</p>
+
+        <div class="note">
+          <strong>쉽게 말하면</strong>
+          <p>JSX는 “JavaScript 안에서 HTML처럼 화면 구조를 작성하는 문법”이다.</p>
+        </div>
+
+        <h3>2. JSX를 사용하는 이유</h3>
+        <p>React 컴포넌트는 화면 구조와 JavaScript 로직이 함께 움직이는 경우가 많다.</p>
+        <p>JSX를 사용하면 컴포넌트 안에서 화면 구조를 직관적으로 작성할 수 있다.</p>
+
+        <pre><code>function Profile() {
+    const name = &quot;홍길동&quot;;
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;{name}&lt;/h1&gt;
+            &lt;p&gt;React 수업을 듣고 있습니다.&lt;/p&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>3. JSX 기본 규칙 1 — 하나의 부모 요소로 감싸기</h3>
+        <p>컴포넌트가 여러 요소를 반환할 때는 하나의 부모 요소로 감싸야 한다.</p>
+
+        <p>잘못된 예:</p>
+
+        <pre><code>function App() {
+    return (
+        &lt;h1&gt;제목&lt;/h1&gt;
+        &lt;p&gt;내용&lt;/p&gt;
+    );
+}</code></pre>
+
+        <p>올바른 예:</p>
+
+        <pre><code>function App() {
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;제목&lt;/h1&gt;
+            &lt;p&gt;내용&lt;/p&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <p>또는 Fragment를 사용할 수 있다.</p>
+
+        <pre><code>function App() {
+    return (
+        &lt;&gt;
+            &lt;h1&gt;제목&lt;/h1&gt;
+            &lt;p&gt;내용&lt;/p&gt;
+        &lt;/&gt;
+    );
+}</code></pre>
+
+        <h3>4. JSX 기본 규칙 2 — JavaScript 값은 중괄호 사용</h3>
+        <p>JSX 안에서 JavaScript 값을 출력할 때는 <code class="inline">{ }</code>를 사용한다.</p>
+
+        <pre><code>function App() {
+    const name = &quot;홍길동&quot;;
+    const age = 20;
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;{name}&lt;/h1&gt;
+            &lt;p&gt;{age}살입니다.&lt;/p&gt;
+            &lt;p&gt;내년에는 {age + 1}살입니다.&lt;/p&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>5. JSX 기본 규칙 3 — class 대신 className</h3>
+        <p>HTML에서는 <code class="inline">class</code>를 사용하지만, JSX에서는 <code class="inline">className</code>을 사용한다.</p>
+
+        <pre><code>function App() {
+    return (
+        &lt;div className=&quot;box&quot;&gt;
+            &lt;h1 className=&quot;title&quot;&gt;React&lt;/h1&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>6. JSX 기본 규칙 4 — 이벤트는 camelCase</h3>
+        <p>HTML에서는 <code class="inline">onclick</code>처럼 작성하지만, JSX에서는 <code class="inline">onClick</code>처럼 camelCase로 작성한다.</p>
+
+        <pre><code>function App() {
+    function handleClick() {
+        alert(&quot;클릭했습니다.&quot;);
+    }
+
+    return (
+        &lt;button onClick={handleClick}&gt;
+            클릭
+        &lt;/button&gt;
+    );
+}</code></pre>
+
+        <h3>7. JSX 기본 규칙 5 — 스타일은 객체로 작성</h3>
+        <p>JSX에서 인라인 스타일을 작성할 때는 문자열이 아니라 객체를 사용한다.</p>
+
+        <pre><code>function App() {
+    return (
+        &lt;h1 style={{ color: &quot;blue&quot;, fontSize: &quot;30px&quot; }}&gt;
+            React 스타일
+        &lt;/h1&gt;
+    );
+}</code></pre>
+
+        <h3>8. JSX에서 조건부 렌더링</h3>
+        <p>조건에 따라 다른 화면을 보여줄 수 있다.</p>
+
+        <pre><code>function LoginMessage() {
+    const isLogin = true;
+
+    return (
+        &lt;div&gt;
+            {isLogin ? (
+                &lt;p&gt;로그인 상태입니다.&lt;/p&gt;
+            ) : (
+                &lt;p&gt;로그인이 필요합니다.&lt;/p&gt;
+            )}
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>9. JSX에서 배열 출력하기</h3>
+        <p>배열은 <code class="inline">map()</code>을 사용해 화면에 출력한다. 반복 출력할 때는 각 항목에 <code class="inline">key</code>를 넣는 것이 중요하다.</p>
+
+        <pre><code>function UserList() {
+    const users = [
+        { id: 1, name: &quot;aaa&quot; },
+        { id: 2, name: &quot;bbb&quot; },
+        { id: 3, name: &quot;ccc&quot; }
+    ];
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;사용자 목록&lt;/h1&gt;
+
+            {users.map((user) =&gt; (
+                &lt;p key={user.id}&gt;{user.name}&lt;/p&gt;
+            ))}
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <div class="summary">
+          <strong>JSX 핵심 정리</strong>
+          <ul>
+            <li>JSX는 JavaScript 안에서 HTML처럼 화면을 작성하는 문법이다.</li>
+            <li>여러 요소를 반환할 때는 하나의 부모 요소로 감싼다.</li>
+            <li>JavaScript 값은 <code class="inline">{ }</code> 안에 작성한다.</li>
+            <li><code class="inline">class</code> 대신 <code class="inline">className</code>을 사용한다.</li>
+            <li>이벤트는 <code class="inline">onClick</code>, <code class="inline">onChange</code>처럼 camelCase로 작성한다.</li>
+            <li>배열 출력은 <code class="inline">map()</code>을 사용한다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="chapter5">
+        <h2><span class="chapter-label">Chapter 05</span><br />Virtual DOM, 가상 DOM</h2>
+
+        <h3>1. DOM이란?</h3>
+        <p>DOM은 HTML 문서를 JavaScript가 다룰 수 있도록 객체 구조로 표현한 것이다.</p>
+
+        <pre><code>&lt;h1&gt;안녕하세요&lt;/h1&gt;
+&lt;p&gt;React 수업입니다.&lt;/p&gt;</code></pre>
+
+        <p>브라우저는 위 HTML을 다음과 같은 구조로 이해한다.</p>
+
+        <div class="diagram">document
+└── body
+    ├── h1
+    └── p</div>
+
+        <p>JavaScript는 DOM을 이용해 화면을 변경할 수 있다.</p>
+
+        <pre><code>document.querySelector(&quot;h1&quot;).textContent = &quot;변경됨&quot;;</code></pre>
+
+        <h3>2. Virtual DOM이란?</h3>
+        <p>Virtual DOM은 실제 DOM을 바로 바꾸기 전에, React가 메모리 안에서 관리하는 <strong>가상의 UI 표현</strong>이라고 이해하면 된다.</p>
+
+        <div class="diagram">1. 상태 state가 변경된다.
+2. React가 새로운 화면 구조를 계산한다.
+3. 이전 화면 구조와 새 화면 구조를 비교한다.
+4. 실제로 바뀐 부분만 실제 DOM에 반영한다.</div>
+
+        <h3>3. Virtual DOM 흐름</h3>
+
+        <div class="diagram">state 변경
+   ↓
+컴포넌트 다시 실행
+   ↓
+새로운 Virtual DOM 생성
+   ↓
+이전 Virtual DOM과 비교
+   ↓
+바뀐 부분 계산
+   ↓
+실제 DOM 업데이트</div>
+
+        <div class="note">
+          <strong>학생용 쉬운 설명</strong>
+          <p>실제 칠판을 바로 지우고 다시 쓰는 것이 아니라, 먼저 연습장에 바뀔 내용을 계산한 뒤, 칠판에서는 진짜 바뀐 부분만 고치는 방식이다.</p>
+        </div>
+      </section>
+
+      <section id="chapter6">
+        <h2><span class="chapter-label">Chapter 06</span><br />SPA와 MPA</h2>
+
+        <h3>1. MPA란?</h3>
+        <p>MPA는 <strong>Multi Page Application</strong>의 약자이다. 여러 개의 HTML 페이지로 구성된 전통적인 웹 방식이다.</p>
+
+        <div class="diagram">/
+├── index.html
+├── login.html
+├── board.html
+└── detail.html</div>
+
+        <p>사용자가 페이지를 이동할 때마다 서버에서 새로운 HTML 문서를 받아온다.</p>
+
+        <div class="diagram">/login 클릭
+   ↓
+서버에 login.html 요청
+   ↓
+브라우저가 새 페이지 로드</div>
+
+        <h3>2. SPA란?</h3>
+        <p>SPA는 <strong>Single Page Application</strong>의 약자이다. 처음에 하나의 HTML 문서를 받고, 이후 화면 변경은 JavaScript가 처리하는 방식이다.</p>
+
+        <div class="diagram">index.html 하나
+   ↓
+React JavaScript 실행
+   ↓
+화면을 컴포넌트로 바꿔가며 표시</div>
+
+        <p>예를 들어 사용자가 <code class="inline">/login</code>으로 이동해도 실제로 새로운 <code class="inline">login.html</code>을 받는 것이 아니라, React가 현재 화면을 로그인 컴포넌트로 바꿔준다.</p>
+
+        <div class="diagram">/login 이동
+   ↓
+새 HTML 요청 X
+   ↓
+React가 Login 컴포넌트 표시</div>
+
+        <h3>3. SPA와 MPA 비교</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>MPA</th>
+                <th>SPA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>뜻</td>
+                <td>Multi Page Application</td>
+                <td>Single Page Application</td>
+              </tr>
+              <tr>
+                <td>HTML 구조</td>
+                <td>여러 HTML 페이지</td>
+                <td>하나의 HTML 중심</td>
+              </tr>
+              <tr>
+                <td>페이지 이동</td>
+                <td>서버에서 새 HTML 로드</td>
+                <td>JavaScript로 화면 전환</td>
+              </tr>
+              <tr>
+                <td>새로고침</td>
+                <td>자주 발생</td>
+                <td>적게 발생</td>
+              </tr>
+              <tr>
+                <td>사용자 경험</td>
+                <td>전통적인 웹 느낌</td>
+                <td>앱처럼 부드러운 느낌</td>
+              </tr>
+              <tr>
+                <td>대표 예</td>
+                <td>회사 소개 사이트, 전통 게시판</td>
+                <td>대시보드, 관리자 페이지, 채팅 앱</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="chapter7">
+        <h2><span class="chapter-label">Chapter 07</span><br />React를 라이브러리처럼 사용하는 법</h2>
+
+        <h3>1. 언제 이 방식을 쓰는가?</h3>
+        <p>React는 꼭 전체 프로젝트로 시작하지 않아도 된다. 기존 HTML 페이지의 일부 영역에만 React를 붙일 수 있다.</p>
+
+        <div class="diagram">기존 HTML 페이지
+├── 일반 HTML 영역
+├── 일반 CSS 영역
+└── React 버튼 영역만 추가</div>
+
+        <p>이 방식은 다음 상황에 좋다.</p>
+
+        <ul>
+          <li>React를 처음 실습할 때</li>
+          <li>기존 HTML 페이지 일부에만 React를 붙이고 싶을 때</li>
+          <li>빌드 도구 없이 React 개념을 보여주고 싶을 때</li>
+        </ul>
+
+        <h3>2. CDN으로 React 추가하기</h3>
+        <p>아래 예제는 교육용으로 가장 단순하게 만든 방식이다.</p>
+
+        <p>파일 이름:</p>
+        <pre><code>index.html</code></pre>
+
+        <p>코드:</p>
+
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;React 라이브러리 방식&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;기존 HTML 페이지&lt;/h1&gt;
+
+    &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+
+    &lt;!-- React 라이브러리 추가 --&gt;
+    &lt;script src=&quot;https://unpkg.com/react@18/umd/react.development.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://unpkg.com/react-dom@18/umd/react-dom.development.js&quot;&gt;&lt;/script&gt;
+
+    &lt;!-- JSX를 브라우저에서 사용하기 위한 Babel --&gt;
+    &lt;script src=&quot;https://unpkg.com/@babel/standalone/babel.min.js&quot;&gt;&lt;/script&gt;
+
+    &lt;script type=&quot;text/babel&quot;&gt;
+        function App() {
+            const [count, setCount] = React.useState(0);
+
+            return (
+                &lt;div&gt;
+                    &lt;h2&gt;React 영역&lt;/h2&gt;
+                    &lt;p&gt;count: {count}&lt;/p&gt;
+                    &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+                        증가
+                    &lt;/button&gt;
+                &lt;/div&gt;
+            );
+        }
+
+        const root = ReactDOM.createRoot(
+            document.getElementById(&quot;root&quot;)
+        );
+
+        root.render(&lt;App /&gt;);
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <h3>3. 코드 설명</h3>
+
+        <pre><code>&lt;div id=&quot;root&quot;&gt;&lt;/div&gt;</code></pre>
+        <p>React 컴포넌트가 들어갈 위치이다.</p>
+
+        <pre><code>function App() {
+    return &lt;h2&gt;React 영역&lt;/h2&gt;;
+}</code></pre>
+        <p>React 컴포넌트이다.</p>
+
+        <pre><code>const root = ReactDOM.createRoot(
+    document.getElementById(&quot;root&quot;)
+);</code></pre>
+        <p><code class="inline">id="root"</code>인 HTML 요소 안에 React를 실행할 준비를 한다.</p>
+
+        <pre><code>root.render(&lt;App /&gt;);</code></pre>
+        <p><code class="inline">App</code> 컴포넌트를 화면에 출력한다.</p>
+
+        <h3>4. 라이브러리 방식의 장단점</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>장점</th>
+                <th>단점</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  설치가 간단하다.<br />
+                  기존 HTML에 React를 조금만 붙일 수 있다.<br />
+                  초보자 실습에 좋다.
+                </td>
+                <td>
+                  실무 프로젝트에는 부족하다.<br />
+                  파일 분리가 어렵다.<br />
+                  빌드 최적화가 어렵다.<br />
+                  라우팅, 상태 관리, 배포 구조를 갖추기 어렵다.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="warning">
+          <strong>수업용 주의</strong>
+          <p>CDN + Babel 방식은 React 개념을 빠르게 보여주기 위한 교육용 방식이다. 실제 프로젝트에서는 Vite, Next.js, Expo 같은 프로젝트 도구를 사용하는 것이 일반적이다.</p>
+        </div>
+      </section>
+
+      <section id="chapter8">
+        <h2><span class="chapter-label">Chapter 08</span><br />웹에서 Babel이란?</h2>
+
+        <h3>1. Babel의 개념</h3>
+        <p><strong>Babel</strong>은 JavaScript 컴파일러이다. 쉽게 말하면, 브라우저나 실행 환경이 바로 이해하기 어려운 최신 JavaScript 문법 또는 JSX 문법을 실행 가능한 JavaScript 코드로 바꿔주는 도구이다.</p>
+
+        <div class="diagram">JSX / 최신 JavaScript 코드
+   ↓
+Babel 변환
+   ↓
+브라우저가 실행할 수 있는 JavaScript 코드</div>
+
+        <h3>2. 브라우저는 JSX를 그대로 이해하지 못한다</h3>
+        <p>다음 코드는 React 개발자에게는 익숙하지만, 브라우저 입장에서는 일반 JavaScript 문법이 아니다.</p>
+
+        <pre><code>const element = &lt;h1&gt;안녕하세요&lt;/h1&gt;;</code></pre>
+
+        <p>그래서 JSX를 브라우저에서 직접 실행하려면 Babel이 JSX를 JavaScript 코드로 바꿔줘야 한다.</p>
+
+        <h3>3. JSX가 변환되는 느낌</h3>
+        <p>수업에서는 아래처럼 설명하면 쉽다.</p>
+
+        <p>우리가 작성하는 JSX:</p>
+
+        <pre><code>const element = &lt;h1&gt;안녕하세요&lt;/h1&gt;;</code></pre>
+
+        <p>Babel이 변환해주는 JavaScript 느낌:</p>
+
+        <pre><code>const element = React.createElement(
+    &quot;h1&quot;,
+    null,
+    &quot;안녕하세요&quot;
+);</code></pre>
+
+        <div class="note">
+          <strong>정확한 변환 결과는 설정에 따라 달라질 수 있다.</strong>
+          <p>하지만 초급 수업에서는 “JSX는 Babel을 거쳐 브라우저가 실행할 수 있는 JavaScript로 바뀐다”라고 이해하면 충분하다.</p>
+        </div>
+
+        <h3>4. CDN 예제에서 Babel이 필요한 부분</h3>
+        <p>HTML 파일에서 다음 스크립트를 추가하면 브라우저 안에서 Babel을 사용할 수 있다.</p>
+
+        <pre><code>&lt;script src=&quot;https://unpkg.com/@babel/standalone/babel.min.js&quot;&gt;&lt;/script&gt;</code></pre>
+
+        <p>그리고 JSX가 들어있는 스크립트에는 <code class="inline">type="text/babel"</code>을 작성한다.</p>
+
+        <pre><code>&lt;script type=&quot;text/babel&quot;&gt;
+    function App() {
+        return &lt;h1&gt;React 수업&lt;/h1&gt;;
+    }
+&lt;/script&gt;</code></pre>
+
+        <p>이 뜻은 다음과 같다.</p>
+
+        <div class="diagram">type="text/babel"
+→ 이 script 안에는 JSX가 들어있다.
+→ Babel이 먼저 변환한 뒤 실행한다.</div>
+
+        <h3>5. 실제 프로젝트에서는 Babel을 직접 넣지 않는 경우가 많다</h3>
+        <p>Vite, Next.js, Expo 같은 프로젝트 도구를 사용하면 내부적으로 JSX와 최신 JavaScript 변환을 처리해준다.</p>
+
+        <div class="diagram">CDN 실습:
+직접 Babel script 추가
+
+Vite / Next.js / Expo 프로젝트:
+개발 도구가 내부적으로 변환 처리</div>
+
+        <div class="summary">
+          <strong>Babel 핵심 정리</strong>
+          <ul>
+            <li>Babel은 JavaScript 컴파일러이다.</li>
+            <li>JSX는 브라우저가 그대로 실행할 수 없으므로 변환이 필요하다.</li>
+            <li>CDN 실습에서는 <code class="inline">@babel/standalone</code>을 사용한다.</li>
+            <li><code class="inline">type="text/babel"</code>은 해당 스크립트를 Babel로 변환하겠다는 의미이다.</li>
+            <li>실제 프로젝트에서는 Vite, Expo 같은 도구가 변환 과정을 대신 처리한다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="chapter9">
+        <h2><span class="chapter-label">Chapter 09</span><br />Expo로 React 프로젝트 사용하기</h2>
+
+        <h3>1. Expo란?</h3>
+        <p>Expo는 React Native 앱을 쉽게 만들 수 있게 도와주는 플랫폼이다.</p>
+
+        <div class="diagram">React:
+웹 UI 라이브러리
+
+React Native:
+모바일 앱 UI를 만드는 기술
+
+Expo:
+React Native 프로젝트를 쉽게 만들고 실행하게 해주는 도구</div>
+
+        <p>즉, Expo 수업은 웹 React라기보다 <strong>React Native 기반 앱 프로젝트 수업</strong>이다.</p>
+
+        <h3>2. Expo 프로젝트 생성</h3>
+
+        <pre><code>npx create-expo-app@latest react-expo-study</code></pre>
+
+        <p>프로젝트 폴더로 이동한다.</p>
+
+        <pre><code>cd react-expo-study</code></pre>
+
+        <p>개발 서버를 실행한다.</p>
+
+        <pre><code>npx expo start</code></pre>
+
+        <p>개발 서버가 실행되면 터미널에서 QR 코드가 나오고, Expo Go 앱이나 웹 실행 옵션을 이용해 결과를 확인할 수 있다.</p>
+
+        <h3>3. Expo 프로젝트 기본 구조</h3>
+
+        <div class="diagram">react-expo-study
+├── app
+│   └── index.tsx
+├── assets
+├── package.json
+└── app.json</div>
+
+        <p>가장 먼저 수정할 파일은 보통 다음 파일이다.</p>
+
+        <pre><code>app/index.tsx</code></pre>
+
+        <h3>4. 웹 React와 Expo의 화면 요소 차이</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>웹 React</th>
+                <th>Expo / React Native</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code class="inline">div</code></td>
+                <td><code class="inline">View</code></td>
+              </tr>
+              <tr>
+                <td><code class="inline">h1</code>, <code class="inline">p</code></td>
+                <td><code class="inline">Text</code></td>
+              </tr>
+              <tr>
+                <td><code class="inline">input</code></td>
+                <td><code class="inline">TextInput</code></td>
+              </tr>
+              <tr>
+                <td><code class="inline">button</code></td>
+                <td><code class="inline">Button</code></td>
+              </tr>
+              <tr>
+                <td><code class="inline">onClick</code></td>
+                <td><code class="inline">onPress</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>5. Expo 기본 예제</h3>
+
+        <pre><code>import { Text, View, StyleSheet } from &quot;react-native&quot;;
+
+export default function Index() {
+    return (
+        &lt;View style={styles.container}&gt;
+            &lt;Text style={styles.title}&gt;React Expo 수업&lt;/Text&gt;
+            &lt;Text&gt;첫 번째 Expo 화면입니다.&lt;/Text&gt;
+        &lt;/View&gt;
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: &quot;center&quot;,
+        justifyContent: &quot;center&quot;
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: &quot;bold&quot;
+    }
+});</code></pre>
+      </section>
+
+      <section id="chapter10">
+        <h2><span class="chapter-label">Chapter 10</span><br />React Hook 기본 규칙</h2>
+
+        <h3>1. Hook이란?</h3>
+        <p>Hook은 함수 컴포넌트에서 React 기능을 사용할 수 있게 해주는 함수이다.</p>
+        <p>Hook 이름은 보통 <code class="inline">use</code>로 시작한다.</p>
+
+        <div class="diagram">useState    상태 관리
+useEffect   렌더링 이후 실행할 작업
+useRef      값 또는 참조 저장
+useMemo     계산 결과 재사용
+useCallback 함수 재사용
+useContext  여러 컴포넌트가 값 공유</div>
+
+        <h3>2. Hook 사용 규칙</h3>
+
+        <div class="summary">
+          <ul>
+            <li>Hook은 함수 컴포넌트의 최상위에서 호출한다.</li>
+            <li>조건문 안에서 Hook을 호출하지 않는다.</li>
+            <li>반복문 안에서 Hook을 호출하지 않는다.</li>
+            <li>중첩 함수 안에서 Hook을 호출하지 않는다.</li>
+            <li>Hook 이름은 <code class="inline">use</code>로 시작한다.</li>
+          </ul>
+        </div>
+
+        <p>잘못된 예:</p>
+
+        <pre><code>function App() {
+    if (true) {
+        const [count, setCount] = useState(0);
+    }
+
+    return &lt;h1&gt;잘못된 예&lt;/h1&gt;;
+}</code></pre>
+
+        <p>올바른 예:</p>
+
+        <pre><code>function App() {
+    const [count, setCount] = useState(0);
+
+    if (count &gt; 0) {
+        console.log(&quot;count가 0보다 큽니다.&quot;);
+    }
+
+    return &lt;h1&gt;{count}&lt;/h1&gt;;
+}</code></pre>
+      </section>
+
+      <section id="chapter11">
+        <h2><span class="chapter-label">Chapter 11</span><br />useState</h2>
+
+        <h3>1. useState란?</h3>
+        <p><code class="inline">useState</code>는 컴포넌트 안에서 상태값을 만들 때 사용한다.</p>
+
+        <pre><code>const [값, 값을바꾸는함수] = useState(초기값);</code></pre>
+
+        <p>예:</p>
+
+        <pre><code>const [count, setCount] = useState(0);</code></pre>
+
+        <h3>2. React 웹 예제</h3>
+
+        <pre><code>function Counter() {
+    const [count, setCount] = React.useState(0);
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;{count}&lt;/h1&gt;
+
+            &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+                증가
+            &lt;/button&gt;
+
+            &lt;button onClick={() =&gt; setCount(count - 1)}&gt;
+                감소
+            &lt;/button&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>3. Expo 예제</h3>
+
+        <pre><code>import { useState } from &quot;react&quot;;
+import { Text, View, Button, StyleSheet } from &quot;react-native&quot;;
+
+export default function Index() {
+    const [count, setCount] = useState(0);
+
+    return (
+        &lt;View style={styles.container}&gt;
+            &lt;Text style={styles.title}&gt;count: {count}&lt;/Text&gt;
+
+            &lt;Button
+                title=&quot;증가&quot;
+                onPress={() =&gt; setCount(count + 1)}
+            /&gt;
+
+            &lt;Button
+                title=&quot;감소&quot;
+                onPress={() =&gt; setCount(count - 1)}
+            /&gt;
+        &lt;/View&gt;
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: &quot;center&quot;,
+        justifyContent: &quot;center&quot;,
+        gap: 12
+    },
+    title: {
+        fontSize: 24
+    }
+});</code></pre>
+
+        <h3>4. useState 핵심 정리</h3>
+        <div class="summary">
+          <ul>
+            <li>값을 저장하고 싶을 때 사용한다.</li>
+            <li>값이 바뀌면 화면이 다시 렌더링된다.</li>
+            <li>값을 바꿀 때는 setter 함수를 사용한다.</li>
+            <li>상태값을 직접 수정하면 안 된다.</li>
+          </ul>
+        </div>
+
+        <p>잘못된 예:</p>
+        <pre><code>count = count + 1;</code></pre>
+
+        <p>올바른 예:</p>
+        <pre><code>setCount(count + 1);</code></pre>
+      </section>
+
+      <section id="chapter12">
+        <h2><span class="chapter-label">Chapter 12</span><br />useEffect</h2>
+
+        <h3>1. useEffect란?</h3>
+        <p><code class="inline">useEffect</code>는 컴포넌트가 렌더링된 후 특정 작업을 실행할 때 사용한다.</p>
+
+        <pre><code>useEffect(() =&gt; {
+    실행할 코드
+}, [의존성]);</code></pre>
+
+        <h3>2. 처음 한 번만 실행</h3>
+
+        <pre><code>useEffect(() =&gt; {
+    console.log(&quot;처음 한 번만 실행&quot;);
+}, []);</code></pre>
+
+        <h3>3. 특정 값이 바뀔 때 실행</h3>
+
+        <pre><code>useEffect(() =&gt; {
+    console.log(&quot;count가 변경됨:&quot;, count);
+}, [count]);</code></pre>
+
+        <h3>4. React 웹 예제</h3>
+
+        <pre><code>function Counter() {
+    const [count, setCount] = React.useState(0);
+
+    React.useEffect(() =&gt; {
+        console.log(&quot;count 변경:&quot;, count);
+    }, [count]);
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;{count}&lt;/h1&gt;
+            &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+                증가
+            &lt;/button&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>5. Expo 예제</h3>
+
+        <pre><code>import { useState, useEffect } from &quot;react&quot;;
+import { Text, View, Button, StyleSheet } from &quot;react-native&quot;;
+
+export default function Index() {
+    const [count, setCount] = useState(0);
+
+    useEffect(() =&gt; {
+        console.log(&quot;count 변경:&quot;, count);
+    }, [count]);
+
+    return (
+        &lt;View style={styles.container}&gt;
+            &lt;Text style={styles.title}&gt;count: {count}&lt;/Text&gt;
+
+            &lt;Button
+                title=&quot;증가&quot;
+                onPress={() =&gt; setCount(count + 1)}
+            /&gt;
+        &lt;/View&gt;
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: &quot;center&quot;,
+        justifyContent: &quot;center&quot;
+    },
+    title: {
+        fontSize: 24
+    }
+});</code></pre>
+
+        <h3>6. API 데이터 가져오기 예제</h3>
+
+        <pre><code>function UserList() {
+    const [users, setUsers] = React.useState([]);
+
+    React.useEffect(() =&gt; {
+        fetch(&quot;https://jsonplaceholder.typicode.com/users&quot;)
+            .then((res) =&gt; res.json())
+            .then((data) =&gt; {
+                setUsers(data);
+            });
+    }, []);
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;사용자 목록&lt;/h1&gt;
+
+            {users.map((user) =&gt; (
+                &lt;p key={user.id}&gt;{user.name}&lt;/p&gt;
+            ))}
+        &lt;/div&gt;
+    );
+}</code></pre>
+      </section>
+
+      <section id="chapter13">
+        <h2><span class="chapter-label">Chapter 13</span><br />useRef</h2>
+
+        <h3>1. useRef란?</h3>
+        <p><code class="inline">useRef</code>는 렌더링과 상관없이 값을 보관할 때 사용한다.</p>
+
+        <pre><code>const ref = useRef(초기값);</code></pre>
+
+        <p>값은 다음처럼 사용한다.</p>
+
+        <pre><code>ref.current</code></pre>
+
+        <h3>2. 값 저장 예제</h3>
+
+        <pre><code>function RefExample() {
+    const countRef = React.useRef(0);
+
+    function handleClick() {
+        countRef.current = countRef.current + 1;
+        console.log(countRef.current);
+    }
+
+    return (
+        &lt;button onClick={handleClick}&gt;
+            ref 값 증가
+        &lt;/button&gt;
+    );
+}</code></pre>
+
+        <h3>3. useRef와 useState 비교</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>useState</th>
+                <th>useRef</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>값 저장</td>
+                <td>가능</td>
+                <td>가능</td>
+              </tr>
+              <tr>
+                <td>값 변경 시 렌더링</td>
+                <td>다시 렌더링됨</td>
+                <td>다시 렌더링 안 됨</td>
+              </tr>
+              <tr>
+                <td>화면 표시용 데이터</td>
+                <td>적합</td>
+                <td>부적합</td>
+              </tr>
+              <tr>
+                <td>타이머 ID, 이전 값 저장</td>
+                <td>가능</td>
+                <td>적합</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="chapter14">
+        <h2><span class="chapter-label">Chapter 14</span><br />useMemo</h2>
+
+        <h3>1. useMemo란?</h3>
+        <p><code class="inline">useMemo</code>는 계산 결과를 기억해두고 재사용할 때 사용한다.</p>
+
+        <pre><code>const 결과 = useMemo(() =&gt; {
+    return 계산결과;
+}, [의존성]);</code></pre>
+
+        <h3>2. 예제</h3>
+
+        <pre><code>function TotalPrice() {
+    const [price, setPrice] = React.useState(1000);
+    const [count, setCount] = React.useState(1);
+
+    const total = React.useMemo(() =&gt; {
+        console.log(&quot;총 가격 계산&quot;);
+        return price * count;
+    }, [price, count]);
+
+    return (
+        &lt;div&gt;
+            &lt;p&gt;가격: {price}&lt;/p&gt;
+            &lt;p&gt;수량: {count}&lt;/p&gt;
+            &lt;p&gt;총 가격: {total}&lt;/p&gt;
+
+            &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+                수량 증가
+            &lt;/button&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <div class="note">
+          <strong>초급 수업 포인트</strong>
+          <p><code class="inline">useMemo</code>는 “계산 결과를 기억하는 Hook” 정도로 이해하면 된다. 처음부터 많이 사용할 필요는 없다.</p>
+        </div>
+      </section>
+
+      <section id="chapter15">
+        <h2><span class="chapter-label">Chapter 15</span><br />useCallback</h2>
+
+        <h3>1. useCallback이란?</h3>
+        <p><code class="inline">useCallback</code>은 함수를 기억해두고 재사용할 때 사용한다.</p>
+
+        <pre><code>const 함수 = useCallback(() =&gt; {
+    실행할 코드
+}, [의존성]);</code></pre>
+
+        <h3>2. 예제</h3>
+
+        <pre><code>function CallbackExample() {
+    const [count, setCount] = React.useState(0);
+
+    const increase = React.useCallback(() =&gt; {
+        setCount((prev) =&gt; prev + 1);
+    }, []);
+
+    return (
+        &lt;div&gt;
+            &lt;p&gt;{count}&lt;/p&gt;
+            &lt;button onClick={increase}&gt;증가&lt;/button&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>3. useMemo와 useCallback 차이</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Hook</th>
+                <th>기억하는 것</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>useMemo</td>
+                <td>계산 결과</td>
+              </tr>
+              <tr>
+                <td>useCallback</td>
+                <td>함수</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="chapter16">
+        <h2><span class="chapter-label">Chapter 16</span><br />useContext</h2>
+
+        <h3>1. useContext란?</h3>
+        <p><code class="inline">useContext</code>는 여러 컴포넌트에서 공통 값을 쉽게 사용하게 해준다.</p>
+        <p>예를 들어 로그인 사용자 정보, 테마 정보, 언어 설정 등을 여러 컴포넌트에서 사용할 때 쓴다.</p>
+
+        <h3>2. 예제</h3>
+
+        <pre><code>const UserContext = React.createContext();
+
+function App() {
+    const user = {
+        name: &quot;홍길동&quot;,
+        role: &quot;admin&quot;
+    };
+
+    return (
+        &lt;UserContext.Provider value={user}&gt;
+            &lt;Profile /&gt;
+        &lt;/UserContext.Provider&gt;
+    );
+}
+
+function Profile() {
+    const user = React.useContext(UserContext);
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;{user.name}&lt;/h1&gt;
+            &lt;p&gt;{user.role}&lt;/p&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>3. useContext 정리</h3>
+
+        <div class="summary">
+          <ul>
+            <li>여러 컴포넌트가 같은 값을 사용할 때 쓴다.</li>
+            <li>props를 여러 단계로 전달하지 않아도 된다.</li>
+            <li>로그인 정보, 테마, 언어 설정 등에 자주 사용한다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="chapter17">
+        <h2><span class="chapter-label">Chapter 17</span><br />Custom Hook</h2>
+
+        <h3>1. Custom Hook이란?</h3>
+        <p>Custom Hook은 개발자가 직접 만드는 Hook이다.</p>
+        <p>이름은 반드시 <code class="inline">use</code>로 시작해야 한다.</p>
+
+        <div class="diagram">useCounter
+useInput
+useUser
+useFetch</div>
+
+        <h3>2. useCounter 예제</h3>
+
+        <pre><code>function useCounter() {
+    const [count, setCount] = React.useState(0);
+
+    function increase() {
+        setCount((prev) =&gt; prev + 1);
+    }
+
+    function decrease() {
+        setCount((prev) =&gt; prev - 1);
+    }
+
+    return {
+        count,
+        increase,
+        decrease
+    };
+}
+
+function Counter() {
+    const { count, increase, decrease } = useCounter();
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;{count}&lt;/h1&gt;
+            &lt;button onClick={increase}&gt;증가&lt;/button&gt;
+            &lt;button onClick={decrease}&gt;감소&lt;/button&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>3. Custom Hook을 사용하는 이유</h3>
+
+        <div class="summary">
+          <ul>
+            <li>반복되는 로직을 분리할 수 있다.</li>
+            <li>컴포넌트 코드가 짧아진다.</li>
+            <li>상태 관리 로직을 재사용할 수 있다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice1" class="page-break">
+        <h2>최종 실습 1 — HTML에서 React 라이브러리로 사용</h2>
+
+        <h3>1. index.html</h3>
+
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;React Hook 실습&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;기존 HTML 영역&lt;/h1&gt;
+
+    &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+
+    &lt;script src=&quot;https://unpkg.com/react@18/umd/react.development.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://unpkg.com/react-dom@18/umd/react-dom.development.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://unpkg.com/@babel/standalone/babel.min.js&quot;&gt;&lt;/script&gt;
+
+    &lt;script type=&quot;text/babel&quot;&gt;
+        function App() {
+            const [name, setName] = React.useState(&quot;&quot;);
+            const [count, setCount] = React.useState(0);
+
+            React.useEffect(() =&gt; {
+                console.log(&quot;count 변경:&quot;, count);
+            }, [count]);
+
+            return (
+                &lt;div&gt;
+                    &lt;h2&gt;React 영역&lt;/h2&gt;
+
+                    &lt;input
+                        value={name}
+                        onChange={(e) =&gt; setName(e.target.value)}
+                        placeholder=&quot;이름 입력&quot;
+                    /&gt;
+
+                    &lt;p&gt;입력한 이름: {name}&lt;/p&gt;
+
+                    &lt;hr /&gt;
+
+                    &lt;p&gt;count: {count}&lt;/p&gt;
+
+                    &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+                        증가
+                    &lt;/button&gt;
+
+                    &lt;button onClick={() =&gt; setCount(count - 1)}&gt;
+                        감소
+                    &lt;/button&gt;
+                &lt;/div&gt;
+            );
+        }
+
+        const root = ReactDOM.createRoot(
+            document.getElementById(&quot;root&quot;)
+        );
+
+        root.render(&lt;App /&gt;);
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <h3>2. 실습 내용</h3>
+
+        <div class="summary">
+          <ul>
+            <li><code class="inline">useState</code>로 name 관리</li>
+            <li><code class="inline">useState</code>로 count 관리</li>
+            <li>input 값 변경 처리</li>
+            <li>button 클릭 처리</li>
+            <li><code class="inline">useEffect</code>로 count 변경 감지</li>
+            <li><code class="inline">Babel</code>로 JSX 변환</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="practice2" class="page-break">
+        <h2>최종 실습 2 — Expo에서 Hook 사용</h2>
+
+        <h3>1. app/index.tsx</h3>
+
+        <pre><code>import { useState, useEffect } from &quot;react&quot;;
+import {
+    Text,
+    View,
+    TextInput,
+    Button,
+    StyleSheet
+} from &quot;react-native&quot;;
+
+export default function Index() {
+    const [name, setName] = useState(&quot;&quot;);
+    const [count, setCount] = useState(0);
+
+    useEffect(() =&gt; {
+        console.log(&quot;count 변경:&quot;, count);
+    }, [count]);
+
+    return (
+        &lt;View style={styles.container}&gt;
+            &lt;Text style={styles.title}&gt;React Expo Hook 실습&lt;/Text&gt;
+
+            &lt;TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+                placeholder=&quot;이름 입력&quot;
+            /&gt;
+
+            &lt;Text&gt;입력한 이름: {name}&lt;/Text&gt;
+
+            &lt;Text style={styles.count}&gt;count: {count}&lt;/Text&gt;
+
+            &lt;Button
+                title=&quot;증가&quot;
+                onPress={() =&gt; setCount(count + 1)}
+            /&gt;
+
+            &lt;Button
+                title=&quot;감소&quot;
+                onPress={() =&gt; setCount(count - 1)}
+            /&gt;
+        &lt;/View&gt;
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 40,
+        alignItems: &quot;center&quot;,
+        justifyContent: &quot;center&quot;,
+        gap: 12
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: &quot;bold&quot;
+    },
+    input: {
+        width: &quot;100%&quot;,
+        borderWidth: 1,
+        borderColor: &quot;#ccc&quot;,
+        padding: 10,
+        borderRadius: 8
+    },
+    count: {
+        fontSize: 20,
+        marginTop: 20
+    }
+});</code></pre>
+
+        <h3>2. 웹 React와 Expo 차이</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>웹 React</th>
+                <th>Expo / React Native</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>화면 태그</td>
+                <td>div, h1, p, input, button</td>
+                <td>View, Text, TextInput, Button</td>
+              </tr>
+              <tr>
+                <td>스타일</td>
+                <td>CSS</td>
+                <td>StyleSheet 객체</td>
+              </tr>
+              <tr>
+                <td>클릭 이벤트</td>
+                <td>onClick</td>
+                <td>onPress</td>
+              </tr>
+              <tr>
+                <td>입력 이벤트</td>
+                <td>onChange</td>
+                <td>onChangeText</td>
+              </tr>
+              <tr>
+                <td>실행 대상</td>
+                <td>브라우저</td>
+                <td>Android, iOS, Web</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="problems" class="page-break">
+        <h2>React 수업 문제</h2>
+
+        <div class="problem">
+          <h3>문제 1</h3>
+          <p>React가 무엇인지 한 문장으로 설명하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 2</h3>
+          <p>JSX가 무엇인지 설명하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 3</h3>
+          <p>JSX에서 JavaScript 값을 출력할 때 사용하는 기호는 무엇인가?</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 4</h3>
+          <p>JSX에서 HTML의 <code class="inline">class</code> 대신 사용하는 속성은 무엇인가?</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 5</h3>
+          <p>웹 CDN 방식에서 Babel이 필요한 이유를 설명하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 6</h3>
+          <p>Virtual DOM이 무엇인지 설명하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 7</h3>
+          <p>SPA와 MPA의 차이를 설명하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 8</h3>
+          <p>React에서 상태를 만들 때 사용하는 Hook을 작성하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 9</h3>
+          <p><code class="inline">count</code>라는 상태를 만들고 초기값을 <code class="inline">0</code>으로 설정하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 10</h3>
+          <p>버튼을 클릭하면 <code class="inline">count</code>가 1 증가하는 코드를 작성하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 11</h3>
+          <p><code class="inline">useEffect</code>를 사용하여 컴포넌트가 처음 렌더링될 때 한 번만 로그를 출력하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 12</h3>
+          <p>Expo에서 화면에 글자를 출력할 때 사용하는 컴포넌트는 무엇인가?</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 13</h3>
+          <p>Expo에서 버튼 클릭 이벤트로 사용하는 속성은 무엇인가?</p>
+        </div>
+      </section>
+
+      <section id="answers" class="page-break">
+        <h2>React 수업 문제 정답</h2>
+
+        <div class="answer">
+          <h3>문제 1 정답</h3>
+          <pre><code>React는 사용자 인터페이스를 컴포넌트 단위로 만들기 위한 JavaScript 라이브러리이다.</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 2 정답</h3>
+          <pre><code>JSX는 JavaScript 코드 안에서 HTML과 비슷한 마크업을 작성할 수 있게 해주는 문법 확장이다.</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 3 정답</h3>
+          <pre><code>{ }</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 4 정답</h3>
+          <pre><code>className</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 5 정답</h3>
+          <pre><code>브라우저는 JSX를 그대로 실행할 수 없기 때문에 Babel이 JSX를 브라우저가 실행할 수 있는 JavaScript 코드로 변환해준다.</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 6 정답</h3>
+          <pre><code>Virtual DOM은 실제 DOM을 바로 수정하기 전에 React가 메모리 안에서 관리하는 가상의 UI 구조이다.</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 7 정답</h3>
+          <pre><code>MPA는 페이지 이동 시 서버에서 새로운 HTML을 받아오는 방식이다. SPA는 처음에 하나의 HTML을 받고 JavaScript로 화면을 바꾸는 방식이다.</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 8 정답</h3>
+          <pre><code>useState</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 9 정답</h3>
+          <pre><code>const [count, setCount] = useState(0);</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 10 정답</h3>
+          <pre><code>&lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+    증가
+&lt;/button&gt;</code></pre>
+
+          <p>Expo에서는 다음처럼 작성한다.</p>
+
+          <pre><code>&lt;Button
+    title=&quot;증가&quot;
+    onPress={() =&gt; setCount(count + 1)}
+/&gt;</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 11 정답</h3>
+          <pre><code>useEffect(() =&gt; {
+    console.log(&quot;처음 한 번 실행&quot;);
+}, []);</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 12 정답</h3>
+          <pre><code>Text</code></pre>
+        </div>
+
+        <div class="answer">
+          <h3>문제 13 정답</h3>
+          <pre><code>onPress</code></pre>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2>수업 마무리 정리</h2>
+
+        <div class="summary">
+          <ul>
+            <li>React는 UI를 만들기 위한 JavaScript 라이브러리이다.</li>
+            <li>React는 Facebook, 현재 Meta에서 시작되었다.</li>
+            <li>React는 화면을 컴포넌트 단위로 나누어 만든다.</li>
+            <li>JSX는 JavaScript 안에서 HTML처럼 화면 구조를 작성하는 문법이다.</li>
+            <li>브라우저는 JSX를 그대로 실행할 수 없으므로 Babel 같은 변환 도구가 필요하다.</li>
+            <li>Virtual DOM은 실제 DOM을 효율적으로 업데이트하기 위한 가상의 UI 표현이다.</li>
+            <li>SPA는 하나의 HTML을 기반으로 JavaScript가 화면을 바꾸는 방식이다.</li>
+            <li>MPA는 여러 HTML 페이지를 서버에서 받아오는 전통적인 방식이다.</li>
+            <li>React는 기존 HTML에 라이브러리처럼 추가할 수도 있다.</li>
+            <li>Expo를 사용하면 React Native 기반 앱 프로젝트를 쉽게 만들 수 있다.</li>
+            <li>Hook은 함수 컴포넌트에서 상태, 효과, 참조, 공유 값 등을 사용할 수 있게 해준다.</li>
+            <li><code class="inline">useState</code>는 상태 관리에 사용한다.</li>
+            <li><code class="inline">useEffect</code>는 렌더링 이후 실행할 작업에 사용한다.</li>
+            <li><code class="inline">useRef</code>는 렌더링과 상관없는 값을 저장할 때 사용한다.</li>
+            <li><code class="inline">useMemo</code>는 계산 결과를 기억할 때 사용한다.</li>
+            <li><code class="inline">useCallback</code>은 함수를 기억할 때 사용한다.</li>
+            <li><code class="inline">useContext</code>는 여러 컴포넌트가 같은 값을 공유할 때 사용한다.</li>
+            <li>Custom Hook은 반복되는 Hook 로직을 재사용하기 위해 직접 만드는 Hook이다.</li>
+          </ul>
+        </div>
+
+        <h3>추천 수업 순서</h3>
+
+        <div class="diagram">1차시: React 개발 배경, 컴포넌트, Virtual DOM
+2차시: JSX와 Babel
+3차시: SPA vs MPA, React 라이브러리 방식 실습
+4차시: useState
+5차시: useEffect
+6차시: useRef, useMemo, useCallback
+7차시: useContext, Custom Hook
+8차시: Expo 프로젝트 생성
+9차시: Expo에서 Hook 사용 실습</div>
+      </section>
+
+      <section id="references">
+        <h2>참고 자료</h2>
+        <div class="info">
+          <ul>
+            <li><a href="https://react.dev/" target="_blank">React 공식 문서</a></li>
+            <li><a href="https://react.dev/learn/writing-markup-with-jsx" target="_blank">React 공식 문서 — Writing Markup with JSX</a></li>
+            <li><a href="https://react.dev/learn/add-react-to-an-existing-project" target="_blank">React 공식 문서 — Add React to an Existing Project</a></li>
+            <li><a href="https://babeljs.io/docs/" target="_blank">Babel 공식 문서</a></li>
+            <li><a href="https://developer.mozilla.org/ko/docs/Glossary/SPA" target="_blank">MDN — SPA 설명</a></li>
+            <li><a href="https://docs.expo.dev/" target="_blank">Expo 공식 문서</a></li>
+            <li><a href="https://docs.expo.dev/more/create-expo/" target="_blank">Expo 공식 문서 — create-expo-app</a></li>
+            <li><a href="https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-react-foundation" target="_blank">Linux Foundation — React Foundation 발표</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <footer>
+        <p>React 기초 수업 교안 · JSX와 Babel 포함 HTML 버전</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
