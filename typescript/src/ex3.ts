@@ -27,7 +27,7 @@ interface MemberType{
     id:string|number
 }
 interface ChildType extends MemberType{
-    name:string
+    name:string,
 }
 interface ChildType{
     age:number
