@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>ex4_index method=post 처리</title>
+</head>
+<body>
+  <h1>method=post 처리</h1>
+  <hr>
+  <div id="usersWrap"></div>
+  <p>
+    <a href="./users">users.json 주세요!</a>|
+    <button id="usersBtn">users</button>
+  </p>
+  <p><a href="./user?id=1">id 1인 유저 조회</a></p>
+  <script>
+    usersBtn.onclick=async function () {
+        const users=await fetch("/users").then(res=>res.json());
+        usersWrap.innerText=JSON.stringify(users)
+    }
+  </script>
+  <hr>
+  <h2>회원가입 (users.insert)</h2>
+  <p>method=get:http://localhost:4001/users/insert.do?id=4&name=%EB%93%B1%EB%A1%9D%EC%9C%A0%EC%A0%80&age=20</p>
+  <p>method=post:http://localhost:4001/users/insert.do
+    (post 파라미터는 요청해더(요청상세정보)의 본문(body)에 포함됩니다.)
+  </p>
+  <form action="/users/insert.do" method="post">
+    <p><label for="usersId">id :</label>
+      <input id="usersId" name="id" value="4"></p>
+    <p><label for="usersName">name :</label>
+      <input id="usersName" name="name" value="등록유저"></p>
+    <p><label for="usersAge">age :</label>
+      <input id="usersAge" name="age" value="20"></p>
+    <p><button type="submit">회원가입</button></p>
+  </form>
+
+</body>
+</html>

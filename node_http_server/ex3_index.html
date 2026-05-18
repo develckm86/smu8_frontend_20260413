@@ -16,8 +16,17 @@
   <h2>요청실습</h2>
   <ul>
     <li><a href="./users"> 유저정보 조회</a></li>
-    <li><a href=""></a></li>
-    <li><a href=""></a></li>
+    <li><a href="./sum.do?a=111&b=222">
+      sum.do(111,222),./sum.do?a=111&b=222 (파라미터처리)
+    </a></li>
+    <li>
+      <form action="./sum.do" method="get">
+        <label>a:<input type="number" name="a"></label>
+        <label>b:<input type="number" name="b"></label>
+        <button>a+b=</button>
+      </form>
+
+    </li>
     <li><a href=""></a></li>
     <li><a href=""></a></li>
   </ul>
