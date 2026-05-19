@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 //유니언
 let id;
 id = 13;
@@ -17,4 +15,5 @@ const c = {
     id: 3456,
     age: 39
 };
+export {};
 //# sourceMappingURL=ex3.js.map

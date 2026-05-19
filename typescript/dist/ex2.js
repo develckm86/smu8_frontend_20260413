@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 function sum(a, b) {
     return a + b;
 }
@@ -36,4 +34,5 @@ let arr = [1, 2, 3];
 let arr2 = [1, 2, 3, "dd"];
 //java 제네릭
 let arr3 = [1, 2, 3, "dd"];
+export {};
 //# sourceMappingURL=ex2.js.map
