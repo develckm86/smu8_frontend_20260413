@@ -13,4 +13,19 @@ router.get("/:id",(req, res)=>{
     res.send(`<h1>user/123 페이지 id=${id},page=${page}</h1>`)
 });
 
+router.post("/",(req,res)=>{
+    console.log(req.body,"회원가입성공");
+    res.redirect("/")
+});
+router.put("/",(req,res)=>{
+    console.log(req.body,"회원수정성공");
+    res.redirect("/")
+});
+//요청해더 본문에 json으로 데이터 전송
+router.use(express.json());
+router.delete("/",(req,res)=>{
+    console.log(req.body,"회원삭제성공");
+    res.redirect("/")
+})
+
 export default router;

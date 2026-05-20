@@ -16,6 +16,61 @@
     <li><a href="/user/123">/user/123 : 패스변수</a></li>
     <li><a href="/user/123?page=1">/user/123?page=1 : 패스변수+쿼스트링</a></li>
   </ul>
+  <hr>
+  <h2>동기식 통신의 post</h2>
+  <form action="./user" method="post" name="userForm">
+    id:<input name="id" value="7777" placeholder="id"><br>
+    name:<input name="name" value="smu8" placeholder="이름"><br>
+    <button>제출</button>
+  </form>
+  <hr>
+  <button type="button" id="putBtn">유정수정(put)</button>
+  <script>
+    const userForm=document.forms["userForm"];
+    console.log(userForm);
+    const data=new FormData(userForm);
+    console.log(data)
+    console.log(new URLSearchParams(data))
+    console.log(new URLSearchParams(data).toString())
+
+
+    const userPut=async ()=>{
+      const res=await fetch("/user",{
+        method:"PUT",
+        headers:{
+          "Content-Type":"application/x-www-form-urlencoded"
+        },
+        //body:"id=333&name=경민코딩"
+        body:new URLSearchParams(new FormData(userForm))
+      })
+    }
+    putBtn.addEventListener("click",userPut);
+
+  </script>
+  <hr>
+  <button id="deleteBtn">user 삭제 delete</button>
+
+  <script>
+    console.log(Object.fromEntries(new FormData(userForm)))
+    const userDelete=async ()=>{
+      const paramObj={id:999};
+      const res=await fetch("/user",{
+        method :"DELETE",
+        headers : {
+          "Content-Type":"application/json"
+        },
+        //body : JSON.stringify(paramObj)
+        body : JSON.stringify(
+                Object.fromEntries(new FormData(userForm))
+                )
+      });
+    };
+    deleteBtn.addEventListener("click",userDelete);
+  </script>
+
+
+  <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
 
 </body>
 </html>

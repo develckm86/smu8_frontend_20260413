@@ -11,14 +11,23 @@ import express from "express";
 import userRouter from "./ex4_userRouter.js";
 const app=express();
 
+app.use(express.urlencoded({extended:true}));
 
 app.get("/",(req, res)=>{
    res.sendFile("/expressjs/public/ex4_index.html",{root:process.cwd()})
 });
 
 app.use("/user",userRouter);
+
 app.get("/:id/user",(req, res)=>{
     let id=req.params.id;
+    //console.log(!/^\d+$/.test(id)) regex 정규표현식
+    if(isNaN(id)){
+        res.status(400).send("<h1>잘못된 요청 400</h1>");
+        // const err=new Error("잘못된 요청 400");
+        // err.status=400;
+        // throw err;
+    }
     res.send(`<h1>/123/user 페이지 id=${id}</h1>`)
 })
 
