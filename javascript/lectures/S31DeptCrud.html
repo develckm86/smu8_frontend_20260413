@@ -1,0 +1,1164 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>Express + OracleDB DEPT CRUD 수업 자료</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --paper: #ffffff;
+            --text: #202124;
+            --muted: #5f6368;
+            --line: #dfe3ea;
+            --primary: #234f9c;
+            --primary-soft: #eaf1ff;
+            --code-bg: #101828;
+            --code-text: #f8fafc;
+            --accent: #0f766e;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        .page {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #234f9c, #0f766e);
+            color: white;
+            padding: 44px 40px;
+            border-radius: 20px;
+            margin-bottom: 28px;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
+        }
+
+        header h1 {
+            margin: 0 0 12px;
+            font-size: 36px;
+            line-height: 1.25;
+        }
+
+        header p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 17px;
+        }
+
+        nav {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 22px 28px;
+            margin-bottom: 28px;
+        }
+
+        nav h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        nav a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        section {
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 26px;
+            border-bottom: 2px solid var(--primary-soft);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            margin-top: 28px;
+            color: #111827;
+            font-size: 21px;
+        }
+
+        h4 {
+            margin-top: 24px;
+            font-size: 18px;
+        }
+
+        p {
+            margin: 10px 0;
+        }
+
+        ul, ol {
+            padding-left: 24px;
+        }
+
+        li {
+            margin: 6px 0;
+        }
+
+        .note {
+            background: var(--primary-soft);
+            border-left: 5px solid var(--primary);
+            padding: 16px 18px;
+            border-radius: 10px;
+            margin: 16px 0;
+        }
+
+        .success {
+            background: #ecfdf5;
+            border-left: 5px solid var(--accent);
+            padding: 16px 18px;
+            border-radius: 10px;
+            margin: 16px 0;
+        }
+
+        .warn {
+            background: #fff7ed;
+            border-left: 5px solid #f97316;
+            padding: 16px 18px;
+            border-radius: 10px;
+            margin: 16px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 15px;
+        }
+
+        th, td {
+            border: 1px solid var(--line);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f5f9;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            border-radius: 14px;
+            padding: 18px 20px;
+            overflow-x: auto;
+            line-height: 1.55;
+            font-size: 14px;
+        }
+
+        pre code {
+            white-space: pre;
+        }
+
+        .route-table td:first-child {
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #e0f2fe;
+            color: #075985;
+            margin-right: 6px;
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--muted);
+            margin-top: 36px;
+            font-size: 14px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .page {
+                max-width: none;
+                padding: 0;
+            }
+
+            header, nav, section {
+                box-shadow: none;
+                break-inside: avoid;
+            }
+
+            pre {
+                white-space: pre-wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header>
+            <h1>Express + OracleDB DEPT CRUD 수업 자료</h1>
+            <p>Express 라우터, OracleDB 커넥션 풀, Pug 템플릿을 사용해 DEPT 테이블의 목록, 상세, 등록, 수정, 삭제를 구현합니다.</p>
+        </header>
+
+        <nav>
+            <h2>목차</h2>
+            <ol>
+                <li><a href="#goal">수업 목표</a></li>
+                <li><a href="#table">DEPT 테이블</a></li>
+                <li><a href="#structure">프로젝트 구조</a></li>
+                <li><a href="#app">app.js</a></li>
+                <li><a href="#router">ex3_dept_router.js</a></li>
+                <li><a href="#views">Pug 화면 파일</a></li>
+                <li><a href="#flow">수업 진행 순서</a></li>
+                <li><a href="#errors">수업 중 보여주기 좋은 오류</a></li>
+                <li><a href="#homework">마지막 과제</a></li>
+            </ol>
+        </nav>
+
+        <section id="goal">
+            <h2>1. 수업 목표</h2>
+            <p>이번 수업에서는 Express 라우터에서 OracleDB를 연결해서 <strong>DEPT 테이블 CRUD</strong>를 구현합니다.</p>
+
+            <table class="route-table">
+                <thead>
+                    <tr>
+                        <th>기능</th>
+                        <th>Method</th>
+                        <th>URL</th>
+                        <th>설명</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>목록 조회</td>
+                        <td>GET</td>
+                        <td>/dept</td>
+                        <td>전체 부서 목록 조회</td>
+                    </tr>
+                    <tr>
+                        <td>상세 조회</td>
+                        <td>GET</td>
+                        <td>/dept/:deptno</td>
+                        <td>특정 부서 1건 조회</td>
+                    </tr>
+                    <tr>
+                        <td>등록 화면</td>
+                        <td>GET</td>
+                        <td>/dept/register</td>
+                        <td>부서 등록 form 출력</td>
+                    </tr>
+                    <tr>
+                        <td>등록 처리</td>
+                        <td>POST</td>
+                        <td>/dept/register</td>
+                        <td>INSERT 실행</td>
+                    </tr>
+                    <tr>
+                        <td>수정 화면</td>
+                        <td>GET</td>
+                        <td>/dept/:deptno/modify</td>
+                        <td>기존 데이터 조회 후 수정 form 출력</td>
+                    </tr>
+                    <tr>
+                        <td>수정 처리</td>
+                        <td>POST</td>
+                        <td>/dept/modify</td>
+                        <td>UPDATE 실행</td>
+                    </tr>
+                    <tr>
+                        <td>삭제 처리</td>
+                        <td>POST</td>
+                        <td>/dept/delete</td>
+                        <td>DELETE 실행</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <strong>핵심 흐름</strong><br>
+                서버 시작 시 <code>oracledb.createPool()</code>로 커넥션 풀을 만들고, 요청마다 <code>oracledb.getConnection()</code>으로 커넥션을 빌립니다.
+                사용 후에는 반드시 <code>conn.close()</code>로 풀에 반환합니다.
+            </div>
+        </section>
+
+        <section id="table">
+            <h2>2. DEPT 테이블</h2>
+            <p>수업용 테이블은 다음과 같이 준비합니다.</p>
+
+            <pre><code>CREATE TABLE dept (
+    deptno NUMBER PRIMARY KEY,
+    dname  VARCHAR2(30),
+    loc    VARCHAR2(30)
+);</code></pre>
+
+            <p>테스트 데이터가 없다면 다음 데이터를 넣습니다.</p>
+
+            <pre><code>INSERT INTO dept VALUES (10, &#x27;ACCOUNTING&#x27;, &#x27;NEW YORK&#x27;);
+INSERT INTO dept VALUES (20, &#x27;RESEARCH&#x27;, &#x27;DALLAS&#x27;);
+INSERT INTO dept VALUES (30, &#x27;SALES&#x27;, &#x27;CHICAGO&#x27;);
+INSERT INTO dept VALUES (40, &#x27;OPERATIONS&#x27;, &#x27;BOSTON&#x27;);
+
+COMMIT;</code></pre>
+        </section>
+
+        <section id="structure">
+            <h2>3. 프로젝트 구조</h2>
+
+            <pre><code>expressjs_oracledb
+ ├ app.js
+ ├ ex3_dept_router.js
+ └ views
+    ├ deptList.pug
+    ├ deptDetail.pug
+    ├ deptRegister.pug
+    └ deptModify.pug</code></pre>
+        </section>
+
+        <section id="app">
+            <h2>4. app.js</h2>
+            <p>서버 시작 파일입니다. 여기서 Express 설정, Pug 설정, OracleDB Pool 생성, 라우터 등록을 처리합니다.</p>
+
+            <pre><code>import express from &quot;express&quot;;
+import path from &quot;path&quot;;
+import { fileURLToPath } from &quot;url&quot;;
+import oracledb from &quot;oracledb&quot;;
+import deptRouter from &quot;./ex3_dept_router.js&quot;;
+
+const app = express();
+const PORT = 3000;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Oracle 조회 결과를 객체 형태로 받기
+oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
+
+// Pug 설정
+app.set(&quot;views&quot;, path.join(__dirname, &quot;views&quot;));
+app.set(&quot;view engine&quot;, &quot;pug&quot;);
+
+// form 데이터 처리
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// DB Pool 생성
+async function initDB() {
+    await oracledb.createPool({
+        user: &quot;scott&quot;,
+        password: &quot;tiger&quot;,
+        connectString: &quot;localhost:1521/XEPDB1&quot;,
+
+        poolMin: 1,
+        poolMax: 5,
+        poolIncrement: 1,
+
+        queueTimeout: 60000,
+        poolTimeout: 60
+    });
+
+    console.log(&quot;OracleDB Pool 생성 완료&quot;);
+}
+
+// 기본 주소
+app.get(&quot;/&quot;, (req, res) =&gt; {
+    res.redirect(&quot;/dept&quot;);
+});
+
+// DEPT 라우터 등록
+app.use(&quot;/dept&quot;, deptRouter);
+
+// 서버 시작
+await initDB();
+
+app.listen(PORT, () =&gt; {
+    console.log(`Server running: http://localhost:${PORT}`);
+});
+
+// Ctrl + C 종료 시 Pool 정리
+process.on(&quot;SIGINT&quot;, async () =&gt; {
+    console.log(&quot;\n서버 종료 중...&quot;);
+
+    try {
+        await oracledb.getPool().close(10);
+        process.exit(0);
+    } catch (err) {
+        console.error(err);
+        process.exit(1);
+    }
+});</code></pre>
+
+            <div class="success">
+                <strong>설명 포인트</strong>
+                <ul>
+                    <li><code>oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT</code>는 조회 결과를 객체 배열로 받기 위한 설정입니다.</li>
+                    <li><code>createPool()</code>은 서버 시작 시 한 번만 실행합니다.</li>
+                    <li><code>app.use("/dept", deptRouter)</code>로 DEPT 라우터를 등록합니다.</li>
+                    <li><code>SIGINT</code>는 Ctrl + C로 서버 종료 시 Pool을 정리하기 위한 처리입니다.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="router">
+            <h2>5. ex3_dept_router.js</h2>
+            <p>DEPT CRUD 기능을 처리하는 라우터 파일입니다.</p>
+
+            <div class="warn">
+                <strong>주의</strong><br>
+                <code>/register</code> 라우터는 <code>/:deptno</code> 라우터보다 먼저 작성해야 합니다.
+                그렇지 않으면 <code>/dept/register</code> 요청을 <code>deptno = "register"</code>로 인식할 수 있습니다.
+            </div>
+
+            <pre><code>// ex3_dept_router.js
+import express from &quot;express&quot;;
+import oracledb from &quot;oracledb&quot;;
+
+const router = express.Router();
+
+
+// 1. 목록 조회
+router.get(&quot;/&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    try {
+        conn = await oracledb.getConnection();
+
+        const result = await conn.execute(`
+            SELECT
+                deptno AS &quot;deptno&quot;,
+                dname  AS &quot;dname&quot;,
+                loc    AS &quot;loc&quot;
+            FROM dept
+            ORDER BY deptno
+        `);
+
+        res.render(&quot;deptList&quot;, {
+            depts: result.rows
+        });
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});
+
+
+// 2. 등록 화면
+router.get(&quot;/register&quot;, (req, res) =&gt; {
+    res.render(&quot;deptRegister&quot;);
+});
+
+
+// 3. 등록 처리
+router.post(&quot;/register&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    const { deptno, dname, loc } = req.body;
+
+    try {
+        conn = await oracledb.getConnection();
+
+        await conn.execute(
+            `
+            INSERT INTO dept (
+                deptno,
+                dname,
+                loc
+            )
+            VALUES (
+                :deptno,
+                :dname,
+                :loc
+            )
+            `,
+            {
+                deptno: Number(deptno),
+                dname,
+                loc
+            },
+            {
+                autoCommit: true
+            }
+        );
+
+        res.redirect(&quot;/dept&quot;);
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});
+
+
+// 4. 수정 화면
+router.get(&quot;/:deptno/modify&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    const deptno = Number(req.params.deptno);
+
+    try {
+        conn = await oracledb.getConnection();
+
+        const result = await conn.execute(
+            `
+            SELECT
+                deptno AS &quot;deptno&quot;,
+                dname  AS &quot;dname&quot;,
+                loc    AS &quot;loc&quot;
+            FROM dept
+            WHERE deptno = :deptno
+            `,
+            {
+                deptno
+            }
+        );
+
+        if (result.rows.length === 0) {
+            res.redirect(&quot;/dept&quot;);
+            return;
+        }
+
+        res.render(&quot;deptModify&quot;, {
+            dept: result.rows[0]
+        });
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});
+
+
+// 5. 수정 처리
+router.post(&quot;/modify&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    const { deptno, dname, loc } = req.body;
+
+    try {
+        conn = await oracledb.getConnection();
+
+        const result = await conn.execute(
+            `
+            UPDATE dept
+            SET
+                dname = :dname,
+                loc   = :loc
+            WHERE deptno = :deptno
+            `,
+            {
+                deptno: Number(deptno),
+                dname,
+                loc
+            },
+            {
+                autoCommit: true
+            }
+        );
+
+        if (result.rowsAffected === 0) {
+            res.redirect(&quot;/dept&quot;);
+            return;
+        }
+
+        res.redirect(`/dept/${deptno}`);
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});
+
+
+// 6. 삭제 처리
+router.post(&quot;/delete&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    const { deptno } = req.body;
+
+    try {
+        conn = await oracledb.getConnection();
+
+        await conn.execute(
+            `
+            DELETE FROM dept
+            WHERE deptno = :deptno
+            `,
+            {
+                deptno: Number(deptno)
+            },
+            {
+                autoCommit: true
+            }
+        );
+
+        res.redirect(&quot;/dept&quot;);
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});
+
+
+// 7. 상세 조회
+router.get(&quot;/:deptno&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    const deptno = Number(req.params.deptno);
+
+    try {
+        conn = await oracledb.getConnection();
+
+        const result = await conn.execute(
+            `
+            SELECT
+                deptno AS &quot;deptno&quot;,
+                dname  AS &quot;dname&quot;,
+                loc    AS &quot;loc&quot;
+            FROM dept
+            WHERE deptno = :deptno
+            `,
+            {
+                deptno
+            }
+        );
+
+        if (result.rows.length === 0) {
+            res.redirect(&quot;/dept&quot;);
+            return;
+        }
+
+        res.render(&quot;deptDetail&quot;, {
+            dept: result.rows[0]
+        });
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});
+
+
+// 8. 에러 미들웨어
+router.use((err, req, res, next) =&gt; {
+    console.error(err);
+
+    res.status(500).send(`
+        &lt;h1&gt;서버 오류가 발생했습니다.&lt;/h1&gt;
+        &lt;p&gt;다시 시도해주세요.&lt;/p&gt;
+        &lt;a href=&quot;/dept&quot;&gt;목록으로&lt;/a&gt;
+    `);
+});
+
+export default router;</code></pre>
+        </section>
+
+        <section id="views">
+            <h2>6. Pug 화면 파일</h2>
+
+            <h3>views/deptList.pug</h3>
+            <p>목록 화면입니다.</p>
+            <pre><code>doctype html
+html
+    head
+        title DEPT 목록
+    body
+        h1 DEPT 부서 목록
+
+        p
+            a(href=&quot;/dept/register&quot;) 부서 등록
+
+        table(border=&quot;1&quot;)
+            thead
+                tr
+                    th 부서번호
+                    th 부서명
+                    th 지역
+                    th 상세
+                    th 수정
+                    th 삭제
+            tbody
+                each dept in depts
+                    tr
+                        td= dept.deptno
+                        td= dept.dname
+                        td= dept.loc
+                        td
+                            a(href=&quot;/dept/&quot; + dept.deptno) 상세
+                        td
+                            a(href=&quot;/dept/&quot; + dept.deptno + &quot;/modify&quot;) 수정
+                        td
+                            form(action=&quot;/dept/delete&quot;, method=&quot;post&quot;)
+                                input(type=&quot;hidden&quot;, name=&quot;deptno&quot;, value=dept.deptno)
+                                button(type=&quot;submit&quot;) 삭제</code></pre>
+
+            <h3>views/deptDetail.pug</h3>
+            <p>상세 조회 화면입니다.</p>
+            <pre><code>doctype html
+html
+    head
+        title DEPT 상세
+    body
+        h1 DEPT 상세 조회
+
+        p 부서번호: #{dept.deptno}
+        p 부서명: #{dept.dname}
+        p 지역: #{dept.loc}
+
+        p
+            a(href=&quot;/dept&quot;) 목록으로
+
+        p
+            a(href=&quot;/dept/&quot; + dept.deptno + &quot;/modify&quot;) 수정하기
+
+        form(action=&quot;/dept/delete&quot;, method=&quot;post&quot;)
+            input(type=&quot;hidden&quot;, name=&quot;deptno&quot;, value=dept.deptno)
+            button(type=&quot;submit&quot;) 삭제하기</code></pre>
+
+            <h3>views/deptRegister.pug</h3>
+            <p>등록 화면입니다. 등록 URL은 <code>/dept/register</code>로 맞춥니다.</p>
+            <pre><code>doctype html
+html
+    head
+        title DEPT 등록
+    body
+        h1 DEPT 등록
+
+        form(action=&quot;/dept/register&quot;, method=&quot;post&quot;)
+            p
+                label 부서번호
+                input(type=&quot;number&quot;, name=&quot;deptno&quot;, required)
+
+            p
+                label 부서명
+                input(type=&quot;text&quot;, name=&quot;dname&quot;, required)
+
+            p
+                label 지역
+                input(type=&quot;text&quot;, name=&quot;loc&quot;, required)
+
+            p
+                button(type=&quot;submit&quot;) 등록
+
+        p
+            a(href=&quot;/dept&quot;) 목록으로</code></pre>
+
+            <h3>views/deptModify.pug</h3>
+            <p>수정 화면입니다.</p>
+            <pre><code>doctype html
+html
+    head
+        title DEPT 수정
+    body
+        h1 DEPT 수정
+
+        form(action=&quot;/dept/modify&quot;, method=&quot;post&quot;)
+            input(type=&quot;hidden&quot;, name=&quot;deptno&quot;, value=dept.deptno)
+
+            p
+                label 부서번호
+                input(type=&quot;number&quot;, value=dept.deptno, disabled)
+
+            p
+                label 부서명
+                input(type=&quot;text&quot;, name=&quot;dname&quot;, value=dept.dname, required)
+
+            p
+                label 지역
+                input(type=&quot;text&quot;, name=&quot;loc&quot;, value=dept.loc, required)
+
+            p
+                button(type=&quot;submit&quot;) 수정
+
+        p
+            a(href=&quot;/dept/&quot; + dept.deptno) 상세로
+
+        p
+            a(href=&quot;/dept&quot;) 목록으로</code></pre>
+        </section>
+
+        <section id="flow">
+            <h2>7. 수업 진행 순서</h2>
+
+            <h3>1단계: DB Pool 만들기</h3>
+            <pre><code>await oracledb.createPool({
+    user: &quot;scott&quot;,
+    password: &quot;tiger&quot;,
+    connectString: &quot;localhost:1521/XEPDB1&quot;,
+    poolMin: 1,
+    poolMax: 5,
+    poolIncrement: 1
+});</code></pre>
+
+            <p>설명 흐름:</p>
+            <ul>
+                <li><code>createPool()</code>: 서버 시작 시 한 번만 실행</li>
+                <li><code>getConnection()</code>: 요청마다 풀에서 커넥션 하나 빌림</li>
+                <li><code>conn.close()</code>: 사용한 커넥션을 풀에 반환</li>
+            </ul>
+
+            <h3>2단계: 목록 조회</h3>
+            <p><code>GET /dept</code> 요청으로 전체 부서 목록을 조회합니다.</p>
+
+            <pre><code>router.get(&quot;/&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    try {
+        conn = await oracledb.getConnection();
+
+        const result = await conn.execute(`
+            SELECT
+                deptno AS &quot;deptno&quot;,
+                dname  AS &quot;dname&quot;,
+                loc    AS &quot;loc&quot;
+            FROM dept
+            ORDER BY deptno
+        `);
+
+        res.render(&quot;deptList&quot;, {
+            depts: result.rows
+        });
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});</code></pre>
+
+            <h3>3단계: 상세 조회</h3>
+            <p><code>GET /dept/:deptno</code> 요청으로 특정 부서 1건을 조회합니다.</p>
+
+            <pre><code>router.get(&quot;/:deptno&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    const deptno = Number(req.params.deptno);
+
+    try {
+        conn = await oracledb.getConnection();
+
+        const result = await conn.execute(
+            `
+            SELECT
+                deptno AS &quot;deptno&quot;,
+                dname  AS &quot;dname&quot;,
+                loc    AS &quot;loc&quot;
+            FROM dept
+            WHERE deptno = :deptno
+            `,
+            {
+                deptno
+            }
+        );
+
+        if (result.rows.length === 0) {
+            res.redirect(&quot;/dept&quot;);
+            return;
+        }
+
+        res.render(&quot;deptDetail&quot;, {
+            dept: result.rows[0]
+        });
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});</code></pre>
+
+            <h3>4단계: 등록 화면</h3>
+            <p><code>GET /dept/register</code> 요청으로 등록 화면을 출력합니다.</p>
+
+            <pre><code>router.get(&quot;/register&quot;, (req, res) =&gt; {
+    res.render(&quot;deptRegister&quot;);
+});</code></pre>
+
+            <h3>5단계: 등록 처리</h3>
+            <p><code>POST /dept/register</code> 요청으로 INSERT를 실행합니다.</p>
+
+            <pre><code>router.post(&quot;/register&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    const { deptno, dname, loc } = req.body;
+
+    try {
+        conn = await oracledb.getConnection();
+
+        await conn.execute(
+            `
+            INSERT INTO dept (
+                deptno,
+                dname,
+                loc
+            )
+            VALUES (
+                :deptno,
+                :dname,
+                :loc
+            )
+            `,
+            {
+                deptno: Number(deptno),
+                dname,
+                loc
+            },
+            {
+                autoCommit: true
+            }
+        );
+
+        res.redirect(&quot;/dept&quot;);
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});</code></pre>
+
+            <h3>6단계: 수정 화면</h3>
+            <p><code>GET /dept/:deptno/modify</code> 요청으로 기존 데이터를 조회한 뒤 수정 화면에 출력합니다.</p>
+
+            <pre><code>router.get(&quot;/:deptno/modify&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    const deptno = Number(req.params.deptno);
+
+    try {
+        conn = await oracledb.getConnection();
+
+        const result = await conn.execute(
+            `
+            SELECT
+                deptno AS &quot;deptno&quot;,
+                dname  AS &quot;dname&quot;,
+                loc    AS &quot;loc&quot;
+            FROM dept
+            WHERE deptno = :deptno
+            `,
+            {
+                deptno
+            }
+        );
+
+        if (result.rows.length === 0) {
+            res.redirect(&quot;/dept&quot;);
+            return;
+        }
+
+        res.render(&quot;deptModify&quot;, {
+            dept: result.rows[0]
+        });
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});</code></pre>
+
+            <h3>7단계: 수정 처리</h3>
+            <p><code>POST /dept/modify</code> 요청으로 UPDATE를 실행합니다.</p>
+
+            <pre><code>router.post(&quot;/modify&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    const { deptno, dname, loc } = req.body;
+
+    try {
+        conn = await oracledb.getConnection();
+
+        const result = await conn.execute(
+            `
+            UPDATE dept
+            SET
+                dname = :dname,
+                loc   = :loc
+            WHERE deptno = :deptno
+            `,
+            {
+                deptno: Number(deptno),
+                dname,
+                loc
+            },
+            {
+                autoCommit: true
+            }
+        );
+
+        if (result.rowsAffected === 0) {
+            res.redirect(&quot;/dept&quot;);
+            return;
+        }
+
+        res.redirect(`/dept/${deptno}`);
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});</code></pre>
+
+            <h3>8단계: 삭제 처리</h3>
+            <p><code>POST /dept/delete</code> 요청으로 DELETE를 실행합니다.</p>
+
+            <pre><code>router.post(&quot;/delete&quot;, async (req, res, next) =&gt; {
+    let conn;
+
+    const { deptno } = req.body;
+
+    try {
+        conn = await oracledb.getConnection();
+
+        await conn.execute(
+            `
+            DELETE FROM dept
+            WHERE deptno = :deptno
+            `,
+            {
+                deptno: Number(deptno)
+            },
+            {
+                autoCommit: true
+            }
+        );
+
+        res.redirect(&quot;/dept&quot;);
+
+    } catch (e) {
+        next(e);
+
+    } finally {
+        if (conn) {
+            await conn.close();
+        }
+    }
+});</code></pre>
+        </section>
+
+        <section id="errors">
+            <h2>8. 수업 중 보여주기 좋은 오류</h2>
+
+            <h3>SQL 오타</h3>
+            <p>일부러 SQL을 틀리게 작성해서 오류 처리 흐름을 보여줍니다.</p>
+
+            <pre><code>const result = await conn.execute(&quot;seleddct * from dept&quot;);</code></pre>
+
+            <p>실행 흐름:</p>
+            <ol>
+                <li><code>execute()</code>에서 SQL 오류 발생</li>
+                <li><code>catch</code>로 이동</li>
+                <li><code>next(e)</code>로 에러 미들웨어 호출</li>
+                <li><code>finally</code>에서 커넥션 반환</li>
+            </ol>
+
+            <h3>커넥션 반환 누락</h3>
+            <p>일부러 <code>await conn.close()</code>를 빼고 여러 번 요청을 보내면 커넥션 풀이 부족해질 수 있습니다.</p>
+
+            <p>예상 흐름:</p>
+            <ol>
+                <li>요청마다 커넥션을 빌림</li>
+                <li>커넥션을 반환하지 않음</li>
+                <li><code>poolMax</code>에 도달</li>
+                <li>새 요청이 대기 상태가 됨</li>
+                <li><code>queueTimeout</code> 이후 오류 발생 가능</li>
+            </ol>
+        </section>
+
+        <section id="homework">
+            <h2>9. 마지막 과제</h2>
+
+            <ol>
+                <li>등록 시 <code>deptno</code>가 이미 존재하면 오류 메시지 출력하기</li>
+                <li>삭제 버튼을 누르면 <code>confirm</code> 창 띄우기</li>
+                <li>목록 화면에 검색 기능 추가하기
+                    <br>
+                    예: <code>/dept?keyword=SALES</code>
+                </li>
+                <li><code>loc</code>를 input이 아니라 select box로 바꾸기
+                    <br>
+                    예: SEOUL, BUSAN, DALLAS, NEW YORK
+                </li>
+                <li>수정 또는 삭제 후 <code>rowsAffected</code>가 0이면 “대상이 존재하지 않습니다” 메시지 출력하기</li>
+            </ol>
+
+            <div class="success">
+                <strong>핵심 정리</strong><br>
+                Express + OracleDB CRUD의 핵심은 SQL 실행뿐 아니라,
+                커넥션을 안전하게 빌리고 사용 후 반드시 반환하는 흐름을 만드는 것입니다.
+            </div>
+        </section>
+
+        <p class="footer">Express + OracleDB DEPT CRUD 수업 자료</p>
+    </div>
+</body>
+</html>
