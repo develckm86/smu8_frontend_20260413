@@ -12,7 +12,6 @@ router.get("/:id",(req, res)=>{
     let page=req.query.page;
     res.send(`<h1>user/123 페이지 id=${id},page=${page}</h1>`)
 });
-
 router.post("/",(req,res)=>{
     console.log(req.body,"회원가입성공");
     res.redirect("/")

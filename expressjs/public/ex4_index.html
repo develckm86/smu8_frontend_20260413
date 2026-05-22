@@ -32,8 +32,6 @@
     console.log(data)
     console.log(new URLSearchParams(data))
     console.log(new URLSearchParams(data).toString())
-
-
     const userPut=async ()=>{
       const res=await fetch("/user",{
         method:"PUT",
@@ -60,9 +58,8 @@
           "Content-Type":"application/json"
         },
         //body : JSON.stringify(paramObj)
-        body : JSON.stringify(
-                Object.fromEntries(new FormData(userForm))
-                )
+        //body : "{\"id\":999}"
+        body : JSON.stringify(Object.fromEntries(new FormData(userForm)))
       });
     };
     deleteBtn.addEventListener("click",userDelete);
