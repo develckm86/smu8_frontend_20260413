@@ -2,7 +2,8 @@
 import express from "express";
 import oracledb from "oracledb";
 import deptRouter from "./ex3_dept_router.js";
-import router from "./ex3_dept_router.js";
+import empRouter from "./ex4_emp_api_router.js"
+
 const app=express();
 oracledb.outFormat=oracledb.OUT_FORMAT_OBJECT;
 async function initDB(){
@@ -21,6 +22,11 @@ await initDB()
 
 app.set("view engine","pug");
 app.set("views","./views");
+//정적리소스 요청이오면 ./public 폴더의 리소스를 자동으로 반환
+app.use(express.static("public"))
+
+
+app.use("/emp",empRouter);
 
 app.use("/dept",deptRouter);
 
