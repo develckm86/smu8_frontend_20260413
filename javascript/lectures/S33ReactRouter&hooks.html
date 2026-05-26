@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>React Router DOM과 주요 Hook 수업 교안</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --paper: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #7c3aed;
+      --primary-dark: #5b21b6;
+      --primary-soft: #f3e8ff;
+      --border: #e5e7eb;
+      --code-bg: #111827;
+      --code-text: #e5e7eb;
+      --note-bg: #fffbeb;
+      --note-border: #f59e0b;
+      --info-bg: #eff6ff;
+      --info-border: #2563eb;
+      --success-bg: #ecfdf5;
+      --success-border: #10b981;
+      --danger-bg: #fef2f2;
+      --danger-border: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 310px minmax(0, 1fr);
+      gap: 28px;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    aside {
+      position: sticky;
+      top: 20px;
+      height: calc(100vh - 40px);
+      overflow: auto;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    aside h2 {
+      font-size: 18px;
+      margin: 0 0 14px;
+    }
+
+    aside a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 7px 0;
+      border-bottom: 1px dashed #eef2f7;
+    }
+
+    aside a:hover {
+      color: var(--primary);
+    }
+
+    main {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 42px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+      min-width: 0;
+    }
+
+    header {
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 26px;
+      margin-bottom: 36px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 38px;
+      line-height: 1.25;
+      margin: 0 0 10px;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 18px;
+      margin: 0;
+    }
+
+    h2 {
+      margin-top: 54px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 28px;
+      line-height: 1.35;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      margin-top: 34px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    h4 {
+      margin-top: 24px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 12px 0;
+    }
+
+    ul, ol {
+      padding-left: 26px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .goal-box,
+    .note,
+    .info,
+    .summary,
+    .problem,
+    .answer,
+    .practice,
+    .warning {
+      border-radius: 16px;
+      padding: 20px 22px;
+      margin: 22px 0;
+    }
+
+    .goal-box {
+      background: var(--primary-soft);
+      border: 1px solid #ddd6fe;
+    }
+
+    .note {
+      background: var(--note-bg);
+      border-left: 6px solid var(--note-border);
+    }
+
+    .info {
+      background: var(--info-bg);
+      border-left: 6px solid var(--info-border);
+    }
+
+    .summary {
+      background: var(--success-bg);
+      border-left: 6px solid var(--success-border);
+    }
+
+    .warning {
+      background: var(--danger-bg);
+      border-left: 6px solid var(--danger-border);
+    }
+
+    .practice {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .problem {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+    }
+
+    .answer {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+    }
+
+    .diagram {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 18px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      white-space: pre-wrap;
+      color: #334155;
+      margin: 16px 0;
+    }
+
+    code.inline {
+      background: #f3e8ff;
+      color: #5b21b6;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 18px;
+      border-radius: 14px;
+      overflow-x: auto;
+      margin: 16px 0 22px;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    pre code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 18px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 800;
+    }
+
+    .chapter-label {
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #ede9fe;
+      color: #5b21b6;
+      font-size: 12px;
+      font-weight: 800;
+      margin-right: 6px;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 56px;
+      padding-top: 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    footer a {
+      color: var(--primary-dark);
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+
+      aside {
+        position: static;
+        height: auto;
+      }
+
+      main {
+        padding: 26px 20px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      .layout {
+        display: block;
+        max-width: none;
+        padding: 0;
+      }
+
+      aside {
+        display: none;
+      }
+
+      main {
+        border: 0;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 18mm;
+      }
+
+      pre {
+        white-space: pre-wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <h2>목차</h2>
+      <a href="#goal">수업 목표</a>
+      <a href="#flow">수업 흐름</a>
+      <a href="#router-why">1. Router를 왜 쓰는가</a>
+      <a href="#router-install">2. 설치와 기본 설정</a>
+      <a href="#router-basic">3. Routes / Route / Link</a>
+      <a href="#router-params">4. URL 파라미터</a>
+      <a href="#router-navigate">5. useNavigate</a>
+      <a href="#router-search">6. useSearchParams</a>
+      <a href="#router-nested">7. 중첩 라우팅과 Outlet</a>
+      <a href="#hooks-overview">8. Hook 전체 그림</a>
+      <a href="#useeffect">9. useEffect</a>
+      <a href="#useref">10. useRef</a>
+      <a href="#usememo">11. useMemo</a>
+      <a href="#usecallback">12. useCallback</a>
+      <a href="#usecontext">13. useContext</a>
+      <a href="#usereducer">14. useReducer</a>
+      <a href="#custom-hook">15. Custom Hook</a>
+      <a href="#practice">실습</a>
+      <a href="#problems">문제</a>
+      <a href="#answers">정답</a>
+      <a href="#summary">마무리</a>
+      <a href="#references">참고 자료</a>
+    </aside>
+
+    <main>
+      <header>
+        <span class="eyebrow">React Next Lesson</span>
+        <h1>React Router DOM과 주요 Hook 수업 교안</h1>
+        <p class="subtitle">props와 state 다음 수업용 자료. React Router로 SPA 화면 전환을 만들고, useEffect, useRef, useMemo, useCallback, useContext, useReducer, Custom Hook을 “왜 쓰는지” 중심으로 학습한다.</p>
+      </header>
+
+      <section id="goal">
+        <h2>수업 목표</h2>
+        <div class="goal-box">
+          <ol>
+            <li>SPA에서 라우터가 필요한 이유를 설명할 수 있다.</li>
+            <li>React Router DOM으로 URL에 따라 다른 컴포넌트를 보여줄 수 있다.</li>
+            <li><code class="inline">Link</code>, <code class="inline">Routes</code>, <code class="inline">Route</code>의 역할을 설명할 수 있다.</li>
+            <li><code class="inline">useParams</code>, <code class="inline">useNavigate</code>, <code class="inline">useSearchParams</code>를 사용할 수 있다.</li>
+            <li>중첩 라우팅과 <code class="inline">Outlet</code>이 필요한 상황을 이해한다.</li>
+            <li>각 Hook이 어떤 문제를 해결하기 위해 필요한지 설명할 수 있다.</li>
+            <li>상태 관리, 부수효과, DOM 참조, 계산 최적화, 함수 최적화, 전역 값 공유, 복잡한 상태 변경을 구분할 수 있다.</li>
+          </ol>
+        </div>
+
+        <div class="note">
+          <strong>이전 수업과 연결</strong>
+          <p>이전 수업에서 props와 state를 배웠다면, 이번 수업은 “여러 화면을 어떻게 나눌 것인가”와 “state만으로 처리하기 어려운 상황을 Hook으로 어떻게 해결할 것인가”를 다룬다.</p>
+        </div>
+      </section>
+
+      <section id="flow">
+        <h2>수업 흐름</h2>
+        <div class="diagram">1차시: React Router DOM 개념과 기본 라우팅
+2차시: URL 파라미터, 검색 파라미터, 페이지 이동
+3차시: 중첩 라우팅과 Outlet
+4차시: useEffect
+5차시: useRef
+6차시: useMemo와 useCallback
+7차시: useContext
+8차시: useReducer와 Custom Hook
+9차시: 종합 실습</div>
+      </section>
+
+      <section id="router-why">
+        <h2><span class="chapter-label">Chapter 01</span><br />React Router를 왜 사용하는가</h2>
+
+        <h3>1. React는 기본적으로 한 페이지 안에서 동작한다</h3>
+        <p>React 앱은 보통 하나의 <code class="inline">index.html</code>을 중심으로 동작하는 SPA 구조를 가진다.</p>
+
+        <div class="diagram">브라우저가 처음 index.html 로드
+↓
+React 실행
+↓
+URL에 따라 다른 컴포넌트를 보여줌</div>
+
+        <p>그런데 URL이 바뀔 때 어떤 컴포넌트를 보여줄지 React 혼자 자동으로 결정하지는 않는다.</p>
+
+        <h3>2. 라우터 없이 화면을 바꾸면 생기는 문제</h3>
+        <p>state로 화면을 바꾸는 방식도 가능하다.</p>
+
+        <pre><code>function App() {
+    const [page, setPage] = useState(&quot;home&quot;);
+
+    return (
+        &lt;div&gt;
+            &lt;button onClick={() =&gt; setPage(&quot;home&quot;)}&gt;홈&lt;/button&gt;
+            &lt;button onClick={() =&gt; setPage(&quot;board&quot;)}&gt;게시판&lt;/button&gt;
+
+            {page === &quot;home&quot; &amp;&amp; &lt;Home /&gt;}
+            {page === &quot;board&quot; &amp;&amp; &lt;Board /&gt;}
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <p>하지만 이 방식은 주소창 URL이 바뀌지 않는다.</p>
+
+        <div class="warning">
+          <strong>문제점</strong>
+          <ul>
+            <li>주소를 복사해서 특정 페이지를 공유하기 어렵다.</li>
+            <li>새로고침하면 현재 화면 상태가 사라질 수 있다.</li>
+            <li>브라우저 뒤로가기, 앞으로가기를 자연스럽게 처리하기 어렵다.</li>
+            <li>게시글 상세 페이지처럼 <code class="inline">/board/3</code> 형태의 주소를 만들기 어렵다.</li>
+          </ul>
+        </div>
+
+        <h3>3. Router의 역할</h3>
+        <p>React Router는 URL과 컴포넌트를 연결해주는 도구이다.</p>
+
+        <div class="diagram">/              → Home 컴포넌트
+/about         → About 컴포넌트
+/board         → BoardList 컴포넌트
+/board/3       → BoardDetail 컴포넌트
+/login         → Login 컴포넌트</div>
+
+        <div class="summary">
+          <strong>Router를 사용하는 이유</strong>
+          <ul>
+            <li>URL에 따라 다른 화면을 보여주기 위해</li>
+            <li>새로고침해도 현재 URL에 맞는 화면을 보여주기 위해</li>
+            <li>뒤로가기, 앞으로가기 등 브라우저 히스토리를 사용하기 위해</li>
+            <li>상세 페이지, 검색 페이지처럼 주소에 데이터를 담기 위해</li>
+            <li>공유 가능한 주소를 만들기 위해</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="router-install">
+        <h2><span class="chapter-label">Chapter 02</span><br />설치와 기본 설정</h2>
+
+        <h3>1. 설치</h3>
+        <p>수업에서 <code class="inline">react-router-dom</code> 기준으로 진행한다면 다음 명령어를 사용한다.</p>
+
+        <pre><code># 수업에서 react-router-dom 기준으로 진행하는 경우
+npm install react-router-dom
+
+# 최신 React Router v7 공식 문서 방식은 react-router 패키지를 사용한다.
+npm install react-router</code></pre>
+
+          <div class="info">
+              <strong>수업 기준</strong>
+
+              <p>
+                  웹 브라우저에서 React Router를 사용할 때는
+                  보통 <code class="inline">react-router-dom</code> 패키지를 사용한다.
+              </p>
+
+              <p>
+                  이 수업도 <code class="inline">react-router-dom</code> 기준으로 진행한다.
+              </p>
+          </div>
+
+        <h3>2. BrowserRouter로 감싸기</h3>
+        <p>라우터 기능을 사용하려면 앱 전체를 <code class="inline">BrowserRouter</code>로 감싼다.</p>
+
+        <pre><code>import React from &quot;react&quot;;
+import ReactDOM from &quot;react-dom/client&quot;;
+import { BrowserRouter } from &quot;react-router-dom&quot;;
+import App from &quot;./App.jsx&quot;;
+
+ReactDOM.createRoot(document.getElementById(&quot;root&quot;)).render(
+    &lt;BrowserRouter&gt;
+        &lt;App /&gt;
+    &lt;/BrowserRouter&gt;
+);</code></pre>
+
+        <p><code class="inline">BrowserRouter</code>는 브라우저 주소창과 React 앱을 연결하는 역할을 한다.</p>
+      </section>
+
+      <section id="router-basic">
+        <h2><span class="chapter-label">Chapter 03</span><br />Routes, Route, Link</h2>
+
+        <h3>1. 기본 라우팅</h3>
+        <p><code class="inline">Routes</code>는 여러 개의 라우트 목록이고, <code class="inline">Route</code>는 URL 하나와 컴포넌트 하나를 연결한다.</p>
+
+        <pre><code>import { Routes, Route, Link } from &quot;react-router-dom&quot;;
+
+function Home() {
+    return &lt;h1&gt;Home&lt;/h1&gt;;
+}
+
+function About() {
+    return &lt;h1&gt;About&lt;/h1&gt;;
+}
+
+function Board() {
+    return &lt;h1&gt;Board&lt;/h1&gt;;
+}
+
+function NotFound() {
+    return &lt;h1&gt;404 페이지를 찾을 수 없습니다.&lt;/h1&gt;;
+}
+
+export default function App() {
+    return (
+        &lt;div&gt;
+            &lt;nav&gt;
+                &lt;Link to=&quot;/&quot;&gt;홈&lt;/Link&gt;
+                &lt;Link to=&quot;/about&quot;&gt;소개&lt;/Link&gt;
+                &lt;Link to=&quot;/board&quot;&gt;게시판&lt;/Link&gt;
+            &lt;/nav&gt;
+
+            &lt;Routes&gt;
+                &lt;Route path=&quot;/&quot; element={&lt;Home /&gt;} /&gt;
+                &lt;Route path=&quot;/about&quot; element={&lt;About /&gt;} /&gt;
+                &lt;Route path=&quot;/board&quot; element={&lt;Board /&gt;} /&gt;
+                &lt;Route path=&quot;*&quot; element={&lt;NotFound /&gt;} /&gt;
+            &lt;/Routes&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>2. 각 요소의 역할</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>요소</th>
+                <th>역할</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code class="inline">BrowserRouter</code></td>
+                <td>브라우저 주소창과 React Router를 연결한다.</td>
+              </tr>
+              <tr>
+                <td><code class="inline">Routes</code></td>
+                <td>여러 Route 중 현재 URL과 맞는 Route를 찾는다.</td>
+              </tr>
+              <tr>
+                <td><code class="inline">Route</code></td>
+                <td>특정 path일 때 어떤 element를 보여줄지 정한다.</td>
+              </tr>
+              <tr>
+                <td><code class="inline">Link</code></td>
+                <td>새로고침 없이 다른 URL로 이동한다.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>3. a 태그 대신 Link를 쓰는 이유</h3>
+        <p>일반 <code class="inline">&lt;a href="/board"&gt;</code>는 브라우저가 새 페이지를 요청하게 만들 수 있다. React SPA에서는 새로고침 없이 컴포넌트만 바꾸고 싶기 때문에 <code class="inline">Link</code>를 사용한다.</p>
+
+        <div class="summary">
+          <ul>
+            <li><code class="inline">a</code>: 문서 이동, 새로고침 발생 가능</li>
+            <li><code class="inline">Link</code>: React Router가 URL만 바꾸고 화면을 교체</li>
+          </ul>
+        </div>
+
+        <h3>4. NavLink</h3>
+        <p><code class="inline">NavLink</code>는 현재 URL과 일치하는 링크에 active 스타일을 줄 때 사용한다.</p>
+
+        <pre><code>import { NavLink } from &quot;react-router-dom&quot;;
+
+function Header() {
+    return (
+        &lt;nav&gt;
+            &lt;NavLink to=&quot;/&quot;&gt;홈&lt;/NavLink&gt;
+            &lt;NavLink to=&quot;/board&quot;&gt;게시판&lt;/NavLink&gt;
+            &lt;NavLink to=&quot;/login&quot;&gt;로그인&lt;/NavLink&gt;
+        &lt;/nav&gt;
+    );
+}</code></pre>
+      </section>
+
+      <section id="router-params">
+        <h2><span class="chapter-label">Chapter 04</span><br />URL 파라미터와 useParams</h2>
+
+        <h3>1. URL 파라미터가 필요한 이유</h3>
+        <p>게시글 상세 페이지처럼 ID에 따라 다른 데이터를 보여줘야 할 때 사용한다.</p>
+
+        <div class="diagram">/board/1 → 1번 게시글
+/board/2 → 2번 게시글
+/board/3 → 3번 게시글</div>
+
+        <h3>2. Route 설정</h3>
+
+        <pre><code>&lt;Routes&gt;
+    &lt;Route path=&quot;/board&quot; element={&lt;BoardList /&gt;} /&gt;
+    &lt;Route path=&quot;/board/:id&quot; element={&lt;BoardDetail /&gt;} /&gt;
+&lt;/Routes&gt;</code></pre>
+
+        <p><code class="inline">:id</code>는 URL에서 바뀌는 값을 의미한다.</p>
+
+        <h3>3. useParams로 값 꺼내기</h3>
+
+        <pre><code>import { useParams } from &quot;react-router-dom&quot;;
+
+function BoardDetail() {
+    const { id } = useParams();
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;게시글 상세&lt;/h1&gt;
+            &lt;p&gt;게시글 번호: {id}&lt;/p&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <div class="summary">
+          <strong>useParams를 쓰는 이유</strong>
+          <p>URL 경로 안에 들어있는 동적 값을 컴포넌트에서 사용하기 위해 쓴다.</p>
+        </div>
+      </section>
+
+      <section id="router-navigate">
+        <h2><span class="chapter-label">Chapter 05</span><br />useNavigate</h2>
+
+        <h3>1. useNavigate가 필요한 이유</h3>
+        <p><code class="inline">Link</code>는 사용자가 클릭해서 이동할 때 좋다. 하지만 로그인 성공 후 이동, 등록 완료 후 목록으로 이동처럼 코드 안에서 페이지를 이동해야 할 때는 <code class="inline">useNavigate</code>를 사용한다.</p>
+
+        <pre><code>import { useNavigate } from &quot;react-router-dom&quot;;
+
+function Login() {
+    const navigate = useNavigate();
+
+    function handleLogin() {
+        // 로그인 성공 후 메인 페이지로 이동
+        navigate(&quot;/&quot;);
+    }
+
+    return (
+        &lt;button onClick={handleLogin}&gt;
+            로그인
+        &lt;/button&gt;
+    );
+}</code></pre>
+
+        <h3>2. 자주 쓰는 상황</h3>
+        <ul>
+          <li>로그인 성공 후 메인으로 이동</li>
+          <li>게시글 등록 후 상세 페이지로 이동</li>
+          <li>삭제 완료 후 목록으로 이동</li>
+          <li>뒤로가기 버튼 구현</li>
+        </ul>
+
+        <div class="diagram">navigate(&quot;/board&quot;)  → /board로 이동
+navigate(&quot;/&quot;)       → 홈으로 이동
+navigate(-1)        → 이전 페이지로 이동</div>
+      </section>
+
+      <section id="router-search">
+        <h2><span class="chapter-label">Chapter 06</span><br />useSearchParams</h2>
+
+        <h3>1. Query String이란?</h3>
+        <p>URL 뒤에 붙는 검색 조건이다.</p>
+
+        <div class="diagram">/board?keyword=react
+/search?category=book&amp;page=2
+/products?sort=price</div>
+
+        <p>목록 검색, 필터, 정렬, 페이지 번호처럼 “화면 상태를 URL에 남기고 싶을 때” 사용한다.</p>
+
+        <h3>2. useSearchParams 예제</h3>
+
+        <pre><code>import { useSearchParams } from &quot;react-router-dom&quot;;
+
+function BoardList() {
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const keyword = searchParams.get(&quot;keyword&quot;) || &quot;&quot;;
+
+    function handleSearch() {
+        setSearchParams({ keyword: &quot;react&quot; });
+    }
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;게시판&lt;/h1&gt;
+            &lt;p&gt;검색어: {keyword}&lt;/p&gt;
+
+            &lt;button onClick={handleSearch}&gt;
+                react 검색
+            &lt;/button&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <div class="summary">
+          <strong>useSearchParams를 쓰는 이유</strong>
+          <ul>
+            <li>검색어, 정렬, 필터 값을 URL에 저장할 수 있다.</li>
+            <li>사용자가 현재 검색 결과 URL을 공유할 수 있다.</li>
+            <li>새로고침해도 검색 조건이 주소에 남아 있다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="router-nested">
+        <h2><span class="chapter-label">Chapter 07</span><br />중첩 라우팅과 Outlet</h2>
+
+        <h3>1. 중첩 라우팅이 필요한 이유</h3>
+        <p>여러 페이지가 공통 레이아웃을 공유하는 경우가 많다.</p>
+
+        <div class="diagram">공통 영역:
+Header
+Sidebar
+Footer
+
+바뀌는 영역:
+Home
+Profile
+Settings
+Board</div>
+
+        <p>공통 레이아웃은 유지하고, 내부 내용만 URL에 따라 바꾸고 싶을 때 중첩 라우팅을 사용한다.</p>
+
+        <h3>2. Outlet 예제</h3>
+
+        <pre><code>import { Routes, Route, Link, Outlet } from &quot;react-router-dom&quot;;
+
+function Layout() {
+    return (
+        &lt;div&gt;
+            &lt;header&gt;
+                &lt;Link to=&quot;/&quot;&gt;홈&lt;/Link&gt;
+                &lt;Link to=&quot;/mypage&quot;&gt;마이페이지&lt;/Link&gt;
+            &lt;/header&gt;
+
+            &lt;main&gt;
+                &lt;Outlet /&gt;
+            &lt;/main&gt;
+        &lt;/div&gt;
+    );
+}
+
+function MyPage() {
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;마이페이지&lt;/h1&gt;
+            &lt;Link to=&quot;profile&quot;&gt;프로필&lt;/Link&gt;
+            &lt;Link to=&quot;settings&quot;&gt;설정&lt;/Link&gt;
+
+            &lt;Outlet /&gt;
+        &lt;/div&gt;
+    );
+}
+
+function App() {
+    return (
+        &lt;Routes&gt;
+            &lt;Route path=&quot;/&quot; element={&lt;Layout /&gt;}&gt;
+                &lt;Route index element={&lt;Home /&gt;} /&gt;
+                &lt;Route path=&quot;mypage&quot; element={&lt;MyPage /&gt;}&gt;
+                    &lt;Route path=&quot;profile&quot; element={&lt;Profile /&gt;} /&gt;
+                    &lt;Route path=&quot;settings&quot; element={&lt;Settings /&gt;} /&gt;
+                &lt;/Route&gt;
+            &lt;/Route&gt;
+        &lt;/Routes&gt;
+    );
+}</code></pre>
+
+        <h3>3. Outlet의 역할</h3>
+        <p><code class="inline">Outlet</code>은 자식 라우트가 렌더링될 자리이다.</p>
+
+        <div class="diagram">부모 Route element
+└── &lt;Outlet /&gt;
+    └── 자식 Route element가 여기에 들어옴</div>
+      </section>
+
+      <section id="hooks-overview" class="page-break">
+        <h2><span class="chapter-label">Chapter 08</span><br />Hook 전체 그림</h2>
+
+        <p>props와 state를 배운 뒤에는 다음 질문들이 생긴다.</p>
+
+        <div class="problem">
+          <ul>
+            <li>렌더링 후 API 요청은 어디서 하지?</li>
+            <li>input DOM에 직접 focus를 주고 싶으면?</li>
+            <li>무거운 계산을 매번 다시 하지 않게 하려면?</li>
+            <li>자식 컴포넌트에 넘기는 함수를 매번 새로 만들지 않으려면?</li>
+            <li>props를 여러 단계로 계속 넘기기 싫으면?</li>
+            <li>state 변경 로직이 너무 복잡해지면?</li>
+            <li>반복되는 Hook 로직을 재사용하고 싶으면?</li>
+          </ul>
+        </div>
+
+        <p>이 문제들을 해결하기 위해 여러 Hook을 사용한다.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Hook</th>
+                <th>왜 사용하는가</th>
+                <th>대표 상황</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code class="inline">useEffect</code></td>
+                <td>렌더링 이후 외부 시스템과 동기화하기 위해</td>
+                <td>API 요청, 이벤트 등록, 타이머</td>
+              </tr>
+              <tr>
+                <td><code class="inline">useRef</code></td>
+                <td>렌더링과 상관없는 값을 저장하거나 DOM을 참조하기 위해</td>
+                <td>input focus, timer id, 이전 값 저장</td>
+              </tr>
+              <tr>
+                <td><code class="inline">useMemo</code></td>
+                <td>계산 결과를 재사용하기 위해</td>
+                <td>무거운 필터링, 정렬, 계산</td>
+              </tr>
+              <tr>
+                <td><code class="inline">useCallback</code></td>
+                <td>함수 자체를 재사용하기 위해</td>
+                <td>memo된 자식에게 함수 props 전달</td>
+              </tr>
+              <tr>
+                <td><code class="inline">useContext</code></td>
+                <td>멀리 떨어진 컴포넌트에 값을 전달하기 위해</td>
+                <td>로그인 사용자, 테마, 언어 설정</td>
+              </tr>
+              <tr>
+                <td><code class="inline">useReducer</code></td>
+                <td>복잡한 state 변경 로직을 한곳에 모으기 위해</td>
+                <td>form, todo, 상태 전환이 많은 화면</td>
+              </tr>
+              <tr>
+                <td><code class="inline">Custom Hook</code></td>
+                <td>반복되는 Hook 로직을 재사용하기 위해</td>
+                <td>useInput, useFetch, useToggle</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="note">
+          <strong>수업 포인트</strong>
+          <p>Hook을 외우는 것보다 “이 Hook은 어떤 문제를 해결하기 위해 쓰는가?”를 먼저 설명한다.</p>
+        </div>
+      </section>
+
+      <section id="useeffect">
+        <h2><span class="chapter-label">Chapter 09</span><br />useEffect</h2>
+
+        <h3>1. 왜 사용하는가?</h3>
+        <p><code class="inline">useEffect</code>는 컴포넌트가 렌더링된 후 외부 시스템과 동기화할 때 사용한다.</p>
+
+        <div class="diagram">React 내부:
+props, state, JSX, 렌더링
+
+React 외부:
+서버 API
+브라우저 이벤트
+타이머
+localStorage
+외부 라이브러리</div>
+
+        <p>외부 시스템과 연결하는 작업은 렌더링 중에 하지 않고, 렌더링 이후 <code class="inline">useEffect</code>에서 처리한다.</p>
+
+        <h3>2. API 요청 예제</h3>
+
+        <pre><code>import { useEffect, useState } from &quot;react&quot;;
+
+function UserList() {
+    const [users, setUsers] = useState([]);
+
+    useEffect(() =&gt; {
+        fetch(&quot;https://jsonplaceholder.typicode.com/users&quot;)
+            .then((res) =&gt; res.json())
+            .then((data) =&gt; {
+                setUsers(data);
+            });
+    }, []);
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;사용자 목록&lt;/h1&gt;
+
+            {users.map((user) =&gt; (
+                &lt;p key={user.id}&gt;{user.name}&lt;/p&gt;
+            ))}
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+      <h3>3. cleanup이 필요한 경우</h3>
+
+      <p>
+          <code class="inline">useEffect</code> 안에서 타이머, 이벤트 리스너 같은 외부 작업을 등록하면,
+          컴포넌트가 사라질 때 정리 작업도 함께 해야 한다.
+      </p>
+
+      <p>
+          이 정리 작업을 <strong>cleanup</strong>이라고 부른다.
+      </p>
+
+      <div class="diagram">
+          컴포넌트 렌더링
+          ↓
+          useEffect 실행
+          ↓
+          타이머 등록 / 이벤트 등록
+          ↓
+          컴포넌트 제거
+          ↓
+          cleanup 실행
+          ↓
+          타이머 제거 / 이벤트 제거
+      </div>
+
+      <h4>1. cleanup이 필요한 이유</h4>
+
+      <p>
+          cleanup을 하지 않으면 컴포넌트가 화면에서 사라져도,
+          타이머나 이벤트가 계속 살아있을 수 있다.
+      </p>
+
+      <div class="warning">
+          <strong>문제 상황</strong>
+
+          <ul>
+              <li>사용하지 않는 타이머가 계속 실행될 수 있다.</li>
+              <li>이벤트 리스너가 계속 남아 메모리 누수가 발생할 수 있다.</li>
+              <li>이미 제거된 컴포넌트의 state를 변경하려고 시도할 수 있다.</li>
+          </ul>
+      </div>
+
+      <h4>2. Timer 예제</h4>
+
+      <pre><code>import { useEffect, useState } from "react";
+
+function Timer() {
+
+const [count, setCount] = useState(0);
+
+useEffect(() =&gt; {
+
+    console.log("타이머 시작");
+
+    const timerId = setInterval(() =&gt; {
+
+        setCount((prev) =&gt; prev + 1);
+
+    }, 1000);
+
+    return () =&gt; {
+
+        console.log("타이머 제거");
+
+        clearInterval(timerId);
+    };
+
+}, []);
+
+return &lt;h1&gt;{count}&lt;/h1&gt;;
+}</code></pre>
+
+      <h4>3. 코드 흐름</h4>
+
+      <div class="diagram">
+          컴포넌트 처음 렌더링
+          ↓
+          useEffect 실행
+          ↓
+          setInterval 등록
+          ↓
+          1초마다 count 증가
+          ↓
+          컴포넌트 제거
+          ↓
+          return 안의 cleanup 실행
+          ↓
+          clearInterval(timerId)
+          ↓
+          타이머 종료
+      </div>
+
+      <h4>4. return 함수가 cleanup이다</h4>
+
+      <p>
+          <code class="inline">useEffect</code> 안에서 반환하는 함수가 cleanup 함수이다.
+      </p>
+
+      <pre><code>return () =&gt; {
+
+clearInterval(timerId);
+
+};</code></pre>
+
+      <p>
+          즉 “나중에 정리할 작업”을 return으로 등록하는 것이다.
+      </p>
+
+      <h4>5. 언제 cleanup이 실행되는가?</h4>
+
+      <div class="table-wrap">
+          <table>
+              <thead>
+              <tr>
+                  <th>상황</th>
+                  <th>cleanup 실행 여부</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                  <td>컴포넌트 제거</td>
+                  <td>실행됨</td>
+              </tr>
+              <tr>
+                  <td>의존성 값 변경 후 effect 재실행 전</td>
+                  <td>실행됨</td>
+              </tr>
+              <tr>
+                  <td>처음 렌더링 직후</td>
+                  <td>실행 안됨</td>
+              </tr>
+              </tbody>
+          </table>
+      </div>
+
+      <h4>6. 이벤트 리스너 cleanup 예제</h4>
+
+      <pre><code>useEffect(() =&gt; {
+
+    function handleResize() {
+
+        console.log(window.innerWidth);
+
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () =&gt; {
+
+        window.removeEventListener("resize", handleResize);
+
+    };
+
+}, []);</code></pre>
+
+      <p>
+          이 예제는 브라우저 크기 변경 이벤트를 등록하고,
+          컴포넌트가 제거될 때 이벤트 리스너를 제거한다.
+      </p>
+
+      <div class="summary">
+          <strong>cleanup 핵심 정리</strong>
+
+          <ul>
+              <li>타이머, 이벤트 리스너 같은 외부 작업은 cleanup이 필요하다.</li>
+              <li><code class="inline">useEffect</code>의 return 함수가 cleanup 함수이다.</li>
+              <li>cleanup은 컴포넌트 제거 시 실행된다.</li>
+              <li>cleanup을 하지 않으면 메모리 누수나 불필요한 작업이 발생할 수 있다.</li>
+          </ul>
+      </div>
+        <h3>4. useEffect를 쓰지 않아도 되는 경우</h3>
+        <p>state나 props로 바로 계산할 수 있는 값은 effect가 필요 없다.</p>
+
+        <pre><code>// 굳이 useEffect를 쓸 필요가 없는 예
+function Price({ price, count }) {
+    const total = price * count;
+
+    return &lt;h1&gt;{total}&lt;/h1&gt;;
+}</code></pre>
+
+        <div class="summary">
+          <strong>useEffect 핵심</strong>
+          <ul>
+            <li>렌더링 이후 실행된다.</li>
+            <li>API, 타이머, 이벤트처럼 React 밖의 작업에 사용한다.</li>
+            <li>의존성 배열 값이 바뀌면 다시 실행된다.</li>
+            <li>정리할 작업이 있으면 cleanup 함수를 반환한다.</li>
+            <li>단순 계산에는 useEffect를 쓰지 않는다.</li>
+          </ul>
+        </div>
+      </section>
+
+        <section id="useref">
+            <h2><span class="chapter-label">Chapter 10</span><br />useRef</h2>
+
+            <h3>1. useRef란?</h3>
+
+            <p>
+                <code class="inline">useRef</code>는 렌더링과 상관없는 값을 저장하거나,
+                실제 DOM 요소를 참조할 때 사용하는 Hook이다.
+            </p>
+
+            <div class="diagram">State
+                ↓
+                값이 바뀌면 리렌더링
+
+                Ref
+                ↓
+                값이 바뀌어도 리렌더링 안함</div>
+
+            <p>
+                즉 state는 화면에 보여줄 값을 저장할 때 사용하고,
+                ref는 화면 렌더링과 직접 관계없는 값을 저장할 때 사용한다.
+            </p>
+
+            <h3>2. 기본 문법</h3>
+
+            <pre><code>const ref = useRef(초기값);</code></pre>
+
+            <p>
+                값은 <code class="inline">ref.current</code>에 저장된다.
+            </p>
+
+            <pre><code>ref.current</code></pre>
+
+            <div class="note">
+                <strong>중요</strong>
+
+                <p>
+                    useRef는 값을 저장하지만,
+                    값이 바뀌어도 React가 다시 렌더링하지 않는다.
+                </p>
+            </div>
+
+            <h3>3. 왜 state 대신 useRef를 사용하는가?</h3>
+
+            <p>
+                state는 값이 바뀌면 컴포넌트를 다시 실행한다.
+            </p>
+
+            <div class="diagram">
+                state 변경
+                ↓
+                React가 상태 변경 감지
+                ↓
+                컴포넌트 다시 실행
+                ↓
+                리렌더링
+            </div>
+
+            <p>
+                하지만 어떤 값은 화면을 다시 그릴 필요가 없다.
+            </p>
+
+            <div class="diagram">
+                예: 타이머 ID, 클릭 횟수, 로그 스크롤 위치, 이전 값 저장, DOM 요소 참조
+            </div>
+
+            <p>
+                이런 값은 useRef로 관리하면 불필요한 렌더링을 막을 수 있다.
+            </p>
+
+            <h3>4. 왜 전역변수를 사용하지 않는가?</h3>
+
+            <p>
+                초급자는 종종 이렇게 생각한다.
+            </p>
+
+            <div class="diagram">"렌더링과 상관없는 값이면
+                그냥 전역변수 쓰면 되는 거 아닌가?"</div>
+
+            <p>
+                하지만 전역변수는 React 컴포넌트마다 따로 관리되지 않는다.
+            </p>
+
+            <pre><code>let count = 0;
+
+function Counter() {
+
+    function increase() {
+
+        count++;
+
+        console.log(count);
+    }
+
+    return (
+        &lt;button onClick={increase}&gt;
+            증가
+        &lt;/button&gt;
+    );
+}</code></pre>
+
+            <p>
+                위 코드에서는 모든 Counter 컴포넌트가 같은 count를 공유한다.
+            </p>
+
+            <div class="diagram">
+                Counter A
+                ↓
+                같은 count 사용
+
+                Counter B
+                ↓
+                같은 count 사용
+            </div>
+
+            <p>
+                반면 useRef는 컴포넌트마다 독립적인 값을 가진다.
+            </p>
+
+            <pre><code>function Counter() {
+
+    const countRef = useRef(0);
+
+    function increase() {
+
+        countRef.current++;
+
+        console.log(countRef.current);
+    }
+
+    return (
+        &lt;button onClick={increase}&gt;
+            증가
+        &lt;/button&gt;
+    );
+}</code></pre>
+
+            <div class="diagram">
+                Counter A
+                ↓
+                자기만의 ref
+
+                Counter B
+                ↓
+                다른 ref
+            </div>
+
+            <div class="summary">
+                <strong>한 문장 정리</strong>
+
+                <p>
+                    전역변수는 앱 전체가 공유하지만,
+                    useRef는 컴포넌트마다 독립적으로 값을 가진다.
+                </p>
+            </div>
+
+            <h3>5. DOM 참조 예제</h3>
+
+            <p>
+                useRef의 가장 대표적인 사용 방법은 DOM 요소를 직접 참조하는 것이다.
+            </p>
+
+            <pre><code>import { useRef } from "react";
+
+function InputFocus() {
+
+    const inputRef = useRef(null);
+
+    function focusInput() {
+
+        inputRef.current.focus();
+    }
+
+    return (
+        &lt;div&gt;
+
+            &lt;input ref={inputRef} /&gt;
+
+            &lt;button onClick={focusInput}&gt;
+                input 포커스
+            &lt;/button&gt;
+
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+            <h4>동작 흐름</h4>
+
+            <div class="diagram">
+                렌더링
+                ↓
+                input DOM 요소가 생성됨
+                ↓
+                inputRef.current에 input DOM 저장
+                ↓
+                버튼 클릭
+                ↓
+                inputRef.current.focus()
+                ↓
+                input에 포커스 이동
+            </div>
+
+            <p>
+                즉 useRef를 사용하면 실제 DOM 요소에 직접 접근할 수 있다.
+            </p>
+
+            <h3>6. 값 저장 예제</h3>
+
+            <p>
+                ref는 렌더링과 상관없는 값을 저장할 때도 사용한다.
+            </p>
+
+            <pre><code>import { useRef, useState } from "react";
+
+function RenderCount() {
+
+    const [count, setCount] = useState(0);
+
+    const clickCountRef = useRef(0);
+
+    function handleClick() {
+
+        clickCountRef.current += 1;
+
+        console.log("클릭 횟수:", clickCountRef.current);
+
+        setCount(count + 1);
+    }
+
+    return (
+        &lt;button onClick={handleClick}&gt;
+            화면 count: {count}
+        &lt;/button&gt;
+    );
+}</code></pre>
+
+            <h4>동작 흐름</h4>
+
+            <div class="diagram">
+                버튼 클릭
+                ↓
+                clickCountRef.current 증가
+                ↓
+                콘솔 출력
+                ↓
+                ref 값 변경
+                ↓
+                ref만 변경하면 리렌더링 안됨
+
+                setCount 실행
+                ↓
+                state 변경
+                ↓
+                리렌더링
+            </div>
+
+            <p>
+                여기서 중요한 점은:
+            </p>
+
+            <div class="diagram">
+                ref 변경
+                → 리렌더링 안됨
+
+                state 변경
+                → 리렌더링됨</div>
+
+            <h3>7. useRef 핵심 정리</h3>
+
+            <div class="summary">
+                <ul>
+                    <li>useRef는 렌더링과 상관없는 값을 저장한다.</li>
+                    <li>ref.current에 값을 저장한다.</li>
+                    <li>ref.current를 바꿔도 리렌더링되지 않는다.</li>
+                    <li>DOM 요소 참조에 자주 사용한다.</li>
+                    <li>전역변수와 달리 컴포넌트마다 독립적인 값을 가진다.</li>
+                    <li>화면에 보여줄 값은 state로 관리한다.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="usememo">
+            <h2><span class="chapter-label">Chapter 11</span><br />useMemo</h2>
+
+            <h3>1. useMemo란?</h3>
+
+            <p>
+                <code class="inline">useMemo</code>는 계산 결과를 기억해두고,
+                의존성 값이 바뀌지 않으면 이전 계산 결과를 재사용하는 Hook이다.
+            </p>
+
+            <div class="diagram">
+                렌더링 발생
+                ↓
+                useMemo 계산 확인
+                ↓
+                의존성 변경됨?
+                ├─ YES → 다시 계산
+                └─ NO → 이전 결과 재사용</div>
+
+            <p>
+                즉 useMemo는 “계산 결과 캐시”라고 이해하면 쉽다.
+            </p>
+
+            <h3>2. 왜 사용하는가?</h3>
+
+            <p>
+                React는 state가 변경되면 컴포넌트를 다시 실행한다.
+            </p>
+
+            <div class="diagram">
+                state 변경
+                ↓
+                컴포넌트 함수 다시 실행
+                ↓
+                함수 안의 코드 다시 실행</div>
+
+            <p>
+                이때 무거운 계산도 계속 다시 실행될 수 있다.
+            </p>
+
+            <pre><code>function App({ products }) {
+
+    const [count, setCount] = useState(0);
+
+    const filtered = products.filter((product) =&gt; {
+
+        console.log("상품 필터링");
+
+        return product.price &gt; 1000;
+    });
+
+    return (
+        &lt;div&gt;
+
+            &lt;h1&gt;{count}&lt;/h1&gt;
+
+            &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+                증가
+            &lt;/button&gt;
+
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+            <p>
+                위 코드에서는 count만 변경해도:
+            </p>
+
+            <div class="diagram">
+                컴포넌트 다시 실행
+                ↓
+                products.filter() 다시 실행
+                ↓
+                불필요한 계산 반복</div>
+
+            <p>
+                products가 바뀌지 않았는데도 필터링을 계속 다시 하게 된다.
+            </p>
+
+            <h3>3. useMemo 사용</h3>
+
+            <pre><code>import { useMemo, useState } from "react";
+
+function ProductList({ products }) {
+
+    const [keyword, setKeyword] = useState("");
+
+    const filteredProducts = useMemo(() =&gt; {
+
+        console.log("상품 필터링 실행");
+
+        return products.filter((product) =&gt;
+            product.name.includes(keyword)
+        );
+
+    }, [products, keyword]);
+
+    return (
+        &lt;div&gt;
+
+            &lt;input
+                value={keyword}
+                onChange={(e) =&gt; setKeyword(e.target.value)}
+                placeholder="검색어"
+            /&gt;
+
+            {filteredProducts.map((product) =&gt; (
+                &lt;p key={product.id}&gt;
+                    {product.name}
+                &lt;/p&gt;
+            ))}
+
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+            <h3>4. useMemo 동작 흐름</h3>
+
+            <div class="diagram">
+                처음 렌더링
+                ↓
+                useMemo 계산 실행
+                ↓
+                결과 저장
+
+                다음 렌더링
+                ↓
+                products, keyword 변경 확인
+                ├─ 변경됨 → 다시 계산
+                └─ 변경 안됨 → 이전 결과 재사용</div>
+
+            <p>
+                즉 useMemo는 컴포넌트 자체를 기억하는 것이 아니라,
+                계산 결과 값을 기억한다.
+            </p>
+
+            <div class="note">
+                <strong>중요</strong>
+
+                <p>
+                    useMemo는 “컴포넌트 캐시”가 아니라
+                    “계산 결과 캐시”이다.
+                </p>
+            </div>
+
+            <h3>5. useMemo와 React.memo 차이</h3>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>기능</th>
+                        <th>설명</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>useMemo</td>
+                        <td>계산 결과를 기억한다.</td>
+                    </tr>
+                    <tr>
+                        <td>React.memo</td>
+                        <td>컴포넌트 렌더링 자체를 건너뛴다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>6. useMemo를 왜 fetch에 사용하면 안되는가?</h3>
+
+            <p>
+                초급자는 종종 useMemo를 “의존성 배열이 있는 함수” 정도로 생각해서 fetch를 넣기도 한다.
+            </p>
+
+            <pre><code>// 잘못된 사용
+useMemo(() =&gt; {
+
+    fetch("/api/users");
+
+}, []);</code></pre>
+
+            <p>
+                하지만 useMemo는 계산 결과를 저장하기 위한 Hook이다.
+            </p>
+
+            <p>
+                fetch는 계산이 아니라 “외부 작업”이다.
+            </p>
+
+            <div class="diagram">useMemo
+↓
+계산 결과 캐시 용도
+
+fetch
+↓
+서버 통신
+↓
+외부 작업
+↓
+부수효과(side effect)</div>
+
+            <p>
+                React에서는 렌더링 과정과 외부 작업을 구분한다.
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Hook</th>
+                        <th>역할</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>useMemo</td>
+                        <td>렌더링 중 계산 결과 저장</td>
+                    </tr>
+                    <tr>
+                        <td>useEffect</td>
+                        <td>렌더링 이후 외부 작업 처리</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                그래서 API 요청은 useEffect에서 처리한다.
+            </p>
+
+            <pre><code>// 올바른 사용
+useEffect(() =&gt; {
+
+    fetch("/api/users")
+        .then((res) =&gt; res.json())
+        .then((data) =&gt; {
+
+            console.log(data);
+
+        });
+
+}, []);</code></pre>
+
+            <h3>7. useMemo를 남용하면 안되는 이유</h3>
+
+            <p>
+                useMemo도 내부적으로 값을 저장하고 비교하는 비용이 있다.
+            </p>
+
+            <p>
+                따라서 간단한 계산에는 오히려 useMemo가 더 비효율적일 수 있다.
+            </p>
+
+            <div class="warning">
+                <strong>주의</strong>
+
+                <p>
+                    useMemo는 “모든 계산에 쓰는 Hook”이 아니다.
+                </p>
+
+                <p>
+                    정말 계산 비용이 크거나,
+                    렌더링마다 다시 계산되는 것이 문제일 때 사용한다.
+                </p>
+            </div>
+
+            <h3>8. 언제 useMemo를 사용하는가?</h3>
+
+            <div class="summary">
+                <ul>
+                    <li>무거운 filter, map, sort 계산</li>
+                    <li>큰 배열 검색</li>
+                    <li>비용이 큰 수학 계산</li>
+                    <li>렌더링마다 다시 계산되는 것을 막고 싶을 때</li>
+                    <li>의존성 값이 바뀔 때만 다시 계산하고 싶을 때</li>
+                </ul>
+            </div>
+
+            <h3>9. useMemo 핵심 정리</h3>
+
+            <div class="summary">
+                <ul>
+                    <li>useMemo는 계산 결과를 기억하는 Hook이다.</li>
+                    <li>컴포넌트를 기억하는 것이 아니라 값 자체를 기억한다.</li>
+                    <li>의존성 배열 값이 바뀌면 다시 계산한다.</li>
+                    <li>무거운 계산 최적화에 사용한다.</li>
+                    <li>fetch 같은 외부 작업은 useMemo가 아니라 useEffect에서 처리한다.</li>
+                    <li>모든 계산에 useMemo를 사용할 필요는 없다.</li>
+                </ul>
+            </div>
+        </section>
+      <section id="usecallback">
+        <h2><span class="chapter-label">Chapter 12</span><br />useCallback</h2>
+
+        <h3>1. 왜 사용하는가?</h3>
+        <p>컴포넌트가 다시 렌더링되면 내부에서 만든 함수도 새로 만들어진다. <code class="inline">useCallback</code>은 함수를 재사용하고 싶을 때 사용한다.</p>
+
+        <div class="diagram">렌더링
+↓
+함수 새로 생성
+↓
+자식 컴포넌트에 함수 props 전달
+↓
+자식이 불필요하게 다시 렌더링될 수 있음</div>
+
+        <h3>2. 예제</h3>
+
+        <pre><code>import { useCallback, useState, memo } from &quot;react&quot;;
+
+const ChildButton = memo(function ChildButton({ onClick }) {
+    console.log(&quot;ChildButton 렌더링&quot;);
+
+    return &lt;button onClick={onClick}&gt;증가&lt;/button&gt;;
+});
+
+function Counter() {
+    const [count, setCount] = useState(0);
+
+    const increase = useCallback(() =&gt; {
+        setCount((prev) =&gt; prev + 1);
+    }, []);
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;{count}&lt;/h1&gt;
+            &lt;ChildButton onClick={increase} /&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>3. useMemo와 useCallback 차이</h3>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Hook</th>
+                <th>기억하는 것</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code class="inline">useMemo</code></td>
+                <td>계산 결과 값</td>
+              </tr>
+              <tr>
+                <td><code class="inline">useCallback</code></td>
+                <td>함수 자체</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="summary">
+          <strong>useCallback 핵심</strong>
+          <ul>
+            <li>함수를 캐싱한다.</li>
+            <li>주로 memo된 자식 컴포넌트에 함수를 props로 넘길 때 사용한다.</li>
+            <li>모든 함수에 무조건 사용할 필요는 없다.</li>
+            <li>성능 최적화가 필요한 상황에서 사용한다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="usecontext">
+        <h2><span class="chapter-label">Chapter 13</span><br />useContext</h2>
+
+        <h3>1. 왜 사용하는가?</h3>
+        <p>props는 부모에서 자식으로 값을 전달한다. 그런데 여러 단계 아래 컴포넌트까지 계속 props를 넘기면 코드가 불편해진다.</p>
+
+        <div class="diagram">App
+↓ user props
+Layout
+↓ user props
+Header
+↓ user props
+Profile</div>
+
+        <p>이런 props drilling을 줄이기 위해 context를 사용한다.</p>
+
+        <pre><code>import { createContext, useContext, useState } from &quot;react&quot;;
+
+const ThemeContext = createContext(null);
+
+function App() {
+    const [dark, setDark] = useState(false);
+
+    return (
+        &lt;ThemeContext.Provider value={{ dark, setDark }}&gt;
+            &lt;Header /&gt;
+            &lt;Content /&gt;
+        &lt;/ThemeContext.Provider&gt;
+    );
+}
+
+function Header() {
+    const { dark, setDark } = useContext(ThemeContext);
+
+    return (
+        &lt;button onClick={() =&gt; setDark(!dark)}&gt;
+            {dark ? &quot;다크모드&quot; : &quot;라이트모드&quot;}
+        &lt;/button&gt;
+    );
+}
+
+function Content() {
+    const { dark } = useContext(ThemeContext);
+
+    return (
+        &lt;main style={{ background: dark ? &quot;#222&quot; : &quot;#fff&quot; }}&gt;
+            화면 내용
+        &lt;/main&gt;
+    );
+}</code></pre>
+
+        <h3>2. 언제 사용하는가?</h3>
+        <ul>
+          <li>로그인 사용자 정보</li>
+          <li>다크모드 / 라이트모드</li>
+          <li>언어 설정</li>
+          <li>공통 설정값</li>
+        </ul>
+
+        <div class="warning">
+          <strong>주의</strong>
+          <p>Context는 값 전달을 쉽게 해주는 도구이다. 모든 state를 Context에 넣는 것이 항상 좋은 것은 아니다. 값이 자주 바뀌거나 상태 변경 로직이 복잡하면 Redux, Zustand, useReducer 같은 다른 방법이 더 적합할 수 있다.</p>
+        </div>
+      </section>
+
+      <section id="usereducer">
+        <h2><span class="chapter-label">Chapter 14</span><br />useReducer</h2>
+
+        <h3>1. 왜 사용하는가?</h3>
+        <p>state 변경 로직이 단순하면 <code class="inline">useState</code>로 충분하다.</p>
+
+        <div class="diagram">단순한 state:
+count 증가
+input 값 변경
+modal 열기/닫기</div>
+
+        <p>하지만 상태 변경 경우가 많아지면 이벤트 함수 안이 복잡해진다. 이때 <code class="inline">useReducer</code>를 사용하면 상태 변경 규칙을 한곳에 모을 수 있다.</p>
+
+        <div class="diagram">dispatch(action)
+↓
+reducer가 action.type 확인
+↓
+다음 state 반환
+↓
+React가 리렌더링</div>
+
+        <h3>2. 예제</h3>
+
+        <pre><code>import { useReducer } from &quot;react&quot;;
+
+const initialState = {
+    count: 0
+};
+
+function reducer(state, action) {
+    switch (action.type) {
+        case &quot;increase&quot;:
+            return {
+                count: state.count + 1
+            };
+
+        case &quot;decrease&quot;:
+            return {
+                count: state.count - 1
+            };
+
+        case &quot;reset&quot;:
+            return {
+                count: 0
+            };
+
+        default:
+            return state;
+    }
+}
+
+function Counter() {
+    const [state, dispatch] = useReducer(reducer, initialState);
+
+    return (
+        &lt;div&gt;
+            &lt;h1&gt;{state.count}&lt;/h1&gt;
+
+            &lt;button onClick={() =&gt; dispatch({ type: &quot;increase&quot; })}&gt;
+                증가
+            &lt;/button&gt;
+
+            &lt;button onClick={() =&gt; dispatch({ type: &quot;decrease&quot; })}&gt;
+                감소
+            &lt;/button&gt;
+
+            &lt;button onClick={() =&gt; dispatch({ type: &quot;reset&quot; })}&gt;
+                초기화
+            &lt;/button&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <div class="summary">
+          <strong>useReducer 핵심</strong>
+          <ul>
+            <li>useState와 비슷하지만 상태 변경 로직을 reducer 함수로 분리한다.</li>
+            <li>dispatch로 어떤 행동이 발생했는지 전달한다.</li>
+            <li>복잡한 form, todo, 상태 전환이 많은 화면에 적합하다.</li>
+            <li>Redux를 이해하기 전 단계로도 좋다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="custom-hook">
+        <h2><span class="chapter-label">Chapter 15</span><br />Custom Hook</h2>
+
+        <h3>1. 왜 사용하는가?</h3>
+        <p>여러 컴포넌트에서 같은 Hook 로직이 반복되면 Custom Hook으로 분리한다.</p>
+
+        <div class="diagram">반복되는 로직:
+input 상태 관리
+fetch 요청
+toggle 상태
+localStorage 저장
+타이머</div>
+
+        <h3>2. useInput 예제</h3>
+
+        <pre><code>import { useState } from &quot;react&quot;;
+
+function useInput(initialValue = &quot;&quot;) {
+    const [value, setValue] = useState(initialValue);
+
+    function onChange(e) {
+        setValue(e.target.value);
+    }
+
+    return {
+        value,
+        onChange
+    };
+}
+
+function LoginForm() {
+    const username = useInput(&quot;&quot;);
+    const password = useInput(&quot;&quot;);
+
+    return (
+        &lt;div&gt;
+            &lt;input placeholder=&quot;아이디&quot; {...username} /&gt;
+            &lt;input placeholder=&quot;비밀번호&quot; {...password} /&gt;
+
+            &lt;p&gt;아이디: {username.value}&lt;/p&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+
+        <h3>3. Custom Hook 규칙</h3>
+        <ul>
+          <li>이름은 반드시 <code class="inline">use</code>로 시작한다.</li>
+          <li>내부에서 다른 Hook을 사용할 수 있다.</li>
+          <li>컴포넌트가 아니라 로직을 재사용하기 위한 함수이다.</li>
+        </ul>
+
+        <div class="summary">
+          <strong>Custom Hook 핵심</strong>
+          <p>화면 JSX를 재사용하는 것은 컴포넌트, 상태와 로직을 재사용하는 것은 Custom Hook이다.</p>
+        </div>
+      </section>
+
+      <section id="practice" class="page-break">
+        <h2>종합 실습</h2>
+
+        <div class="practice">
+          <h3>실습 1. 미니 게시판 라우팅</h3>
+          <ol>
+            <li><code class="inline">/</code> 홈 페이지 만들기</li>
+            <li><code class="inline">/board</code> 게시글 목록 만들기</li>
+            <li><code class="inline">/board/:id</code> 게시글 상세 만들기</li>
+            <li><code class="inline">Link</code>로 목록에서 상세로 이동하기</li>
+            <li><code class="inline">useParams</code>로 게시글 번호 출력하기</li>
+          </ol>
+        </div>
+
+        <div class="practice">
+          <h3>실습 2. 검색 URL 만들기</h3>
+          <ol>
+            <li><code class="inline">/board?keyword=react</code> 형태 만들기</li>
+            <li><code class="inline">useSearchParams</code>로 keyword 읽기</li>
+            <li>검색 버튼 클릭 시 URL 검색어 변경하기</li>
+          </ol>
+        </div>
+
+        <div class="practice">
+          <h3>실습 3. Hook 적용하기</h3>
+          <ol>
+            <li><code class="inline">useEffect</code>로 사용자 목록 fetch하기</li>
+            <li><code class="inline">useRef</code>로 input focus 버튼 만들기</li>
+            <li><code class="inline">useMemo</code>로 검색 결과 계산하기</li>
+            <li><code class="inline">useContext</code>로 다크모드 값 공유하기</li>
+            <li><code class="inline">useReducer</code>로 카운터 상태 관리하기</li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="problems" class="page-break">
+        <h2>문제</h2>
+
+        <div class="problem">
+          <h3>문제 1</h3>
+          <p>React Router를 사용하는 이유를 3가지 이상 쓰시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 2</h3>
+          <p><code class="inline">Link</code>와 일반 <code class="inline">a</code> 태그의 차이를 설명하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 3</h3>
+          <p><code class="inline">/board/:id</code>에서 <code class="inline">id</code> 값을 꺼내기 위해 사용하는 Hook은 무엇인가?</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 4</h3>
+          <p>로그인 성공 후 코드로 홈 화면으로 이동하려면 어떤 Hook을 사용하는가?</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 5</h3>
+          <p><code class="inline">useEffect</code>를 사용하는 대표 상황을 3가지 쓰시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 6</h3>
+          <p><code class="inline">useRef</code>와 <code class="inline">useState</code>의 차이를 설명하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 7</h3>
+          <p><code class="inline">useMemo</code>와 <code class="inline">useCallback</code>의 차이를 설명하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 8</h3>
+          <p><code class="inline">useContext</code>가 필요한 상황을 설명하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 9</h3>
+          <p><code class="inline">useReducer</code>를 <code class="inline">useState</code> 대신 사용하는 이유를 설명하시오.</p>
+        </div>
+
+        <div class="problem">
+          <h3>문제 10</h3>
+          <p>Custom Hook을 사용하는 이유를 설명하시오.</p>
+        </div>
+      </section>
+
+      <section id="answers" class="page-break">
+        <h2>문제 정답</h2>
+
+        <div class="answer">
+          <h3>문제 1 정답</h3>
+          <p>URL에 따라 다른 화면을 보여주기 위해, 새로고침해도 현재 URL에 맞는 화면을 보여주기 위해, 뒤로가기와 앞으로가기를 사용하기 위해, 공유 가능한 주소를 만들기 위해 사용한다.</p>
+        </div>
+
+        <div class="answer">
+          <h3>문제 2 정답</h3>
+          <p><code class="inline">a</code> 태그는 일반 문서 이동을 수행하고 새로고침이 발생할 수 있다. <code class="inline">Link</code>는 React Router가 URL을 바꾸고 컴포넌트를 교체하여 SPA 방식으로 이동한다.</p>
+        </div>
+
+        <div class="answer">
+          <h3>문제 3 정답</h3>
+          <p><code class="inline">useParams</code></p>
+        </div>
+
+        <div class="answer">
+          <h3>문제 4 정답</h3>
+          <p><code class="inline">useNavigate</code></p>
+        </div>
+
+        <div class="answer">
+          <h3>문제 5 정답</h3>
+          <p>API 요청, 타이머 등록, 이벤트 리스너 등록, localStorage 사용, 외부 라이브러리 연결 등에 사용한다.</p>
+        </div>
+
+        <div class="answer">
+          <h3>문제 6 정답</h3>
+          <p><code class="inline">useState</code>는 값이 바뀌면 리렌더링된다. <code class="inline">useRef</code>는 <code class="inline">ref.current</code> 값이 바뀌어도 리렌더링되지 않는다.</p>
+        </div>
+
+        <div class="answer">
+          <h3>문제 7 정답</h3>
+          <p><code class="inline">useMemo</code>는 계산 결과 값을 기억하고, <code class="inline">useCallback</code>은 함수 자체를 기억한다.</p>
+        </div>
+
+        <div class="answer">
+          <h3>문제 8 정답</h3>
+          <p>여러 단계 아래 컴포넌트까지 props를 계속 전달해야 할 때, 로그인 사용자 정보나 테마처럼 여러 컴포넌트가 함께 사용하는 값을 공유하기 위해 사용한다.</p>
+        </div>
+
+        <div class="answer">
+          <h3>문제 9 정답</h3>
+          <p>상태 변경 경우가 많고 로직이 복잡할 때, reducer 함수에 상태 변경 규칙을 모아서 관리하기 위해 사용한다.</p>
+        </div>
+
+        <div class="answer">
+          <h3>문제 10 정답</h3>
+          <p>여러 컴포넌트에서 반복되는 Hook 로직을 함수로 분리해서 재사용하기 위해 사용한다.</p>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2>수업 마무리</h2>
+
+        <div class="summary">
+          <ul>
+            <li>React Router는 URL과 컴포넌트를 연결한다.</li>
+            <li><code class="inline">Routes</code>와 <code class="inline">Route</code>로 경로별 화면을 설정한다.</li>
+            <li><code class="inline">Link</code>는 새로고침 없이 URL을 이동한다.</li>
+            <li><code class="inline">useParams</code>는 URL 경로의 동적 값을 읽는다.</li>
+            <li><code class="inline">useNavigate</code>는 코드에서 페이지를 이동할 때 사용한다.</li>
+            <li><code class="inline">useSearchParams</code>는 검색어, 필터, 페이지 번호 같은 query string을 다룬다.</li>
+            <li><code class="inline">Outlet</code>은 중첩 라우팅에서 자식 화면이 들어갈 위치이다.</li>
+            <li><code class="inline">useEffect</code>는 렌더링 이후 외부 시스템과 동기화할 때 사용한다.</li>
+            <li><code class="inline">useRef</code>는 렌더링과 상관없는 값이나 DOM 참조를 저장한다.</li>
+            <li><code class="inline">useMemo</code>는 계산 결과를 기억한다.</li>
+            <li><code class="inline">useCallback</code>은 함수를 기억한다.</li>
+            <li><code class="inline">useContext</code>는 여러 컴포넌트가 공통 값을 쉽게 사용하게 한다.</li>
+            <li><code class="inline">useReducer</code>는 복잡한 상태 변경 로직을 reducer로 분리한다.</li>
+            <li>Custom Hook은 반복되는 Hook 로직을 재사용하기 위해 만든다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="references">
+        <h2>참고 자료</h2>
+        <div class="info">
+          <ul>
+            <li><a href="https://reactrouter.com/" target="_blank">React Router 공식 문서</a></li>
+            <li><a href="https://reactrouter.com/start/declarative/installation" target="_blank">React Router — Installation</a></li>
+            <li><a href="https://reactrouter.com/start/declarative/routing" target="_blank">React Router — Routing</a></li>
+            <li><a href="https://reactrouter.com/api/hooks/useParams" target="_blank">React Router — useParams</a></li>
+            <li><a href="https://reactrouter.com/api/hooks/useNavigate" target="_blank">React Router — useNavigate</a></li>
+            <li><a href="https://reactrouter.com/api/hooks/useSearchParams" target="_blank">React Router — useSearchParams</a></li>
+            <li><a href="https://react.dev/reference/react/useEffect" target="_blank">React 공식 문서 — useEffect</a></li>
+            <li><a href="https://react.dev/reference/react/useRef" target="_blank">React 공식 문서 — useRef</a></li>
+            <li><a href="https://react.dev/reference/react/useMemo" target="_blank">React 공식 문서 — useMemo</a></li>
+            <li><a href="https://react.dev/reference/react/useCallback" target="_blank">React 공식 문서 — useCallback</a></li>
+            <li><a href="https://react.dev/reference/react/useContext" target="_blank">React 공식 문서 — useContext</a></li>
+            <li><a href="https://react.dev/reference/react/useReducer" target="_blank">React 공식 문서 — useReducer</a></li>
+          </ul>
+        </div>
+      </section>
+
+      <footer>
+        <p>React Router DOM과 주요 Hook 수업 교안 · props/state 다음 차시용</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
