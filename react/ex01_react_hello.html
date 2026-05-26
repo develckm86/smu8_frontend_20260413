@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ex01_react_hello 웹 리액트 생성해 보기</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    let {a,b}={a:10,b:20};//구조분해할당
+    //name,title 을 props 컴포넌트의 초기값이라 부른다.
+    function Card({name,title}){
+      return (<div>
+        <p>이름 : {name}</p>
+        <p>교육 : {title}</p>
+      </div>);
+    }
+    //js 에서 html 작성 == JSX
+    //JSX 를 반환하는 함수를 리액트 컴포넌트라 부른다!
+    function App(){
+      return <>
+              <h1>안녕~ jsx 컴포넌트야~!</h1>
+              <Card name="경민코딩" title="리액트개발"/>
+              <hr/>
+              <Card name="smu8" title="자바웹앱개발"/>
+            </>;
+    }
+
+    const root=ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App/>)
+
+  </script>
+</body>
+</html>
