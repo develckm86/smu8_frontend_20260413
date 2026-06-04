@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Java Web JSP Tomcat 교안 - 설치 및 요청/응답 처리</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --paper: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #d9e2ec;
+      --accent: #2563eb;
+      --accent-soft: #eaf1ff;
+      --green-soft: #eaf8ef;
+      --yellow-soft: #fff7df;
+      --red-soft: #fff0f0;
+      --code-bg: #111827;
+      --code-ink: #f9fafb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.72;
+      word-break: keep-all;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255,255,255,0.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button, .nav-pill {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    button:hover, .nav-pill:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 34px 22px 64px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #eef4ff 100%);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 42px;
+      box-shadow: 0 18px 60px rgba(31, 41, 55, 0.08);
+      margin-bottom: 26px;
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-soft);
+      color: #174ea6;
+      border: 1px solid #c9dbff;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.12;
+      letter-spacing: -0.06em;
+    }
+
+    .subtitle {
+      font-size: 19px;
+      color: var(--muted);
+      margin: 0;
+      max-width: 850px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .meta {
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 16px;
+    }
+
+    .meta strong {
+      display: block;
+      color: var(--accent);
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .meta span {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    aside {
+      position: sticky;
+      top: 72px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 12px 34px rgba(31, 41, 55, 0.05);
+    }
+
+    aside h2 {
+      font-size: 16px;
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .toc {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .toc li {
+      margin: 3px 0;
+    }
+
+    .toc a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 7px 8px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .toc a:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 32px;
+      margin-bottom: 22px;
+      box-shadow: 0 12px 34px rgba(31, 41, 55, 0.04);
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      font-size: 28px;
+      letter-spacing: -0.04em;
+      line-height: 1.25;
+    }
+
+    h3 {
+      margin: 28px 0 10px;
+      font-size: 21px;
+      letter-spacing: -0.03em;
+    }
+
+    h4 {
+      margin: 22px 0 8px;
+      font-size: 17px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    .lead {
+      font-size: 17px;
+      color: #374151;
+    }
+
+    .box {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      padding: 18px 20px;
+      margin: 16px 0;
+      background: #fbfdff;
+    }
+
+    .box.info {
+      background: var(--accent-soft);
+      border-color: #c9dbff;
+    }
+
+    .box.success {
+      background: var(--green-soft);
+      border-color: #ccebd6;
+    }
+
+    .box.warn {
+      background: var(--yellow-soft);
+      border-color: #f1d58a;
+    }
+
+    .box.danger {
+      background: var(--red-soft);
+      border-color: #f4b8b8;
+    }
+
+    .box-title {
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .flow {
+      display: grid;
+      gap: 8px;
+      margin: 18px 0;
+    }
+
+    .flow .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 700;
+    }
+
+    .num {
+      width: 28px;
+      height: 28px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-size: 14px;
+      flex: 0 0 auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      font-size: 15px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5f9;
+      text-align: left;
+      font-weight: 800;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-ink);
+      padding: 18px 20px;
+      border-radius: 16px;
+      overflow-x: auto;
+      margin: 14px 0;
+      font-size: 14px;
+      line-height: 1.62;
+    }
+
+    code {
+      font-family: "D2Coding", "Consolas", "Menlo", "Monaco", monospace;
+    }
+
+    :not(pre) > code {
+      background: #eef2f7;
+      color: #111827;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.92em;
+    }
+
+    .practice {
+      counter-reset: item;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .practice li {
+      counter-increment: item;
+      position: relative;
+      padding-left: 44px;
+      margin: 10px 0;
+    }
+
+    .practice li::before {
+      content: counter(item);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      border: 1px solid #c9dbff;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0;
+    }
+
+    .checklist li {
+      margin: 8px 0;
+      padding-left: 30px;
+      position: relative;
+    }
+
+    .checklist li::before {
+      content: "□";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .quiz {
+      background: #f8fafc;
+      border: 1px dashed #b6c4d4;
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin: 12px 0;
+    }
+
+    .answer {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 28px;
+    }
+
+    .page-break {
+      break-before: page;
+    }
+
+    @media (max-width: 920px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        position: static;
+      }
+
+      .meta-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 620px) {
+      .hero, section {
+        padding: 24px;
+        border-radius: 20px;
+      }
+
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .topbar, aside {
+        display: none !important;
+      }
+
+      .wrap {
+        max-width: none;
+        padding: 0;
+      }
+
+      .hero, section {
+        box-shadow: none;
+        border-color: #cbd5e1;
+        border-radius: 0;
+        margin-bottom: 0;
+        break-inside: avoid;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">Java Web · JSP · Tomcat</div>
+      <div class="actions">
+        <a class="nav-pill" href="#summary">핵심 요약</a>
+        <a class="nav-pill" href="#practice">실습</a>
+        <button type="button" onclick="window.print()">인쇄 / PDF 저장</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <header class="hero">
+      <div class="label">1장 교안 · 설치 및 요청/응답 처리</div>
+      <h1>Java Web JSP Tomcat<br />수업 교안</h1>
+      <p class="subtitle">
+        이번 장은 DB, DAO, DTO를 다루기 전 단계입니다. 
+        Tomcat이 무엇인지 이해하고, 설치 후 JSP/Servlet을 실행하며,
+        브라우저의 요청과 서버의 응답이 어떻게 처리되는지 학습합니다.
+      </p>
+
+      <div class="meta-grid">
+        <div class="meta">
+          <strong>대상</strong>
+          <span>JSP/Servlet 입문</span>
+        </div>
+        <div class="meta">
+          <strong>수업 범위</strong>
+          <span>Tomcat 설치·실행</span>
+        </div>
+        <div class="meta">
+          <strong>핵심 개념</strong>
+          <span>request / response</span>
+        </div>
+        <div class="meta">
+          <strong>다음 장</strong>
+          <span>DB · DAO · DTO</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside>
+        <h2>목차</h2>
+        <ol class="toc">
+          <li><a href="#goal">수업 목표</a></li>
+          <li><a href="#tomcat">Tomcat이란?</a></li>
+          <li><a href="#version">Tomcat 버전 선택</a></li>
+          <li><a href="#install">설치 준비</a></li>
+          <li><a href="#windows">Windows 설치 방법</a></li>
+          <li><a href="#folder">Tomcat 폴더 구조</a></li>
+          <li><a href="#run">실행과 종료</a></li>
+          <li><a href="#eclipse">Eclipse 연동</a></li>
+          <li><a href="#jsp">첫 JSP 실행</a></li>
+          <li><a href="#request-response">요청과 응답</a></li>
+          <li><a href="#get-post">GET과 POST</a></li>
+          <li><a href="#servlet">Servlet 요청 처리</a></li>
+          <li><a href="#move">forward와 redirect</a></li>
+          <li><a href="#error">자주 나는 오류</a></li>
+          <li><a href="#practice">실습 문제</a></li>
+          <li><a href="#summary">최종 정리</a></li>
+        </ol>
+      </aside>
+
+      <main>
+        <section id="goal">
+          <h2>1. 수업 목표</h2>
+          <p class="lead">
+            이번 수업의 목표는 Java 웹 개발의 첫 흐름을 이해하는 것입니다.
+            아직 데이터베이스를 연결하지 않고, 서버 설치와 요청/응답 처리에 집중합니다.
+          </p>
+
+          <div class="box info">
+            <div class="box-title">이번 장에서 할 수 있어야 하는 것</div>
+            <ul>
+              <li>Tomcat이 왜 필요한지 설명할 수 있다.</li>
+              <li>JDK와 Tomcat을 설치하고 실행할 수 있다.</li>
+              <li><code>localhost:8080</code> 주소의 의미를 설명할 수 있다.</li>
+              <li>JSP 파일을 만들고 브라우저에서 실행할 수 있다.</li>
+              <li>form으로 보낸 값을 <code>request.getParameter()</code>로 받을 수 있다.</li>
+              <li>Servlet에서 요청을 처리하고 응답을 만들 수 있다.</li>
+              <li><code>forward</code>와 <code>redirect</code>의 차이를 설명할 수 있다.</li>
+            </ul>
+          </div>
+
+          <div class="box warn">
+            <div class="box-title">이번 장에서 제외하는 내용</div>
+            <p>
+              DB 접속, DAO, DTO, JDBC, 회원/게시판 CRUD는 다음 장에서 다룹니다.
+              이번 장에서는 웹 서버가 요청을 받고 응답하는 기본 구조만 학습합니다.
+            </p>
+          </div>
+        </section>
+
+        <section id="tomcat">
+          <h2>2. Tomcat이란?</h2>
+          <p>
+            <strong>Tomcat은 Java 웹 애플리케이션을 실행해주는 서버 프로그램</strong>입니다.
+            브라우저는 HTML, CSS, JavaScript는 직접 해석할 수 있지만,
+            JSP나 Servlet 같은 Java 코드는 직접 실행하지 못합니다.
+          </p>
+          <p>
+            그래서 중간에서 Java 웹 코드를 실행하고, 그 결과를 HTML로 만들어 브라우저에게
+            보내주는 프로그램이 필요합니다. 그 대표적인 프로그램이 <strong>Apache Tomcat</strong>입니다.
+          </p>
+
+          <div class="flow">
+            <div class="step"><span class="num">1</span>브라우저가 HTTP 요청을 보낸다.</div>
+            <div class="step"><span class="num">2</span>Tomcat이 요청을 받는다.</div>
+            <div class="step"><span class="num">3</span>Tomcat이 JSP 또는 Servlet을 실행한다.</div>
+            <div class="step"><span class="num">4</span>Java 코드 실행 결과로 HTML 응답을 만든다.</div>
+            <div class="step"><span class="num">5</span>브라우저가 HTML을 받아 화면에 출력한다.</div>
+          </div>
+
+          <div class="box success">
+            <div class="box-title">한 문장 정리</div>
+            <p>
+              <strong>Tomcat = Java 웹 서버 + Servlet/JSP 실행기</strong>
+            </p>
+          </div>
+
+          <h3>Tomcat이 필요한 이유</h3>
+          <p>
+            HTML 파일은 브라우저가 바로 열 수 있습니다. 하지만 JSP 파일은 Java 코드가 포함될 수 있기 때문에
+            브라우저가 직접 실행할 수 없습니다.
+          </p>
+
+          <pre><code class="">index.html
+→ 브라우저가 직접 해석 가능
+
+index.jsp
+→ Java 코드가 포함될 수 있음
+→ 브라우저가 직접 실행 불가능
+→ Tomcat이 실행해야 함</code></pre>
+
+          <p>예를 들어 JSP 파일에 다음 코드가 있다고 가정합니다.</p>
+
+          <pre><code class="language-jsp">&lt;%
+    String name = &quot;홍길동&quot;;
+%&gt;
+
+&lt;h1&gt;&lt;%= name %&gt;님 안녕하세요&lt;/h1&gt;</code></pre>
+
+          <p>
+            브라우저는 <code>&lt;% %&gt;</code> 안의 Java 코드를 알지 못합니다.
+            Tomcat이 JSP를 실행한 뒤, 최종 결과인 HTML을 만들어 브라우저에게 응답합니다.
+          </p>
+
+          <pre><code class="language-html">&lt;h1&gt;홍길동님 안녕하세요&lt;/h1&gt;</code></pre>
+
+          <h3>Tomcat의 역할</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>역할</th>
+                <th>설명</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>요청 받기</td>
+                <td>브라우저가 보낸 HTTP 요청을 받는다.</td>
+              </tr>
+              <tr>
+                <td>주소 분석</td>
+                <td><code>/hello</code>, <code>/login</code>, <code>/index.jsp</code> 같은 요청 주소를 확인한다.</td>
+              </tr>
+              <tr>
+                <td>JSP 실행</td>
+                <td>JSP를 실행하고 HTML 결과를 만든다.</td>
+              </tr>
+              <tr>
+                <td>Servlet 실행</td>
+                <td>요청 주소와 연결된 Servlet 클래스를 실행한다.</td>
+              </tr>
+              <tr>
+                <td>응답 생성</td>
+                <td>HTML, 페이지 이동, 오류 코드 등을 브라우저로 보낸다.</td>
+              </tr>
+              <tr>
+                <td>포트 관리</td>
+                <td>보통 <code>8080</code> 포트에서 요청을 기다린다.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Apache HTTP Server와 Tomcat 차이</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>주요 역할</th>
+                <th>예시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Apache HTTP Server</td>
+                <td>정적 웹 서버</td>
+                <td>HTML, CSS, JS, 이미지 제공</td>
+              </tr>
+              <tr>
+                <td>Apache Tomcat</td>
+                <td>Java 웹 서버</td>
+                <td>JSP, Servlet 실행</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="version">
+          <h2>3. Tomcat 버전 선택</h2>
+          <p>
+            수업에서 가장 많이 헷갈리는 부분은 Tomcat 9와 Tomcat 10 이상에서 사용하는
+            Servlet 패키지명이 다르다는 점입니다.
+          </p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>패키지명</th>
+                <th>예시 import</th>
+                <th>수업 기준</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Tomcat 9</td>
+                <td><code>javax.servlet.*</code></td>
+                <td><code>import javax.servlet.http.HttpServlet;</code></td>
+                <td>예전 JSP/Servlet 교재에서 많이 사용</td>
+              </tr>
+              <tr>
+                <td>Tomcat 10.1 이상</td>
+                <td><code>jakarta.servlet.*</code></td>
+                <td><code>import jakarta.servlet.http.HttpServlet;</code></td>
+                <td>최신 Jakarta EE 기준</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="box warn">
+            <div class="box-title">버전 선택 공식</div>
+            <pre><code class="">수업 코드가 javax.servlet.* 이면
+→ Tomcat 9 사용
+
+수업 코드가 jakarta.servlet.* 이면
+→ Tomcat 10.1 이상 사용</code></pre>
+          </div>
+
+          <p>
+            가장 중요한 것은 <strong>JDK, Tomcat, Servlet import 버전이 서로 맞아야 한다</strong>는 점입니다.
+            버전이 맞지 않으면 import 오류나 실행 오류가 발생할 수 있습니다.
+          </p>
+        </section>
+
+        <section id="install">
+          <h2>4. 설치 준비</h2>
+          <p>Tomcat을 사용하려면 먼저 Java 개발 환경이 필요합니다.</p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>프로그램</th>
+                <th>역할</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>JDK</td>
+                <td>Java 코드를 컴파일하고 실행하는 개발 도구</td>
+              </tr>
+              <tr>
+                <td>Apache Tomcat</td>
+                <td>JSP와 Servlet을 실행하는 Java 웹 서버</td>
+              </tr>
+              <tr>
+                <td>Eclipse 또는 IntelliJ</td>
+                <td>코드를 작성하고 프로젝트를 관리하는 개발 도구</td>
+              </tr>
+              <tr>
+                <td>웹 브라우저</td>
+                <td>서버 응답 결과를 확인하는 도구</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="box info">
+            <div class="box-title">설치 순서</div>
+            <div class="flow">
+              <div class="step"><span class="num">1</span>JDK 설치</div>
+              <div class="step"><span class="num">2</span>JAVA_HOME 환경변수 설정</div>
+              <div class="step"><span class="num">3</span>Tomcat 다운로드</div>
+              <div class="step"><span class="num">4</span>Tomcat 압축 해제</div>
+              <div class="step"><span class="num">5</span>startup.bat으로 서버 실행</div>
+              <div class="step"><span class="num">6</span>localhost:8080 접속 확인</div>
+              <div class="step"><span class="num">7</span>Eclipse에 Tomcat Runtime 등록</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="windows">
+          <h2>5. Windows 기준 Tomcat 설치 방법</h2>
+
+          <h3>5-1. JDK 설치 확인</h3>
+          <p>명령 프롬프트를 열고 다음 명령어를 입력합니다.</p>
+
+          <pre><code class="language-bash">java -version
+javac -version</code></pre>
+
+          <p>정상적으로 버전이 나오면 Java 설치가 된 것입니다.</p>
+
+          <pre><code class="">java version &quot;17.0.x&quot;
+javac 17.0.x</code></pre>
+
+          <div class="box danger">
+            <div class="box-title">주의</div>
+            <p>
+              <code>java</code> 또는 <code>javac</code> 명령어를 찾을 수 없다고 나오면
+              JDK 설치 또는 환경변수 설정을 확인해야 합니다.
+            </p>
+          </div>
+
+          <h3>5-2. JAVA_HOME 설정</h3>
+          <p>
+            Tomcat은 Java로 실행되므로 JDK 위치를 알아야 합니다.
+            이때 사용하는 환경변수가 <code>JAVA_HOME</code>입니다.
+          </p>
+
+          <p>예를 들어 JDK가 다음 위치에 설치되어 있다면,</p>
+
+          <pre><code class="">C:\Program Files\Java\jdk-17</code></pre>
+
+          <p>환경변수는 다음처럼 설정합니다.</p>
+
+          <pre><code class="">JAVA_HOME = C:\Program Files\Java\jdk-17</code></pre>
+
+          <p><code>Path</code>에는 다음 값을 추가합니다.</p>
+
+          <pre><code class="">%JAVA_HOME%\bin</code></pre>
+
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>예시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>올바른 JAVA_HOME</td>
+                <td><code>C:\Program Files\Java\jdk-17</code></td>
+              </tr>
+              <tr>
+                <td>잘못된 JAVA_HOME</td>
+                <td><code>C:\Program Files\Java\jdk-17\bin</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>설정 확인은 다음 명령어로 합니다.</p>
+
+          <pre><code class="language-bash">echo %JAVA_HOME%
+java -version
+javac -version</code></pre>
+
+          <h3>5-3. Tomcat 다운로드</h3>
+          <p>
+            Apache Tomcat 공식 다운로드 페이지에서 수업 버전에 맞는 Tomcat을 내려받습니다.
+            초보 수업에서는 보통 설치 프로그램보다 <strong>zip 파일 방식</strong>이 이해하기 쉽습니다.
+          </p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>수업 기준</th>
+                <th>다운로드 예시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Tomcat 9</td>
+                <td><code>apache-tomcat-9.x.x-windows-x64.zip</code></td>
+              </tr>
+              <tr>
+                <td>Tomcat 10.1</td>
+                <td><code>apache-tomcat-10.1.x-windows-x64.zip</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="box success">
+            <div class="box-title">zip 방식의 장점</div>
+            <ul>
+              <li>압축만 풀면 설치가 끝난다.</li>
+              <li>폴더 구조를 직접 확인할 수 있다.</li>
+              <li>Eclipse에 연결하기 쉽다.</li>
+              <li>삭제할 때 폴더만 지우면 된다.</li>
+            </ul>
+          </div>
+
+          <h3>5-4. Tomcat 압축 해제</h3>
+          <p>다운로드한 zip 파일을 원하는 위치에 압축 해제합니다.</p>
+
+          <p>추천 위치:</p>
+
+          <pre><code class="">C:\dev\apache-tomcat-9.0.x
+C:\dev\apache-tomcat-10.1.x</code></pre>
+
+          <p>비추천 위치:</p>
+
+          <pre><code class="">바탕화면
+다운로드 폴더
+한글 경로가 포함된 폴더
+너무 깊은 폴더</code></pre>
+
+          <div class="box info">
+            <div class="box-title">용어 정리</div>
+            <p>
+              Tomcat을 압축 해제한 최상위 폴더를 보통 <strong>Tomcat 설치 폴더</strong> 또는
+              <strong>CATALINA_HOME</strong>이라고 부릅니다.
+            </p>
+          </div>
+        </section>
+
+        <section id="folder">
+          <h2>6. Tomcat 폴더 구조</h2>
+          <p>압축을 풀면 다음과 같은 폴더가 보입니다.</p>
+
+          <pre><code class="">apache-tomcat-9.0.x
+ ├─ bin
+ ├─ conf
+ ├─ lib
+ ├─ logs
+ ├─ temp
+ ├─ webapps
+ └─ work</code></pre>
+
+          <table>
+            <thead>
+              <tr>
+                <th>폴더</th>
+                <th>의미</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>bin</code></td>
+                <td>Tomcat 실행, 종료 파일이 들어 있다. <code>startup.bat</code>, <code>shutdown.bat</code></td>
+              </tr>
+              <tr>
+                <td><code>conf</code></td>
+                <td>서버 설정 파일이 들어 있다. 포트 번호를 바꿀 때 <code>server.xml</code>을 수정한다.</td>
+              </tr>
+              <tr>
+                <td><code>lib</code></td>
+                <td>Tomcat 실행에 필요한 라이브러리 파일이 들어 있다.</td>
+              </tr>
+              <tr>
+                <td><code>logs</code></td>
+                <td>실행 로그와 오류 로그가 저장된다.</td>
+              </tr>
+              <tr>
+                <td><code>webapps</code></td>
+                <td>웹 프로젝트가 배포되는 위치이다.</td>
+              </tr>
+              <tr>
+                <td><code>work</code></td>
+                <td>JSP가 Servlet으로 변환되어 임시 저장되는 위치이다.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="box warn">
+            <div class="box-title">수업 초반에 특히 중요한 폴더</div>
+            <p><code>bin</code>, <code>conf</code>, <code>webapps</code>, <code>logs</code>, <code>work</code></p>
+          </div>
+        </section>
+
+        <section id="run">
+          <h2>7. Tomcat 실행과 종료</h2>
+
+          <h3>7-1. Tomcat 실행</h3>
+          <p>Tomcat 설치 폴더 안의 <code>bin</code> 폴더로 이동합니다.</p>
+
+          <pre><code class="">C:\dev\apache-tomcat-9.0.x\bin</code></pre>
+
+          <p>여기서 <code>startup.bat</code>을 실행하면 Tomcat이 시작됩니다.</p>
+
+          <pre><code class="language-bash">cd C:\dev\apache-tomcat-9.0.x\bin
+startup.bat</code></pre>
+
+          <h3>7-2. 실행 확인</h3>
+          <p>브라우저에서 다음 주소로 접속합니다.</p>
+
+          <pre><code class="">http://localhost:8080</code></pre>
+
+          <table>
+            <thead>
+              <tr>
+                <th>부분</th>
+                <th>의미</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>http</code></td>
+                <td>HTTP 방식으로 요청한다.</td>
+              </tr>
+              <tr>
+                <td><code>localhost</code></td>
+                <td>내 컴퓨터를 의미한다.</td>
+              </tr>
+              <tr>
+                <td><code>8080</code></td>
+                <td>Tomcat이 요청을 기다리는 기본 포트 번호이다.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="box success">
+            <div class="box-title">주소 해석</div>
+            <p>
+              <code>http://localhost:8080</code>은
+              “내 컴퓨터에서 실행 중인 Tomcat 서버의 8080번 포트로 요청한다”는 뜻입니다.
+            </p>
+          </div>
+
+          <h3>7-3. Tomcat 종료</h3>
+          <p>Tomcat을 종료할 때는 <code>shutdown.bat</code>을 실행합니다.</p>
+
+          <pre><code class="language-bash">cd C:\dev\apache-tomcat-9.0.x\bin
+shutdown.bat</code></pre>
+
+          <h3>7-4. 8080 포트 변경</h3>
+          <p>
+            다른 프로그램이 이미 8080 포트를 사용 중이면 Tomcat이 실행되지 않을 수 있습니다.
+            이때는 <code>conf/server.xml</code>에서 포트 번호를 변경합니다.
+          </p>
+
+          <p>기존 설정:</p>
+
+          <pre><code class="language-xml">&lt;Connector port=&quot;8080&quot; protocol=&quot;HTTP/1.1&quot;
+           connectionTimeout=&quot;20000&quot;
+           redirectPort=&quot;8443&quot; /&gt;</code></pre>
+
+          <p>변경 예시:</p>
+
+          <pre><code class="language-xml">&lt;Connector port=&quot;8090&quot; protocol=&quot;HTTP/1.1&quot;
+           connectionTimeout=&quot;20000&quot;
+           redirectPort=&quot;8443&quot; /&gt;</code></pre>
+
+          <p>변경 후에는 다음 주소로 접속합니다.</p>
+
+          <pre><code class="">http://localhost:8090</code></pre>
+        </section>
+
+        <section id="eclipse">
+          <h2>8. Eclipse에 Tomcat 등록하기</h2>
+          <p>
+            Tomcat을 설치한 뒤에는 Eclipse에서 사용할 수 있도록 서버 런타임으로 등록해야 합니다.
+          </p>
+
+          <h3>8-1. Tomcat Runtime 등록</h3>
+          <ol class="practice">
+            <li>Eclipse 실행</li>
+            <li><code>Window → Preferences</code> 이동</li>
+            <li><code>Server → Runtime Environments</code> 또는 <code>Installed Runtimes</code> 선택</li>
+            <li><code>Add</code> 클릭</li>
+            <li><code>Apache → Apache Tomcat v9.0</code> 또는 <code>Apache Tomcat v10.1</code> 선택</li>
+            <li>Tomcat 설치 폴더 선택</li>
+            <li>JDK 선택 후 <code>Finish</code></li>
+          </ol>
+
+          <div class="box danger">
+            <div class="box-title">폴더 선택 주의</div>
+            <p>Tomcat 설치 폴더를 선택해야 하며, <code>bin</code> 폴더를 선택하면 안 됩니다.</p>
+
+            <pre><code class="">잘못된 선택:
+C:\dev\apache-tomcat-9.0.x\bin
+
+올바른 선택:
+C:\dev\apache-tomcat-9.0.x</code></pre>
+          </div>
+
+          <h3>8-2. Eclipse에서 서버 만들기</h3>
+          <ol class="practice">
+            <li><code>Servers</code> 탭 열기</li>
+            <li><code>No servers are available</code> 또는 빈 영역에서 새 서버 생성</li>
+            <li><code>Apache → Tomcat v9.0 Server</code> 또는 <code>Tomcat v10.1 Server</code> 선택</li>
+            <li>실행할 프로젝트 추가</li>
+            <li><code>Finish</code></li>
+            <li>서버를 Start하여 실행 확인</li>
+          </ol>
+
+          <h3>8-3. Dynamic Web Project와 연결</h3>
+          <p>웹 프로젝트를 만들 때는 Target Runtime으로 Tomcat을 선택합니다.</p>
+
+          <pre><code class="">File
+ → New
+ → Dynamic Web Project
+ → Project name 입력
+ → Target Runtime: Apache Tomcat v9.0 또는 v10.1 선택</code></pre>
+
+          <div class="box info">
+            <div class="box-title">Target Runtime이란?</div>
+            <p>
+              이 프로젝트를 어떤 서버에서 실행할지 정하는 설정입니다.
+              JSP와 Servlet 프로젝트라면 Tomcat Runtime을 연결해야 합니다.
+            </p>
+          </div>
+        </section>
+
+        <section id="jsp">
+          <h2>9. 첫 JSP 실행</h2>
+          <p>프로젝트 이름이 <code>MyWeb</code>이고, <code>index.jsp</code> 파일이 있다고 가정합니다.</p>
+
+          <pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html; charset=UTF-8&quot; %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;첫 JSP&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Tomcat 실행 성공&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+          <p>브라우저에서 다음 주소로 접속합니다.</p>
+
+          <pre><code class="">http://localhost:8080/MyWeb/index.jsp</code></pre>
+
+          <div class="flow">
+            <div class="step"><span class="num">1</span>브라우저가 <code>/MyWeb/index.jsp</code> 요청</div>
+            <div class="step"><span class="num">2</span>Tomcat이 8080 포트에서 요청을 받음</div>
+            <div class="step"><span class="num">3</span>Tomcat이 MyWeb 프로젝트를 찾음</div>
+            <div class="step"><span class="num">4</span>index.jsp 실행</div>
+            <div class="step"><span class="num">5</span>HTML 응답 생성</div>
+            <div class="step"><span class="num">6</span>브라우저에 화면 출력</div>
+          </div>
+
+          <div class="box success">
+            <div class="box-title">핵심</div>
+            <p>
+              사용자는 JSP 원본 코드를 보는 것이 아니라,
+              Tomcat이 JSP를 실행해서 만든 HTML 결과를 봅니다.
+            </p>
+          </div>
+        </section>
+
+        <section id="request-response">
+          <h2>10. 요청 request와 응답 response</h2>
+          <p>
+            웹 수업의 가장 기본이 되는 개념은 <strong>요청</strong>과 <strong>응답</strong>입니다.
+          </p>
+
+          <div class="flow">
+            <div class="step"><span class="num">1</span>사용자가 주소 입력, 링크 클릭, form 제출</div>
+            <div class="step"><span class="num">2</span>브라우저가 서버로 request 전송</div>
+            <div class="step"><span class="num">3</span>Tomcat이 요청을 받아 JSP 또는 Servlet 실행</div>
+            <div class="step"><span class="num">4</span>서버가 response 생성</div>
+            <div class="step"><span class="num">5</span>브라우저가 응답을 화면에 출력</div>
+          </div>
+
+          <h3>request란?</h3>
+          <p><strong>request</strong>는 브라우저가 서버에게 보내는 요청 정보입니다.</p>
+          <ul>
+            <li>요청 주소</li>
+            <li>요청 방식 GET 또는 POST</li>
+            <li>사용자가 입력한 값</li>
+            <li>브라우저 정보</li>
+            <li>쿠키 정보</li>
+          </ul>
+
+          <h3>response란?</h3>
+          <p><strong>response</strong>는 서버가 브라우저에게 돌려주는 결과입니다.</p>
+          <ul>
+            <li>HTML</li>
+            <li>CSS, JavaScript, 이미지</li>
+            <li>페이지 이동 명령</li>
+            <li>상태 코드</li>
+          </ul>
+
+          <div class="box info">
+            <div class="box-title">방향 기억하기</div>
+            <pre><code class="">request  = 브라우저 → 서버
+response = 서버 → 브라우저</code></pre>
+          </div>
+        </section>
+
+        <section id="get-post">
+          <h2>11. GET과 POST</h2>
+
+          <h3>11-1. GET 요청</h3>
+          <p>GET은 주로 조회할 때 사용합니다. 데이터가 주소 뒤에 붙습니다.</p>
+
+          <pre><code class="">http://localhost:8080/MyWeb/hello.jsp?name=hong</code></pre>
+
+          <p><code>?</code> 뒤에 붙는 값을 query string이라고 합니다.</p>
+
+          <pre><code class="">name=hong</code></pre>
+
+          <p>JSP에서는 다음처럼 값을 받을 수 있습니다.</p>
+
+          <pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html; charset=UTF-8&quot; %&gt;
+&lt;%
+    String name = request.getParameter(&quot;name&quot;);
+%&gt;
+
+&lt;h1&gt;&lt;%= name %&gt;님 안녕하세요&lt;/h1&gt;</code></pre>
+
+          <h3>11-2. POST 요청</h3>
+          <p>POST는 주로 사용자가 입력한 데이터를 서버로 보낼 때 사용합니다.</p>
+
+          <pre><code class="language-html">&lt;form action=&quot;result.jsp&quot; method=&quot;post&quot;&gt;
+    &lt;input type=&quot;text&quot; name=&quot;name&quot;&gt;
+    &lt;button type=&quot;submit&quot;&gt;전송&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+          <p><code>result.jsp</code>에서는 다음처럼 값을 받습니다.</p>
+
+          <pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html; charset=UTF-8&quot; %&gt;
+&lt;%
+    request.setCharacterEncoding(&quot;UTF-8&quot;);
+    String name = request.getParameter(&quot;name&quot;);
+%&gt;
+
+&lt;h1&gt;&lt;%= name %&gt;님 환영합니다.&lt;/h1&gt;</code></pre>
+
+          <h3>11-3. GET과 POST 비교</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>GET</th>
+                <th>POST</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>주 목적</td>
+                <td>조회</td>
+                <td>등록, 전송</td>
+              </tr>
+              <tr>
+                <td>데이터 위치</td>
+                <td>URL 뒤 query string</td>
+                <td>요청 body</td>
+              </tr>
+              <tr>
+                <td>주소창 노출</td>
+                <td>보임</td>
+                <td>URL에는 직접 보이지 않음</td>
+              </tr>
+              <tr>
+                <td>사용 예</td>
+                <td>검색, 목록, 상세보기</td>
+                <td>로그인, 회원가입, 글쓰기</td>
+              </tr>
+              <tr>
+                <td>form method</td>
+                <td><code>method="get"</code></td>
+                <td><code>method="post"</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="box success">
+            <div class="box-title">암기 공식</div>
+            <pre><code class="">GET  = 주소에 값을 붙여서 요청
+POST = 요청 몸체에 값을 담아서 요청</code></pre>
+          </div>
+
+          <h3>11-4. form 태그 핵심</h3>
+          <p>사용자 입력값을 서버로 보내려면 <code>form</code> 태그를 사용합니다.</p>
+
+          <pre><code class="language-html">&lt;form action=&quot;result.jsp&quot; method=&quot;get&quot;&gt;
+    아이디: &lt;input type=&quot;text&quot; name=&quot;id&quot;&gt;
+    비밀번호: &lt;input type=&quot;password&quot; name=&quot;pw&quot;&gt;
+    &lt;button type=&quot;submit&quot;&gt;로그인&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+          <table>
+            <thead>
+              <tr>
+                <th>속성</th>
+                <th>의미</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>action</code></td>
+                <td>요청을 보낼 주소</td>
+              </tr>
+              <tr>
+                <td><code>method</code></td>
+                <td>요청 방식 GET 또는 POST</td>
+              </tr>
+              <tr>
+                <td><code>name</code></td>
+                <td>서버에서 값을 꺼낼 때 사용하는 이름</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="box info">
+            <div class="box-title">가장 중요한 연결</div>
+            <pre><code class="">&lt;input type=&quot;text&quot; name=&quot;id&quot;&gt;
+             ↓
+request.getParameter(&quot;id&quot;)</code></pre>
+          </div>
+
+          <h3>11-5. 한글 깨짐 처리</h3>
+          <p>POST 방식으로 한글을 보낼 때는 값을 꺼내기 전에 인코딩을 설정합니다.</p>
+
+          <pre><code class="language-java">request.setCharacterEncoding(&quot;UTF-8&quot;);
+
+String name = request.getParameter(&quot;name&quot;);</code></pre>
+
+          <div class="box danger">
+            <div class="box-title">순서 주의</div>
+            <p>
+              <code>request.setCharacterEncoding("UTF-8")</code>은 반드시
+              <code>request.getParameter()</code>보다 먼저 작성해야 합니다.
+            </p>
+          </div>
+        </section>
+
+        <section id="servlet">
+          <h2>12. Servlet으로 요청 처리하기</h2>
+          <p>
+            JSP가 화면 중심이라면, Servlet은 요청 처리 중심입니다.
+            Servlet은 브라우저의 요청을 받아 Java 코드로 처리하고 응답을 만듭니다.
+          </p>
+
+          <div class="box info">
+            <div class="box-title">역할 구분</div>
+            <pre><code class="">JSP     : 화면 출력
+Servlet : 요청 처리</code></pre>
+          </div>
+
+          <h3>12-1. Servlet 기본 구조</h3>
+          <p>Tomcat 10.1 이상 기준 예시입니다.</p>
+
+          <pre><code class="language-java">import java.io.IOException;
+import java.io.PrintWriter;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@WebServlet(&quot;/hello&quot;)
+public class HelloServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType(&quot;text/html; charset=UTF-8&quot;);
+
+        PrintWriter out = response.getWriter();
+        out.println(&quot;&lt;h1&gt;Hello Servlet&lt;/h1&gt;&quot;);
+    }
+}</code></pre>
+
+          <p>Tomcat 9를 사용한다면 import가 다음처럼 바뀝니다.</p>
+
+          <pre><code class="language-java">import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;</code></pre>
+
+          <h3>12-2. Servlet 요청 주소</h3>
+          <p>Servlet 위에 작성한 <code>@WebServlet</code>은 요청 주소를 연결합니다.</p>
+
+          <pre><code class="language-java">@WebServlet(&quot;/hello&quot;)</code></pre>
+
+          <p>이 뜻은 다음과 같습니다.</p>
+
+          <pre><code class="">/hello 주소로 요청이 오면 이 Servlet을 실행한다.</code></pre>
+
+          <p>브라우저에서 다음 주소로 접속하면 <code>HelloServlet</code>의 <code>doGet()</code>이 실행됩니다.</p>
+
+          <pre><code class="">http://localhost:8080/MyWeb/hello</code></pre>
+
+          <h3>12-3. doGet과 doPost</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>메서드</th>
+                <th>실행 상황</th>
+                <th>예시</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>doGet()</code></td>
+                <td>GET 요청이 들어왔을 때 실행</td>
+                <td>주소 직접 입력, 링크 클릭, 검색</td>
+              </tr>
+              <tr>
+                <td><code>doPost()</code></td>
+                <td>POST 요청이 들어왔을 때 실행</td>
+                <td>로그인, 회원가입, 글쓰기 form 제출</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>12-4. Servlet에서 form 값 받기</h3>
+          <p>입력 화면입니다.</p>
+
+          <pre><code class="language-html">&lt;form action=&quot;login&quot; method=&quot;post&quot;&gt;
+    아이디: &lt;input type=&quot;text&quot; name=&quot;id&quot;&gt;
+    비밀번호: &lt;input type=&quot;password&quot; name=&quot;pw&quot;&gt;
+    &lt;button type=&quot;submit&quot;&gt;로그인&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+          <p>Servlet에서는 다음처럼 값을 받습니다.</p>
+
+          <pre><code class="language-java">@WebServlet(&quot;/login&quot;)
+public class LoginServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        request.setCharacterEncoding(&quot;UTF-8&quot;);
+
+        String id = request.getParameter(&quot;id&quot;);
+        String pw = request.getParameter(&quot;pw&quot;);
+
+        System.out.println(&quot;id = &quot; + id);
+        System.out.println(&quot;pw = &quot; + pw);
+    }
+}</code></pre>
+
+          <div class="box success">
+            <div class="box-title">연결 관계</div>
+            <pre><code class="">form action=&quot;login&quot;
+        ↓
+@WebServlet(&quot;/login&quot;)
+
+input name=&quot;id&quot;
+        ↓
+request.getParameter(&quot;id&quot;)</code></pre>
+          </div>
+
+          <h3>12-5. Servlet에서 직접 응답 보내기</h3>
+          <p>Servlet에서 직접 HTML을 만들어 브라우저로 보낼 수 있습니다.</p>
+
+          <pre><code class="language-java">response.setContentType(&quot;text/html; charset=UTF-8&quot;);
+
+PrintWriter out = response.getWriter();
+out.println(&quot;&lt;html&gt;&quot;);
+out.println(&quot;&lt;body&gt;&quot;);
+out.println(&quot;&lt;h1&gt;로그인 결과&lt;/h1&gt;&quot;);
+out.println(&quot;&lt;p&gt;로그인 요청이 처리되었습니다.&lt;/p&gt;&quot;);
+out.println(&quot;&lt;/body&gt;&quot;);
+out.println(&quot;&lt;/html&gt;&quot;);</code></pre>
+
+          <div class="box warn">
+            <div class="box-title">실무 구조로 가면?</div>
+            <p>
+              Servlet 안에 HTML을 많이 쓰면 코드가 복잡해집니다.
+              그래서 보통 Servlet은 요청을 처리하고, JSP는 화면을 출력하도록 역할을 나눕니다.
+            </p>
+          </div>
+        </section>
+
+        <section id="move">
+          <h2>13. forward와 redirect</h2>
+
+          <h3>13-1. forward</h3>
+          <p>
+            <code>forward</code>는 Servlet에서 처리한 결과를 JSP로 넘길 때 사용합니다.
+            서버 내부에서 이동하기 때문에 request 데이터가 유지됩니다.
+          </p>
+
+          <pre><code class="language-java">request.setAttribute(&quot;message&quot;, &quot;로그인 성공&quot;);
+
+request.getRequestDispatcher(&quot;/result.jsp&quot;)
+       .forward(request, response);</code></pre>
+
+          <p><code>result.jsp</code>에서는 다음처럼 출력할 수 있습니다.</p>
+
+          <pre><code class="language-jsp">&lt;h1&gt;${message}&lt;/h1&gt;</code></pre>
+
+          <div class="box info">
+            <div class="box-title">forward 특징</div>
+            <ul>
+              <li>서버 내부에서 JSP로 이동한다.</li>
+              <li>주소창이 바뀌지 않는다.</li>
+              <li>request에 담은 데이터가 유지된다.</li>
+              <li>처리 결과를 화면에 보여줄 때 자주 사용한다.</li>
+            </ul>
+          </div>
+
+          <h3>13-2. redirect</h3>
+          <p>
+            <code>redirect</code>는 브라우저에게 다른 주소로 다시 요청하라고 지시하는 방식입니다.
+          </p>
+
+          <pre><code class="language-java">response.sendRedirect(&quot;main.jsp&quot;);</code></pre>
+
+          <div class="box info">
+            <div class="box-title">redirect 특징</div>
+            <ul>
+              <li>브라우저가 새 요청을 보낸다.</li>
+              <li>주소창이 바뀐다.</li>
+              <li>기존 request 데이터는 유지되지 않는다.</li>
+              <li>작업 후 다른 페이지로 이동시킬 때 사용한다.</li>
+            </ul>
+          </div>
+
+          <h3>13-3. 비교</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>forward</th>
+                <th>redirect</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>이동 방식</td>
+                <td>서버 내부 이동</td>
+                <td>브라우저가 새 요청</td>
+              </tr>
+              <tr>
+                <td>주소창</td>
+                <td>바뀌지 않음</td>
+                <td>바뀜</td>
+              </tr>
+              <tr>
+                <td>request 데이터</td>
+                <td>유지됨</td>
+                <td>사라짐</td>
+              </tr>
+              <tr>
+                <td>주 사용 상황</td>
+                <td>결과를 JSP에 보여줄 때</td>
+                <td>다른 페이지로 이동시킬 때</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="box success">
+            <div class="box-title">암기 공식</div>
+            <pre><code class="">forward  = request를 들고 서버 안에서 이동
+redirect = 브라우저에게 다시 요청하라고 시킴</code></pre>
+          </div>
+
+          <h3>13-4. getParameter와 setAttribute 차이</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>메서드</th>
+                <th>용도</th>
+                <th>방향</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>request.getParameter()</code></td>
+                <td>사용자가 보낸 값을 받는다.</td>
+                <td>브라우저 → 서버</td>
+              </tr>
+              <tr>
+                <td><code>request.setAttribute()</code></td>
+                <td>Servlet에서 JSP로 값을 전달한다.</td>
+                <td>Servlet → JSP</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="error">
+          <h2>14. 자주 나는 오류</h2>
+
+          <h3>14-1. 404 오류</h3>
+          <p>404는 요청한 주소를 찾을 수 없다는 뜻입니다.</p>
+
+          <div class="box danger">
+            <div class="box-title">확인할 것</div>
+            <ul>
+              <li>프로젝트명이 맞는가?</li>
+              <li>JSP 파일명이 맞는가?</li>
+              <li><code>@WebServlet</code> 주소가 맞는가?</li>
+              <li>프로젝트가 Tomcat에 추가되어 있는가?</li>
+              <li>Tomcat 서버가 정상 실행 중인가?</li>
+            </ul>
+          </div>
+
+          <h3>14-2. 405 오류</h3>
+          <p>405는 요청 방식이 맞지 않을 때 발생할 수 있습니다.</p>
+
+          <div class="box danger">
+            <div class="box-title">예시</div>
+            <ul>
+              <li>GET으로 요청했는데 Servlet에 <code>doGet()</code>이 없다.</li>
+              <li>POST로 요청했는데 Servlet에 <code>doPost()</code>가 없다.</li>
+              <li>form의 <code>method</code>와 Servlet 메서드가 맞지 않는다.</li>
+            </ul>
+          </div>
+
+          <h3>14-3. 500 오류</h3>
+          <p>500은 서버 내부 오류입니다. Java 코드 실행 중 예외가 발생했을 가능성이 큽니다.</p>
+
+          <div class="box danger">
+            <div class="box-title">확인할 것</div>
+            <ul>
+              <li>Eclipse Console 오류 메시지</li>
+              <li>오타</li>
+              <li>null 값 사용 여부</li>
+              <li>import 오류</li>
+              <li>Tomcat 버전과 Servlet import 불일치</li>
+            </ul>
+          </div>
+
+          <h3>14-4. Tomcat 실행 창이 바로 꺼짐</h3>
+          <p>대부분 Java 환경변수 문제일 가능성이 높습니다.</p>
+
+          <pre><code class="language-bash">java -version
+javac -version
+echo %JAVA_HOME%</code></pre>
+
+          <h3>14-5. 포트 충돌</h3>
+          <p>8080 포트를 이미 다른 프로그램이 사용 중이면 Tomcat 실행이 실패할 수 있습니다.</p>
+
+          <pre><code class="">conf/server.xml 열기
+ → 8080 검색
+ → 8090 등으로 변경
+ → Tomcat 재시작</code></pre>
+        </section>
+
+        <section id="practice">
+          <h2>15. 실습 문제</h2>
+
+          <h3>실습 1. Tomcat 실행 확인</h3>
+          <ol class="practice">
+            <li>JDK 설치 여부를 <code>java -version</code>, <code>javac -version</code>으로 확인한다.</li>
+            <li>Tomcat 압축 파일을 <code>C:\dev</code> 아래에 해제한다.</li>
+            <li><code>bin/startup.bat</code>을 실행한다.</li>
+            <li>브라우저에서 <code>http://localhost:8080</code>에 접속한다.</li>
+            <li>Tomcat 기본 화면이 보이면 성공이다.</li>
+          </ol>
+
+          <h3>실습 2. 첫 JSP 페이지 만들기</h3>
+          <p><code>index.jsp</code>를 만들고 다음 내용을 작성합니다.</p>
+
+          <pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html; charset=UTF-8&quot; %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;첫 JSP 실습&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;나의 첫 JSP 페이지&lt;/h1&gt;
+    &lt;p&gt;Tomcat을 통해 실행되었습니다.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+          <h3>실습 3. GET 요청 값 받기</h3>
+          <p>브라우저 주소창에 다음처럼 입력합니다.</p>
+
+          <pre><code class="">http://localhost:8080/MyWeb/hello.jsp?name=kim</code></pre>
+
+          <p><code>hello.jsp</code>에서 값을 출력합니다.</p>
+
+          <pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html; charset=UTF-8&quot; %&gt;
+&lt;%
+    String name = request.getParameter(&quot;name&quot;);
+%&gt;
+
+&lt;h1&gt;&lt;%= name %&gt;님 안녕하세요&lt;/h1&gt;</code></pre>
+
+          <h3>실습 4. POST form 값 받기</h3>
+          <p><code>form.jsp</code></p>
+
+          <pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html; charset=UTF-8&quot; %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;입력 화면&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;이름 입력&lt;/h1&gt;
+
+    &lt;form action=&quot;result.jsp&quot; method=&quot;post&quot;&gt;
+        이름: &lt;input type=&quot;text&quot; name=&quot;name&quot;&gt;
+        &lt;button type=&quot;submit&quot;&gt;전송&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+          <p><code>result.jsp</code></p>
+
+          <pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html; charset=UTF-8&quot; %&gt;
+&lt;%
+    request.setCharacterEncoding(&quot;UTF-8&quot;);
+    String name = request.getParameter(&quot;name&quot;);
+%&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;결과 화면&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;&lt;%= name %&gt;님 환영합니다.&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+          <h3>실습 5. Servlet으로 요청 처리하기</h3>
+          <p>Tomcat 10 기준 Servlet 예시입니다. Tomcat 9를 사용하면 import를 <code>javax.servlet.*</code>로 바꿉니다.</p>
+
+          <pre><code class="language-java">import java.io.IOException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@WebServlet(&quot;/result&quot;)
+public class ResultServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        request.setCharacterEncoding(&quot;UTF-8&quot;);
+
+        String name = request.getParameter(&quot;name&quot;);
+
+        request.setAttribute(&quot;name&quot;, name);
+
+        request.getRequestDispatcher(&quot;/result.jsp&quot;)
+               .forward(request, response);
+    }
+}</code></pre>
+
+          <p><code>result.jsp</code></p>
+
+          <pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html; charset=UTF-8&quot; %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;결과 화면&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;결과 페이지&lt;/h1&gt;
+    &lt;p&gt;${name}님 환영합니다.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </section>
+
+        <section id="quiz">
+          <h2>16. 확인 문제</h2>
+
+          <div class="quiz">
+            <strong>문제 1.</strong> Tomcat은 왜 필요한가?
+            <div class="answer">답: 브라우저가 직접 실행할 수 없는 JSP와 Servlet 같은 Java 웹 코드를 실행하고, 그 결과를 HTML 응답으로 만들어 보내기 위해 필요하다.</div>
+          </div>
+
+          <div class="quiz">
+            <strong>문제 2.</strong> <code>http://localhost:8080</code>에서 <code>localhost</code>와 <code>8080</code>은 각각 무엇을 의미하는가?
+            <div class="answer">답: localhost는 내 컴퓨터, 8080은 Tomcat이 요청을 기다리는 포트 번호를 의미한다.</div>
+          </div>
+
+          <div class="quiz">
+            <strong>문제 3.</strong> form 태그의 <code>action</code>, <code>method</code>, input의 <code>name</code>은 각각 무엇인가?
+            <div class="answer">답: action은 요청 주소, method는 요청 방식, name은 서버에서 값을 꺼낼 때 사용하는 이름이다.</div>
+          </div>
+
+          <div class="quiz">
+            <strong>문제 4.</strong> <code>request.getParameter("id")</code>에서 <code>"id"</code>는 어디와 연결되는가?
+            <div class="answer">답: HTML input 태그의 <code>name="id"</code>와 연결된다.</div>
+          </div>
+
+          <div class="quiz">
+            <strong>문제 5.</strong> forward와 redirect의 가장 큰 차이는 무엇인가?
+            <div class="answer">답: forward는 서버 내부 이동이라 request가 유지되고 주소창이 바뀌지 않는다. redirect는 브라우저가 새 요청을 보내므로 request가 유지되지 않고 주소창이 바뀐다.</div>
+          </div>
+        </section>
+
+        <section id="summary">
+          <h2>17. 최종 정리</h2>
+
+          <div class="box success">
+            <div class="box-title">이번 장 핵심 흐름</div>
+            <pre><code class="">브라우저에서 주소 입력 또는 form 제출
+        ↓
+Tomcat이 요청을 받음
+        ↓
+JSP 또는 Servlet 실행
+        ↓
+request.getParameter()로 사용자 입력값 처리
+        ↓
+response 또는 JSP로 결과 생성
+        ↓
+브라우저에 HTML 응답</code></pre>
+          </div>
+
+          <h3>꼭 외울 것</h3>
+          <ul class="checklist">
+            <li>Tomcat은 JSP와 Servlet을 실행하는 Java 웹 서버이다.</li>
+            <li>브라우저는 서버에게 request를 보낸다.</li>
+            <li>서버는 브라우저에게 response를 돌려준다.</li>
+            <li>JSP는 주로 화면을 출력한다.</li>
+            <li>Servlet은 주로 요청을 처리한다.</li>
+            <li>GET은 주소에 데이터가 붙는다.</li>
+            <li>POST는 요청 body에 데이터가 담긴다.</li>
+            <li>form의 action은 요청 주소이다.</li>
+            <li>form의 method는 요청 방식이다.</li>
+            <li>input의 name은 서버에서 값을 꺼낼 때 사용하는 이름이다.</li>
+            <li><code>request.getParameter()</code>는 사용자가 보낸 값을 받는다.</li>
+            <li><code>request.setAttribute()</code>는 JSP로 값을 전달한다.</li>
+            <li>forward는 request를 유지한다.</li>
+            <li>redirect는 새 요청이므로 request가 유지되지 않는다.</li>
+            <li>Tomcat 9는 <code>javax.servlet.*</code>, Tomcat 10 이상은 <code>jakarta.servlet.*</code>를 사용한다.</li>
+          </ul>
+
+          <h3>다음 장 예고</h3>
+          <p>
+            다음 장에서는 이번 장에서 배운 요청 처리 흐름 뒤에 데이터베이스를 연결합니다.
+            그 과정에서 DB 접속, JDBC, DAO, DTO 개념을 학습하고,
+            회원가입 또는 게시판 CRUD 구조로 확장합니다.
+          </p>
+
+          <div class="box info">
+            <div class="box-title">다음 장 연결 흐름</div>
+            <pre><code class="">브라우저 요청
+  ↓
+Servlet에서 요청 처리
+  ↓
+DAO를 통해 DB 작업
+  ↓
+DTO에 데이터 저장
+  ↓
+JSP로 결과 출력</code></pre>
+          </div>
+        </section>
+
+        <p class="footer-note">
+          Java Web JSP Tomcat 1장 교안 · 설치 및 요청/응답 처리 중심 · DB/DAO/DTO는 다음 장에서 학습
+        </p>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

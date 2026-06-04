@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Java Web JSP Tomcat 교안 - Session, Cookie, localStorage</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --paper: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #d9e2ec;
+      --accent: #7c3aed;
+      --accent-dark: #5b21b6;
+      --accent-soft: #f1eaff;
+      --blue-soft: #eaf1ff;
+      --green-soft: #eaf8ef;
+      --yellow-soft: #fff7df;
+      --red-soft: #fff0f0;
+      --code-bg: #111827;
+      --code-ink: #f9fafb;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.72;
+      word-break: keep-all;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255,255,255,0.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand { font-weight: 800; letter-spacing: -0.02em; color: var(--accent); }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    button, .nav-pill {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    button:hover, .nav-pill:hover { border-color: var(--accent); color: var(--accent); }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 34px 22px 64px; }
+
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #f4edff 100%);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 42px;
+      box-shadow: 0 18px 60px rgba(31, 41, 55, 0.08);
+      margin-bottom: 26px;
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      border: 1px solid #d8c6ff;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    h1 { margin: 0 0 14px; font-size: clamp(32px, 5vw, 52px); line-height: 1.12; letter-spacing: -0.06em; }
+    .subtitle { font-size: 19px; color: var(--muted); margin: 0; max-width: 920px; }
+
+    .meta-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 26px; }
+    .meta { background: rgba(255,255,255,0.82); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; }
+    .meta strong { display: block; color: var(--accent); margin-bottom: 4px; font-size: 14px; }
+    .meta span { color: var(--ink); font-weight: 700; }
+
+    .layout { display: grid; grid-template-columns: 292px minmax(0, 1fr); gap: 24px; align-items: start; }
+
+    aside {
+      position: sticky;
+      top: 72px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 12px 34px rgba(31, 41, 55, 0.05);
+      max-height: calc(100vh - 96px);
+      overflow: auto;
+    }
+    aside h2 { font-size: 16px; margin: 0 0 10px; letter-spacing: -0.02em; }
+    .toc { list-style: none; padding: 0; margin: 0; }
+    .toc li { margin: 3px 0; }
+    .toc a { display: block; color: var(--muted); text-decoration: none; padding: 7px 8px; border-radius: 10px; font-size: 14px; }
+    .toc a:hover { background: var(--accent-soft); color: var(--accent); }
+
+    main { min-width: 0; }
+    section { background: var(--paper); border: 1px solid var(--line); border-radius: 24px; padding: 30px; margin-bottom: 22px; box-shadow: 0 10px 28px rgba(31, 41, 55, 0.04); }
+    h2 { margin: 0 0 16px; font-size: 30px; letter-spacing: -0.05em; line-height: 1.25; }
+    h3 { margin: 26px 0 10px; font-size: 22px; letter-spacing: -0.04em; }
+    h4 { margin: 18px 0 8px; font-size: 18px; }
+    p { margin: 10px 0; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 6px 0; }
+
+    .note, .warning, .good, .question { border-radius: 18px; padding: 16px 18px; margin: 16px 0; border: 1px solid transparent; }
+    .note { background: var(--blue-soft); border-color: #c9dbff; }
+    .warning { background: var(--yellow-soft); border-color: #f1d487; }
+    .good { background: var(--green-soft); border-color: #bde8c8; }
+    .question { background: var(--red-soft); border-color: #ffc7c7; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .card { border: 1px solid var(--line); border-radius: 18px; padding: 16px; background: #fff; }
+    .card h3, .card h4 { margin-top: 0; }
+
+    table { width: 100%; border-collapse: collapse; margin: 18px 0; overflow: hidden; border-radius: 16px; }
+    th, td { border: 1px solid var(--line); padding: 12px 14px; vertical-align: top; }
+    th { background: #f3f4f6; text-align: left; color: #374151; }
+    tr:nth-child(even) td { background: #fbfdff; }
+
+    pre { background: var(--code-bg); color: var(--code-ink); padding: 18px; border-radius: 18px; overflow-x: auto; line-height: 1.55; font-size: 14px; margin: 14px 0 20px; }
+    code { font-family: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+    .inline-code { background: #f3f4f6; color: #111827; padding: 2px 6px; border-radius: 6px; border: 1px solid #e5e7eb; }
+
+    .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0; }
+    .flow .step { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; font-weight: 700; }
+    .flow .arrow { color: var(--accent); font-weight: 900; }
+
+    .mini-title { color: var(--accent); font-weight: 800; margin-bottom: 8px; }
+    .badge { display: inline-block; background: #f3f4f6; border: 1px solid #e5e7eb; color: #374151; border-radius: 999px; padding: 2px 9px; font-size: 13px; font-weight: 700; margin-right: 4px; }
+    .checklist label { display: block; margin: 8px 0; }
+    .small { color: var(--muted); font-size: 14px; }
+    .answer { border-left: 4px solid var(--accent); padding-left: 14px; color: #374151; }
+    .hr { height: 1px; background: var(--line); margin: 24px 0; }
+
+    .footer { color: var(--muted); font-size: 14px; text-align: center; padding: 26px 0 0; }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      aside { position: static; max-height: none; }
+      .meta-grid, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .hero, section { padding: 24px; }
+    }
+
+    @media print {
+      .topbar, aside { display: none; }
+      body { background: white; }
+      .wrap { padding: 0; max-width: 100%; }
+      .layout { display: block; }
+      .hero, section { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
+      pre { white-space: pre-wrap; }
+      a { color: black; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">Java Web · JSP · Tomcat</div>
+      <div class="actions">
+        <a class="nav-pill" href="#practice">실습 바로가기</a>
+        <a class="nav-pill" href="#summary">요약</a>
+        <button onclick="window.print()">인쇄 / PDF 저장</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <header class="hero">
+      <div class="label">2차 교안 · 상태 유지</div>
+      <h1>Session, Cookie, localStorage</h1>
+      <p class="subtitle">
+        이전 수업의 요청/응답, forward, redirect 흐름 다음에 이어지는 내용이다.
+        HTTP 요청은 기본적으로 이전 요청을 기억하지 못하기 때문에 로그인 상태, 아이디 저장, 화면 설정처럼
+        “기억해야 하는 값”을 어디에 저장할지 배운다.
+      </p>
+      <div class="meta-grid">
+        <div class="meta"><strong>대상</strong><span>JSP/Servlet 입문</span></div>
+        <div class="meta"><strong>기준 환경</strong><span>Tomcat 11 · Jakarta</span></div>
+        <div class="meta"><strong>핵심</strong><span>상태 유지</span></div>
+        <div class="meta"><strong>실습</strong><span>로그인 / 아이디 저장 / 테마 저장</span></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside>
+        <h2>목차</h2>
+        <ul class="toc">
+          <li><a href="#review">1. 이전 수업 복습</a></li>
+          <li><a href="#stateless">2. HTTP와 상태 유지</a></li>
+          <li><a href="#compare">3. 세 저장소 비교</a></li>
+          <li><a href="#session">4. Session</a></li>
+          <li><a href="#cookie">5. Cookie</a></li>
+          <li><a href="#localstorage">6. localStorage</a></li>
+          <li><a href="#flow">7. 흐름으로 이해하기</a></li>
+          <li><a href="#practice">8. 실습 코드</a></li>
+          <li><a href="#errors">9. 오류와 주의점</a></li>
+          <li><a href="#quiz">10. 확인 문제</a></li>
+          <li><a href="#summary">11. 최종 요약</a></li>
+          <li><a href="#sources">참고 문서</a></li>
+        </ul>
+      </aside>
+
+      <main>
+        <section id="review">
+          <h2>1. 이전 수업 복습</h2>
+          <p>이전 수업에서는 브라우저와 서버가 요청과 응답으로 통신한다는 것을 배웠다.</p>
+          <div class="flow">
+            <span class="step">브라우저</span><span class="arrow">→</span>
+            <span class="step">request</span><span class="arrow">→</span>
+            <span class="step">Tomcat</span><span class="arrow">→</span>
+            <span class="step">Servlet / JSP</span><span class="arrow">→</span>
+            <span class="step">response</span><span class="arrow">→</span>
+            <span class="step">브라우저 화면</span>
+          </div>
+          <p>또한 Servlet에서 JSP로 이동하는 두 가지 방법을 배웠다.</p>
+          <table>
+            <thead><tr><th>구분</th><th>forward</th><th>redirect</th></tr></thead>
+            <tbody>
+              <tr><td>이동 방식</td><td>서버 내부 이동</td><td>브라우저에게 새 요청을 시킴</td></tr>
+              <tr><td>주소창</td><td>바뀌지 않음</td><td>바뀜</td></tr>
+              <tr><td>request 데이터</td><td>유지됨</td><td>새 요청이므로 사라짐</td></tr>
+              <tr><td>주 사용 예</td><td>실패 메시지, 조회 결과 전달</td><td>로그인 성공, 글 등록 후 목록 이동</td></tr>
+            </tbody>
+          </table>
+          <div class="note">
+            이번 수업의 출발점은 redirect 후 request가 사라진다는 점이다. 그런데 로그인 성공 후에는 페이지가 바뀌어도
+            로그인 상태가 유지되어야 한다. 이 문제를 해결하는 대표적인 방법이 <strong>session</strong>이다.
+          </div>
+        </section>
+
+        <section id="stateless">
+          <h2>2. HTTP는 기본적으로 이전 요청을 기억하지 않는다</h2>
+          <p>
+            브라우저가 서버에 요청을 보내면 서버는 응답을 돌려준다. 그런데 다음 요청이 들어왔을 때 서버는
+            “아까 그 사용자가 다시 왔다”는 사실을 자동으로 알지 못한다. 이런 성질을 보통 <strong>stateless</strong>,
+            즉 무상태라고 부른다.
+          </p>
+          <div class="grid-2">
+            <div class="card">
+              <h3>요청 1</h3>
+              <p>사용자가 로그인 요청을 보낸다.</p>
+              <pre><code>POST /login
+id=admin&amp;pw=1234</code></pre>
+            </div>
+            <div class="card">
+              <h3>요청 2</h3>
+              <p>사용자가 홈 화면을 요청한다.</p>
+              <pre><code>GET /home.jsp</code></pre>
+            </div>
+          </div>
+          <p>서버 입장에서는 요청 1과 요청 2가 서로 다른 요청이다. 따라서 로그인 상태를 유지하려면 별도의 저장 방법이 필요하다.</p>
+          <h3>상태 유지가 필요한 예</h3>
+          <ul>
+            <li>로그인 후 다른 페이지로 이동해도 로그인 상태 유지</li>
+            <li>로그인 실패 시 에러 메시지 보여주기</li>
+            <li>아이디 저장 체크박스</li>
+            <li>장바구니 또는 최근 본 상품</li>
+            <li>다크 모드, 글자 크기, 닉네임 같은 화면 설정 저장</li>
+          </ul>
+          <div class="good">
+            상태 유지의 핵심 질문은 하나다. <strong>이 값을 서버가 기억해야 하는가, 브라우저가 기억해도 되는가?</strong>
+          </div>
+        </section>
+
+        <section id="compare">
+          <h2>3. Session, Cookie, localStorage 비교</h2>
+          <table>
+            <thead>
+              <tr><th>구분</th><th>Session</th><th>Cookie</th><th>localStorage</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>저장 위치</td>
+                <td>서버</td>
+                <td>브라우저</td>
+                <td>브라우저</td>
+              </tr>
+              <tr>
+                <td>서버로 자동 전송</td>
+                <td>세션 ID를 통해 서버에서 찾음</td>
+                <td>요청마다 자동 전송됨</td>
+                <td>자동 전송 안 됨</td>
+              </tr>
+              <tr>
+                <td>대표 용도</td>
+                <td>로그인 상태, 사용자별 서버 데이터</td>
+                <td>아이디 저장, 간단한 사용자 설정, 세션 식별</td>
+                <td>화면 설정, 임시 입력값, 프론트엔드 상태</td>
+              </tr>
+              <tr>
+                <td>수명</td>
+                <td>브라우저 종료, 타임아웃, 로그아웃 등에 따라 종료</td>
+                <td>Max-Age/Expires 설정에 따라 유지</td>
+                <td>직접 삭제하기 전까지 비교적 오래 유지</td>
+              </tr>
+              <tr>
+                <td>접근 주체</td>
+                <td>서버 코드</td>
+                <td>서버와 브라우저. 단, HttpOnly 설정 시 JS 접근 불가</td>
+                <td>브라우저 JavaScript</td>
+              </tr>
+              <tr>
+                <td>보안 감각</td>
+                <td>민감한 로그인 상태에 적합</td>
+                <td>비밀번호 저장 금지. 필요 시 HttpOnly/Secure 고려</td>
+                <td>비밀번호, 민감 토큰 저장 금지</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="warning">
+            수업 초반에는 이렇게 기억하면 된다. <strong>로그인 상태는 session</strong>,
+            <strong>브라우저가 서버에 자동으로 보내도 되는 작은 값은 cookie</strong>,
+            <strong>서버가 몰라도 되는 화면 설정은 localStorage</strong>가 어울린다.
+          </div>
+        </section>
+
+        <section id="session">
+          <h2>4. Session</h2>
+          <h3>4-1. Session이란?</h3>
+          <p>
+            Session은 서버가 사용자별로 데이터를 저장하는 공간이다. 로그인 성공 후 서버가 세션에 로그인 정보를 넣어두면,
+            다음 요청에서도 같은 사용자인지 확인할 수 있다.
+          </p>
+          <div class="flow">
+            <span class="step">로그인 성공</span><span class="arrow">→</span>
+            <span class="step">session에 loginId 저장</span><span class="arrow">→</span>
+            <span class="step">redirect</span><span class="arrow">→</span>
+            <span class="step">다음 요청에서 session 확인</span>
+          </div>
+          <p>
+            Servlet API의 <code class="inline-code">HttpSession</code>은 여러 페이지 요청 또는 여러 방문에 걸쳐 사용자를 식별하고
+            사용자 정보를 저장하는 방법을 제공한다. Tomcat 같은 Servlet Container는 보통 세션 ID를 쿠키로 관리하며,
+            쿠키를 사용할 수 없는 경우 URL rewriting 같은 방법도 사용할 수 있다.
+          </p>
+
+          <h3>4-2. Session 기본 메서드</h3>
+          <table>
+            <thead><tr><th>메서드</th><th>의미</th><th>예시</th></tr></thead>
+            <tbody>
+              <tr><td><code>request.getSession()</code></td><td>세션을 가져온다. 없으면 새로 만든다.</td><td>로그인 성공 시</td></tr>
+              <tr><td><code>request.getSession(false)</code></td><td>기존 세션만 가져온다. 없으면 null</td><td>로그인 검사, 로그아웃</td></tr>
+              <tr><td><code>session.setAttribute(name, value)</code></td><td>세션에 값 저장</td><td>로그인 아이디 저장</td></tr>
+              <tr><td><code>session.getAttribute(name)</code></td><td>세션 값 읽기</td><td>로그인 여부 확인</td></tr>
+              <tr><td><code>session.removeAttribute(name)</code></td><td>특정 값만 삭제</td><td>일부 상태 초기화</td></tr>
+              <tr><td><code>session.invalidate()</code></td><td>세션 전체 종료</td><td>로그아웃</td></tr>
+              <tr><td><code>session.setMaxInactiveInterval(seconds)</code></td><td>세션 타임아웃 설정</td><td>30분 후 만료</td></tr>
+            </tbody>
+          </table>
+
+          <h3>4-3. request와 session 차이</h3>
+          <table>
+            <thead><tr><th>구분</th><th>request</th><th>session</th></tr></thead>
+            <tbody>
+              <tr><td>저장 범위</td><td>한 번의 요청</td><td>한 사용자 접속 상태</td></tr>
+              <tr><td>forward 후</td><td>유지</td><td>유지</td></tr>
+              <tr><td>redirect 후</td><td>사라짐</td><td>유지 가능</td></tr>
+              <tr><td>예시</td><td>로그인 실패 메시지</td><td>로그인 사용자 정보</td></tr>
+            </tbody>
+          </table>
+
+          <div class="note">
+            <strong>로그인 성공</strong>은 보통 session에 저장하고 redirect한다.
+            <strong>로그인 실패</strong>는 에러 메시지를 request에 저장하고 forward한다.
+          </div>
+        </section>
+
+        <section id="cookie">
+          <h2>5. Cookie</h2>
+          <h3>5-1. Cookie란?</h3>
+          <p>
+            Cookie는 서버가 브라우저에게 저장하라고 보내는 작은 데이터이다. 브라우저는 조건이 맞으면 다음 요청부터
+            그 쿠키를 다시 서버로 보낸다.
+          </p>
+          <div class="flow">
+            <span class="step">서버</span><span class="arrow">response.addCookie()</span>
+            <span class="step">브라우저 저장</span><span class="arrow">다음 요청</span>
+            <span class="step">request.getCookies()</span>
+          </div>
+          <p>
+            Servlet의 <code class="inline-code">Cookie</code> 클래스는 Servlet이 브라우저로 보내고 브라우저가 저장한 뒤
+            나중에 서버로 다시 보내는 작은 정보를 표현한다. 서버는 <code class="inline-code">response.addCookie()</code>로 쿠키를 보내고,
+            이후 요청에서는 <code class="inline-code">request.getCookies()</code>로 읽을 수 있다.
+          </p>
+
+          <h3>5-2. Cookie 기본 메서드</h3>
+          <table>
+            <thead><tr><th>메서드</th><th>의미</th></tr></thead>
+            <tbody>
+              <tr><td><code>new Cookie(name, value)</code></td><td>쿠키 생성</td></tr>
+              <tr><td><code>cookie.setMaxAge(seconds)</code></td><td>쿠키 유지 시간 설정. 0이면 삭제</td></tr>
+              <tr><td><code>cookie.setPath(path)</code></td><td>쿠키가 전송될 경로 설정</td></tr>
+              <tr><td><code>cookie.setHttpOnly(true)</code></td><td>JavaScript에서 쿠키 접근을 막음</td></tr>
+              <tr><td><code>cookie.setSecure(true)</code></td><td>HTTPS에서만 쿠키 전송</td></tr>
+              <tr><td><code>response.addCookie(cookie)</code></td><td>응답에 쿠키 추가</td></tr>
+              <tr><td><code>request.getCookies()</code></td><td>요청에 포함된 쿠키 배열 읽기</td></tr>
+            </tbody>
+          </table>
+
+          <h3>5-3. Cookie 수명</h3>
+          <table>
+            <thead><tr><th>설정</th><th>의미</th></tr></thead>
+            <tbody>
+              <tr><td><code>setMaxAge(60 * 60)</code></td><td>1시간 유지</td></tr>
+              <tr><td><code>setMaxAge(60 * 60 * 24 * 7)</code></td><td>7일 유지</td></tr>
+              <tr><td><code>setMaxAge(0)</code></td><td>쿠키 삭제</td></tr>
+              <tr><td>MaxAge 미설정</td><td>브라우저 세션 쿠키로 동작할 수 있음</td></tr>
+            </tbody>
+          </table>
+
+          <div class="warning">
+            Cookie에는 비밀번호를 저장하지 않는다. “아이디 저장”은 가능하지만 “비밀번호 저장”은 수업 예제로도 피하는 것이 좋다.
+            로그인 인증 자체는 일반적으로 session을 사용하고, 쿠키는 보조 정보 저장에 사용한다.
+          </div>
+        </section>
+
+        <section id="localstorage">
+          <h2>6. localStorage</h2>
+          <h3>6-1. localStorage란?</h3>
+          <p>
+            localStorage는 브라우저가 제공하는 저장소이다. JavaScript로 값을 저장하고 읽을 수 있으며,
+            저장한 데이터는 같은 출처(origin) 안에서 유지된다. 서버로 자동 전송되지 않는다는 점이 Cookie와 가장 큰 차이다.
+          </p>
+          <div class="">
+            <div class="card">
+              <h3>저장</h3>
+              <pre><code>localStorage.setItem("theme", "dark");</code></pre>
+            </div>
+              <br>
+            <div class="card">
+              <h3>읽기</h3>
+              <pre><code>localStorage.getItem("theme");</code></pre>
+            </div> <br>
+            <div class="card">
+              <h3>삭제</h3>
+              <pre><code>localStorage.removeItem("theme");</code></pre>
+            </div> <br>
+          </div>
+
+          <h3>6-2. Cookie와 localStorage 차이</h3>
+          <table>
+            <thead><tr><th>구분</th><th>Cookie</th><th>localStorage</th></tr></thead>
+            <tbody>
+              <tr><td>서버 자동 전송</td><td>자동 전송됨</td><td>자동 전송 안 됨</td></tr>
+              <tr><td>사용 언어</td><td>Servlet/JSP, JavaScript</td><td>JavaScript</td></tr>
+              <tr><td>사용 예</td><td>아이디 저장, 세션 ID</td><td>다크 모드, 닉네임, 임시 입력값</td></tr>
+              <tr><td>문자열 저장</td><td>기본적으로 문자열</td><td>문자열. 객체는 JSON 변환 필요</td></tr>
+            </tbody>
+          </table>
+          <div class="note">
+            localStorage 값은 서버가 자동으로 모른다. 서버가 알아야 한다면 form의 hidden input에 넣거나 fetch/AJAX로 직접 전송해야 한다.
+          </div>
+
+          <h3>6-3. sessionStorage는 무엇인가?</h3>
+          <p>
+            sessionStorage는 localStorage와 비슷하지만 브라우저 탭 단위로 유지된다. 탭을 닫으면 데이터가 사라진다.
+            이번 수업의 중심은 localStorage지만, 비교용으로 함께 알아두면 좋다.
+          </p>
+        </section>
+
+        <section id="flow">
+          <h2>7. 흐름으로 이해하기</h2>
+          <h3>7-1. 로그인 성공: session + redirect</h3>
+          <div class="flow">
+            <span class="step">login.jsp</span><span class="arrow">POST /login</span>
+            <span class="step">LoginServlet</span><span class="arrow">session 저장</span>
+            <span class="step">redirect /home.jsp</span><span class="arrow">새 요청</span>
+            <span class="step">home.jsp에서 session 확인</span>
+          </div>
+          <p>redirect를 하면 request는 사라진다. 그런데 session은 사용자 단위로 유지되기 때문에 home.jsp에서 로그인 상태를 확인할 수 있다.</p>
+
+          <h3>7-2. 로그인 실패: request + forward</h3>
+          <div class="flow">
+            <span class="step">login.jsp</span><span class="arrow">POST /login</span>
+            <span class="step">LoginServlet</span><span class="arrow">request에 error 저장</span>
+            <span class="step">forward /login.jsp</span><span class="arrow">같은 요청</span>
+            <span class="step">login.jsp에서 error 출력</span>
+          </div>
+          <p>로그인 실패 메시지는 한 번만 보여주면 되므로 session에 저장할 필요가 없다. request에 저장하고 forward하면 된다.</p>
+
+          <h3>7-3. 아이디 저장: cookie</h3>
+          <div class="flow">
+            <span class="step">아이디 저장 체크</span><span class="arrow">로그인 요청</span>
+            <span class="step">서버가 Cookie 생성</span><span class="arrow">응답</span>
+            <span class="step">브라우저 저장</span><span class="arrow">다음 접속</span>
+            <span class="step">쿠키 읽고 input에 표시</span>
+          </div>
+
+          <h3>7-4. 화면 설정 저장: localStorage</h3>
+          <div class="flow">
+            <span class="step">다크 모드 클릭</span><span class="arrow">JS 실행</span>
+            <span class="step">localStorage 저장</span><span class="arrow">새로고침</span>
+            <span class="step">JS가 다시 읽어서 적용</span>
+          </div>
+          <p>이 과정은 Tomcat 서버에 요청하지 않아도 브라우저 안에서 처리할 수 있다.</p>
+        </section>
+
+        <section id="practice">
+          <h2>8. 실습 코드</h2>
+          <div class="note">
+            기준은 Tomcat 11이므로 <code class="inline-code">jakarta.servlet.*</code> import를 사용한다.
+            Tomcat 9를 사용하는 수업이면 import를 <code class="inline-code">javax.servlet.*</code>로 바꾸면 된다.
+          </div>
+          <h3>8-0. 버전별 import 비교</h3>
+          <pre><code class="language-java">// Tomcat 11 / Tomcat 10.1
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Cookie;
+
+// Tomcat 9
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Cookie;</code></pre>
+
+          <h3>8-1. 프로젝트 구조</h3>
+          <pre><code>SessionCookieLocalStorage
+ ├─ src/main/java
+ │   └─ com/example/auth
+ │       ├─ LoginServlet.java
+ │       └─ LogoutServlet.java
+ │
+ └─ src/main/webapp
+     ├─ login.jsp
+     ├─ home.jsp
+     ├─ localStorage.html
+     └─ theme.html</code></pre>
+
+          <h3>실습 1. Session으로 로그인 상태 유지</h3>
+          <h4>1단계: login.jsp</h4>
+          <pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html; charset=UTF-8&quot; %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;로그인&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;로그인&lt;/h1&gt;
+
+    &lt;p style=&quot;color:red;&quot;&gt;${error}&lt;/p&gt;
+
+    &lt;form action=&quot;${pageContext.request.contextPath}/login&quot; method=&quot;post&quot;&gt;
+        아이디: &lt;input type=&quot;text&quot; name=&quot;id&quot;&gt;&lt;br&gt;
+        비밀번호: &lt;input type=&quot;password&quot; name=&quot;pw&quot;&gt;&lt;br&gt;
+        &lt;button type=&quot;submit&quot;&gt;로그인&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+          <h4>2단계: LoginServlet.java</h4>
+          <pre><code class="language-java">package com.example.auth;
+
+import java.io.IOException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+@WebServlet(&quot;/login&quot;)
+public class LoginServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        request.setCharacterEncoding(&quot;UTF-8&quot;);
+
+        String id = request.getParameter(&quot;id&quot;);
+        String pw = request.getParameter(&quot;pw&quot;);
+
+        // DB 연결 전이므로 임시 로그인 조건으로 실습한다.
+        if (&quot;admin&quot;.equals(id) &amp;&amp; &quot;1234&quot;.equals(pw)) {
+            HttpSession session = request.getSession();
+            session.setAttribute(&quot;loginId&quot;, id);
+            session.setMaxInactiveInterval(60 * 30); // 30분
+
+            // 성공 후 새 요청으로 메인 화면 이동
+            response.sendRedirect(request.getContextPath() + &quot;/home.jsp&quot;);
+        } else {
+            // 실패 메시지는 이번 요청에서만 필요하므로 request에 저장
+            request.setAttribute(&quot;error&quot;, &quot;아이디 또는 비밀번호가 틀렸습니다.&quot;);
+            request.getRequestDispatcher(&quot;/login.jsp&quot;).forward(request, response);
+        }
+    }
+}</code></pre>
+
+          <h4>3단계: home.jsp</h4>
+          <pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html; charset=UTF-8&quot; %&gt;
+&lt;%
+    String loginId = (String) session.getAttribute(&quot;loginId&quot;);
+
+    if (loginId == null) {
+        response.sendRedirect(request.getContextPath() + &quot;/login.jsp&quot;);
+        return;
+    }
+%&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;홈&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;홈 화면&lt;/h1&gt;
+    &lt;p&gt;&lt;%= loginId %&gt;님, 로그인 상태입니다.&lt;/p&gt;
+
+    &lt;a href=&quot;${pageContext.request.contextPath}/logout&quot;&gt;로그아웃&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+          <h4>4단계: LogoutServlet.java</h4>
+          <pre><code class="language-java">package com.example.auth;
+
+import java.io.IOException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+@WebServlet(&quot;/logout&quot;)
+public class LogoutServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            session.invalidate();
+        }
+
+        response.sendRedirect(request.getContextPath() + &quot;/login.jsp&quot;);
+    }
+}</code></pre>
+
+          <div class="good">
+            실행 순서: <code class="inline-code">/login.jsp</code> 접속 → 아이디 <code class="inline-code">admin</code>,
+            비밀번호 <code class="inline-code">1234</code> 입력 → 로그인 성공 → home.jsp 이동 → 로그아웃 클릭.
+          </div>
+
+          <h3>실습 2. 로그인 여부 검사 코드</h3>
+          <p>로그인이 필요한 Servlet이나 JSP 앞부분에서 다음 흐름을 사용한다.</p>
+          <pre><code class="language-java">HttpSession session = request.getSession(false);
+
+if (session == null || session.getAttribute(&quot;loginId&quot;) == null) {
+    response.sendRedirect(request.getContextPath() + &quot;/login.jsp&quot;);
+    return;
+}
+
+String loginId = (String) session.getAttribute(&quot;loginId&quot;);</code></pre>
+
+          <h3>실습 3. Cookie로 아이디 저장</h3>
+          <p>이번에는 로그인 화면에 “아이디 저장” 기능을 추가한다.</p>
+          <h4>1단계: 쿠키를 읽는 login.jsp</h4>
+          <pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html; charset=UTF-8&quot; %&gt;
+&lt;%@ page import=&quot;jakarta.servlet.http.Cookie&quot; %&gt;
+&lt;%
+    String rememberedId = &quot;&quot;;
+
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+        for (Cookie c : cookies) {
+            if (&quot;rememberId&quot;.equals(c.getName())) {
+                rememberedId = c.getValue();
+                break;
+            }
+        }
+    }
+%&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;쿠키 로그인&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;로그인&lt;/h1&gt;
+
+    &lt;p style=&quot;color:red;&quot;&gt;${error}&lt;/p&gt;
+
+    &lt;form action=&quot;${pageContext.request.contextPath}/login&quot; method=&quot;post&quot;&gt;
+        아이디:
+        &lt;input type=&quot;text&quot; name=&quot;id&quot; value=&quot;&lt;%= rememberedId %&gt;&quot;&gt;&lt;br&gt;
+
+        비밀번호:
+        &lt;input type=&quot;password&quot; name=&quot;pw&quot;&gt;&lt;br&gt;
+
+        &lt;label&gt;
+            &lt;input type=&quot;checkbox&quot; name=&quot;remember&quot; &lt;%= rememberedId.isEmpty() ? &quot;&quot; : &quot;checked&quot; %&gt;&gt;
+            아이디 저장
+        &lt;/label&gt;&lt;br&gt;
+
+        &lt;button type=&quot;submit&quot;&gt;로그인&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+          <h4>2단계: 로그인 처리 중 쿠키 생성/삭제 로직</h4>
+          <pre><code class="language-java">import jakarta.servlet.http.Cookie;
+
+// 로그인 처리 중 id, pw를 받은 뒤에 추가한다.
+String remember = request.getParameter(&quot;remember&quot;);
+String cookiePath = request.getContextPath().isEmpty()
+        ? &quot;/&quot;
+        : request.getContextPath();
+
+Cookie rememberCookie = new Cookie(&quot;rememberId&quot;, id);
+rememberCookie.setPath(cookiePath);
+rememberCookie.setHttpOnly(true);
+
+if (&quot;on&quot;.equals(remember)) {
+    rememberCookie.setMaxAge(60 * 60 * 24 * 7); // 7일 유지
+} else {
+    rememberCookie.setMaxAge(0); // 즉시 삭제
+}
+
+response.addCookie(rememberCookie);</code></pre>
+          <h4>3단계: LoginServlet 전체 예시</h4>
+          <pre><code class="language-java">package com.example.auth;
+
+import java.io.IOException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+@WebServlet(&quot;/login&quot;)
+public class LoginServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        request.setCharacterEncoding(&quot;UTF-8&quot;);
+
+        String id = request.getParameter(&quot;id&quot;);
+        String pw = request.getParameter(&quot;pw&quot;);
+        String remember = request.getParameter(&quot;remember&quot;);
+
+        // 아이디 저장 쿠키 처리
+        String cookiePath = request.getContextPath().isEmpty()
+                ? &quot;/&quot;
+                : request.getContextPath();
+
+        Cookie rememberCookie = new Cookie(&quot;rememberId&quot;, id);
+        rememberCookie.setPath(cookiePath);
+        rememberCookie.setHttpOnly(true);
+
+        if (&quot;on&quot;.equals(remember)) {
+            rememberCookie.setMaxAge(60 * 60 * 24 * 7);
+        } else {
+            rememberCookie.setMaxAge(0);
+        }
+
+        response.addCookie(rememberCookie);
+
+        // DB 연결 전이므로 임시 로그인 조건으로 실습한다.
+        if (&quot;admin&quot;.equals(id) &amp;&amp; &quot;1234&quot;.equals(pw)) {
+            HttpSession session = request.getSession();
+            session.setAttribute(&quot;loginId&quot;, id);
+
+            response.sendRedirect(request.getContextPath() + &quot;/home.jsp&quot;);
+        } else {
+            request.setAttribute(&quot;error&quot;, &quot;아이디 또는 비밀번호가 틀렸습니다.&quot;);
+            request.getRequestDispatcher(&quot;/login.jsp&quot;).forward(request, response);
+        }
+    }
+}</code></pre>
+          <h4>4단계: 쿠키 읽기 기본 패턴</h4>
+          <pre><code class="language-java">Cookie[] cookies = request.getCookies();
+
+if (cookies != null) {
+    for (Cookie c : cookies) {
+        if (&quot;rememberId&quot;.equals(c.getName())) {
+            String rememberedId = c.getValue();
+            System.out.println(&quot;저장된 아이디 = &quot; + rememberedId);
+        }
+    }
+}</code></pre>
+
+          <h3>실습 4. localStorage로 닉네임 저장</h3>
+          <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;localStorage 실습&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;localStorage 실습&lt;/h1&gt;
+
+    &lt;label&gt;
+        닉네임:
+        &lt;input type=&quot;text&quot; id=&quot;nickname&quot;&gt;
+    &lt;/label&gt;
+
+    &lt;button type=&quot;button&quot; id=&quot;saveBtn&quot;&gt;저장&lt;/button&gt;
+    &lt;button type=&quot;button&quot; id=&quot;removeBtn&quot;&gt;삭제&lt;/button&gt;
+
+    &lt;p id=&quot;result&quot;&gt;&lt;/p&gt;
+
+    &lt;script&gt;
+        const nicknameInput = document.querySelector(&quot;#nickname&quot;);
+        const result = document.querySelector(&quot;#result&quot;);
+
+        // 페이지가 열릴 때 기존 저장값 불러오기
+        nicknameInput.value = localStorage.getItem(&quot;nickname&quot;) || &quot;&quot;;
+        result.textContent = &quot;저장된 닉네임: &quot; + (localStorage.getItem(&quot;nickname&quot;) || &quot;없음&quot;);
+
+        document.querySelector(&quot;#saveBtn&quot;).addEventListener(&quot;click&quot;, function () {
+            localStorage.setItem(&quot;nickname&quot;, nicknameInput.value);
+            result.textContent = &quot;저장된 닉네임: &quot; + nicknameInput.value;
+        });
+
+        document.querySelector(&quot;#removeBtn&quot;).addEventListener(&quot;click&quot;, function () {
+            localStorage.removeItem(&quot;nickname&quot;);
+            nicknameInput.value = &quot;&quot;;
+            result.textContent = &quot;저장된 닉네임: 없음&quot;;
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+          <h3>실습 5. localStorage에 객체 저장</h3>
+          <p>localStorage는 문자열을 저장한다. 객체나 배열은 JSON 문자열로 바꾸어 저장한다.</p>
+          <pre><code class="language-javascript">const user = {
+    id: &quot;admin&quot;,
+    theme: &quot;dark&quot;,
+    fontSize: 16
+};
+
+// 객체 저장: 문자열로 변환해서 저장
+localStorage.setItem(&quot;userSetting&quot;, JSON.stringify(user));
+
+// 객체 읽기: 문자열을 다시 객체로 변환
+const saved = JSON.parse(localStorage.getItem(&quot;userSetting&quot;));
+console.log(saved.theme);</code></pre>
+
+          <h3>실습 6. localStorage로 다크 모드 저장</h3>
+          <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;테마 저장 실습&lt;/title&gt;
+    &lt;style&gt;
+        body.dark {
+            background: #222;
+            color: white;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;localStorage 테마 실습&lt;/h1&gt;
+    &lt;button type=&quot;button&quot; id=&quot;toggleBtn&quot;&gt;테마 변경&lt;/button&gt;
+
+    &lt;script&gt;
+        const savedTheme = localStorage.getItem(&quot;theme&quot;);
+
+        if (savedTheme === &quot;dark&quot;) {
+            document.body.classList.add(&quot;dark&quot;);
+        }
+
+        document.querySelector(&quot;#toggleBtn&quot;).addEventListener(&quot;click&quot;, function () {
+            document.body.classList.toggle(&quot;dark&quot;);
+
+            if (document.body.classList.contains(&quot;dark&quot;)) {
+                localStorage.setItem(&quot;theme&quot;, &quot;dark&quot;);
+            } else {
+                localStorage.setItem(&quot;theme&quot;, &quot;light&quot;);
+            }
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+          <h3>실습 7. localStorage 값을 서버로 보내기</h3>
+          <p>localStorage는 서버로 자동 전송되지 않는다. 서버가 알아야 할 값은 직접 request에 실어 보내야 한다.</p>
+          <pre><code class="language-html">&lt;form action=&quot;${pageContext.request.contextPath}/profile&quot; method=&quot;post&quot; id=&quot;profileForm&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;theme&quot; id=&quot;themeInput&quot;&gt;
+    &lt;button type=&quot;submit&quot;&gt;서버로 전송&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+    document.querySelector(&quot;#profileForm&quot;).addEventListener(&quot;submit&quot;, function () {
+        document.querySelector(&quot;#themeInput&quot;).value = localStorage.getItem(&quot;theme&quot;) || &quot;light&quot;;
+    });
+&lt;/script&gt;</code></pre>
+          <pre><code class="language-java">String theme = request.getParameter(&quot;theme&quot;);
+System.out.println(&quot;브라우저에서 전송한 테마 = &quot; + theme);</code></pre>
+
+          <h3>선택: web.xml에서 session timeout 설정</h3>
+          <pre><code class="language-xml">&lt;web-app&gt;
+    &lt;session-config&gt;
+        &lt;session-timeout&gt;30&lt;/session-timeout&gt;
+    &lt;/session-config&gt;
+&lt;/web-app&gt;</code></pre>
+        </section>
+
+        <section id="errors">
+          <h2>9. 자주 나는 오류와 주의점</h2>
+          <h3>9-1. Tomcat 11에서 javax import 오류</h3>
+          <div class="question">
+            <strong>증상:</strong> <code class="inline-code">javax.servlet.http.HttpSession</code>,
+            <code class="inline-code">javax.servlet.http.Cookie</code>를 찾을 수 없다고 나온다.
+          </div>
+          <p>Tomcat 11은 Jakarta 계열이므로 import를 다음처럼 사용한다.</p>
+          <pre><code>import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Cookie;</code></pre>
+          <p>수업에서 Tomcat 9를 쓰는 경우에는 반대로 <code class="inline-code">javax.servlet.*</code>를 사용한다.</p>
+
+          <h3>9-2. 로그인 성공했는데 home.jsp에서 로그인 상태가 안 보임</h3>
+          <ul>
+            <li><code class="inline-code">session.setAttribute("loginId", id)</code>를 했는지 확인한다.</li>
+            <li>읽을 때 이름이 같은지 확인한다. 저장 이름이 <code class="inline-code">loginId</code>이면 읽을 때도 <code class="inline-code">loginId</code>여야 한다.</li>
+            <li>로그인 후 같은 브라우저에서 접속하고 있는지 확인한다.</li>
+            <li>개발자 도구에서 쿠키에 <code class="inline-code">JSESSIONID</code>가 있는지 확인한다.</li>
+          </ul>
+
+          <h3>9-3. redirect 후 request 값이 사라짐</h3>
+          <p>정상이다. redirect는 새 요청이므로 request 데이터가 유지되지 않는다. redirect 후에도 필요한 값은 session에 저장해야 한다.</p>
+
+          <h3>9-4. 쿠키가 삭제되지 않음</h3>
+          <p>쿠키 삭제는 같은 이름, 같은 path로 MaxAge를 0으로 보내야 한다.</p>
+          <pre><code>Cookie c = new Cookie("rememberId", "");
+c.setPath(request.getContextPath().isEmpty() ? "/" : request.getContextPath());
+c.setMaxAge(0);
+response.addCookie(c);</code></pre>
+
+          <h3>9-5. localStorage 값이 서버에서 안 보임</h3>
+          <p>localStorage는 request에 자동 포함되지 않는다. form hidden input, fetch, AJAX 등으로 직접 보내야 한다.</p>
+
+          <h3>9-6. 보안 주의</h3>
+          <ul>
+            <li>비밀번호를 cookie나 localStorage에 저장하지 않는다.</li>
+            <li>로그인 상태는 서버 session으로 관리하는 것이 입문 단계에서는 가장 안전하고 이해하기 쉽다.</li>
+            <li>중요 쿠키는 HttpOnly, Secure 설정을 고려한다.</li>
+            <li>localStorage는 JavaScript에서 읽을 수 있으므로 민감한 인증 정보 저장에 부적합하다.</li>
+          </ul>
+        </section>
+
+        <section id="quiz">
+          <h2>10. 확인 문제</h2>
+          <h3>개념 확인</h3>
+          <ol>
+            <li>redirect 후 request에 저장한 값은 유지되는가?</li>
+            <li>로그인 성공 후 사용자 아이디를 저장하기에 적절한 저장소는 무엇인가?</li>
+            <li>아이디 저장 체크박스에 적절한 저장소는 무엇인가?</li>
+            <li>다크 모드 설정처럼 서버가 몰라도 되는 값은 어디에 저장하기 좋은가?</li>
+            <li>localStorage 값은 서버로 자동 전송되는가?</li>
+            <li>쿠키를 삭제할 때 사용하는 MaxAge 값은 무엇인가?</li>
+            <li><code class="inline-code">getSession(false)</code>는 언제 유용한가?</li>
+          </ol>
+
+          <h3>정답</h3>
+          <div class="answer">
+            <p>1. 유지되지 않는다. redirect는 새 요청이다.</p>
+            <p>2. session.</p>
+            <p>3. cookie가 적절하다. 단, 비밀번호는 저장하지 않는다.</p>
+            <p>4. localStorage.</p>
+            <p>5. 자동 전송되지 않는다.</p>
+            <p>6. <code class="inline-code">setMaxAge(0)</code>.</p>
+            <p>7. 기존 세션이 있는지만 확인하고, 없을 때 새 세션을 만들고 싶지 않을 때.</p>
+          </div>
+
+          <h3>실습 과제</h3>
+          <div class="checklist">
+            <label><input type="checkbox"> 로그인 성공 시 session에 <code class="inline-code">loginId</code> 저장하기</label>
+            <label><input type="checkbox"> home.jsp에서 session이 없으면 login.jsp로 redirect하기</label>
+            <label><input type="checkbox"> 로그아웃 시 <code class="inline-code">session.invalidate()</code> 실행하기</label>
+            <label><input type="checkbox"> 아이디 저장 체크 시 <code class="inline-code">rememberId</code> 쿠키 생성하기</label>
+            <label><input type="checkbox"> 체크 해제 시 <code class="inline-code">rememberId</code> 쿠키 삭제하기</label>
+            <label><input type="checkbox"> localStorage로 다크 모드 유지하기</label>
+          </div>
+        </section>
+
+        <section id="summary">
+          <h2>11. 최종 요약</h2>
+          <table>
+            <thead><tr><th>상황</th><th>사용할 것</th><th>이유</th></tr></thead>
+            <tbody>
+              <tr><td>로그인 실패 메시지</td><td>request + forward</td><td>한 번의 요청에서만 필요하다.</td></tr>
+              <tr><td>로그인 성공 상태</td><td>session + redirect</td><td>여러 요청에 걸쳐 유지되어야 한다.</td></tr>
+              <tr><td>로그아웃</td><td>session.invalidate()</td><td>서버에 저장된 로그인 상태를 종료한다.</td></tr>
+              <tr><td>아이디 저장</td><td>cookie</td><td>브라우저에 저장하고 다음 요청 때 서버가 읽을 수 있다.</td></tr>
+              <tr><td>다크 모드/화면 설정</td><td>localStorage</td><td>서버가 몰라도 되는 브라우저 설정이다.</td></tr>
+            </tbody>
+          </table>
+          <div class="good">
+            <strong>이번 장의 한 문장:</strong><br>
+            HTTP 요청은 기본적으로 이전 상태를 기억하지 못하므로, 서버가 기억해야 하는 로그인 상태는 session,
+            브라우저가 서버에 다시 보내야 하는 작은 값은 cookie, 서버가 몰라도 되는 화면 설정은 localStorage에 저장한다.
+          </div>
+          <div class="flow">
+            <span class="step">request</span><span class="arrow">한 번</span>
+            <span class="step">session</span><span class="arrow">사용자별 서버 저장</span>
+            <span class="step">cookie</span><span class="arrow">브라우저 저장 + 서버 자동 전송</span>
+            <span class="step">localStorage</span><span class="arrow">브라우저 JS 저장</span>
+          </div>
+        </section>
+
+        <section id="sources">
+          <h2>참고 문서</h2>
+          <ul>
+            <li>Apache Tomcat 공식 문서: Tomcat 11은 Servlet 6.1, JSP 4.0 등 Jakarta EE 11 관련 사양을 구현하고 Java 17 이상을 요구한다.</li>
+            <li>Apache Tomcat Servlet 6.1 API: HttpSession은 여러 요청/방문에 걸쳐 사용자를 식별하고 사용자 정보를 저장하는 기능을 제공한다.</li>
+            <li>Jakarta Servlet API: Cookie는 Servlet이 브라우저에 보내고 브라우저가 저장한 뒤 다음 요청에서 서버로 다시 보낼 수 있는 작은 정보이다.</li>
+            <li>MDN Web Docs: localStorage는 같은 origin의 Storage 객체에 접근하며, 저장 데이터는 브라우저 세션을 넘어 유지된다.</li>
+            <li>MDN Web Docs: sessionStorage는 탭/페이지 세션 단위로 유지되며 탭을 닫으면 데이터가 사라진다.</li>
+          </ul>
+          <p class="small">교안 작성일: 2026-05-28 · 수업 기준: DB/DAO/DTO 이전, JSP/Servlet 요청 처리 이후</p>
+        </section>
+
+        <div class="footer">Java Web JSP Tomcat 수업 자료 · Session / Cookie / localStorage</div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spring Boot Web 수업 교안</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --paper: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --brand: #2563eb;
+      --brand-dark: #1e40af;
+      --soft-blue: #eff6ff;
+      --soft-green: #ecfdf5;
+      --soft-yellow: #fffbeb;
+      --soft-red: #fef2f2;
+      --code-bg: #111827;
+      --code-ink: #e5e7eb;
+      --radius: 16px;
+      --shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.72;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    a {
+      color: var(--brand);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      background: #0f172a;
+      color: #f9fafb;
+      overflow-y: auto;
+    }
+
+    aside h1 {
+      margin: 0 0 10px;
+      font-size: 21px;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+    }
+
+    aside .subtitle {
+      margin: 0 0 22px;
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+
+    nav ol {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    nav li {
+      margin: 8px 0;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    nav a {
+      color: #e5e7eb;
+    }
+
+    main {
+      max-width: 1080px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 42px 34px 80px;
+    }
+
+    .hero {
+      padding: 42px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+      color: white;
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: 38px;
+      line-height: 1.22;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 860px;
+      color: #e0e7ff;
+      font-size: 17px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 22px 0 0;
+    }
+
+    .meta-card {
+      padding: 15px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .meta-card strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      color: #ffffff;
+    }
+
+    .meta-card span {
+      font-size: 13px;
+      color: #e0e7ff;
+    }
+
+    section {
+      margin: 26px 0;
+      padding: 34px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    section h2 {
+      margin: 0 0 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--line);
+      font-size: 28px;
+      line-height: 1.3;
+      letter-spacing: -0.03em;
+    }
+
+    section h3 {
+      margin: 28px 0 12px;
+      font-size: 21px;
+      letter-spacing: -0.02em;
+    }
+
+    section h4 {
+      margin: 22px 0 8px;
+      font-size: 17px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    ul, ol {
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .lead {
+      font-size: 18px;
+      color: #374151;
+    }
+
+    .box {
+      margin: 18px 0;
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #f9fafb;
+    }
+
+    .box.blue {
+      background: var(--soft-blue);
+      border-color: #bfdbfe;
+    }
+
+    .box.green {
+      background: var(--soft-green);
+      border-color: #bbf7d0;
+    }
+
+    .box.yellow {
+      background: var(--soft-yellow);
+      border-color: #fde68a;
+    }
+
+    .box.red {
+      background: var(--soft-red);
+      border-color: #fecaca;
+    }
+
+    .box-title {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      overflow: hidden;
+      border-radius: 12px;
+      font-size: 15px;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f3f4f6;
+      font-weight: 800;
+    }
+
+    td code, p code, li code, th code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+    }
+
+    .code-wrap {
+      position: relative;
+      margin: 16px 0 22px;
+    }
+
+    pre {
+      margin: 0;
+      padding: 18px 20px;
+      overflow-x: auto;
+      border-radius: 14px;
+      background: var(--code-bg);
+      color: var(--code-ink);
+      font-size: 14px;
+      line-height: 1.6;
+      tab-size: 4;
+    }
+
+    pre code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: 0;
+      border-radius: 9px;
+      padding: 6px 10px;
+      background: #374151;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      background: #4b5563;
+    }
+
+    .flow {
+      display: grid;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .flow-item {
+      padding: 13px 16px;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      background: #eff6ff;
+      font-weight: 700;
+    }
+
+    .arrow {
+      color: var(--brand-dark);
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .mini-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f9fafb;
+    }
+
+    .mini-card h4 {
+      margin-top: 0;
+    }
+
+    .tag {
+      display: inline-block;
+      margin: 3px 4px 3px 0;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #e0e7ff;
+      color: #3730a3;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .teacher-note {
+      border-left: 5px solid #2563eb;
+      background: #eff6ff;
+    }
+
+    .checklist li::marker {
+      content: "✓ ";
+      color: #059669;
+      font-weight: bold;
+    }
+
+    .quiz-answer {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: #ecfdf5;
+      color: #047857;
+      font-weight: 800;
+    }
+
+    .footer {
+      margin: 30px 0 0;
+      padding: 28px;
+      border-radius: 20px;
+      background: #111827;
+      color: #f9fafb;
+    }
+
+    .footer code {
+      background: #374151;
+      color: #ffffff;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        display: block;
+      }
+
+      aside {
+        position: relative;
+        height: auto;
+      }
+
+      main {
+        padding: 24px 16px 60px;
+      }
+
+      .meta-grid,
+      .two-col,
+      .three-col {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 28px;
+      }
+
+      .hero h2 {
+        font-size: 30px;
+      }
+
+      section {
+        padding: 24px 18px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      aside,
+      .copy-btn {
+        display: none;
+      }
+
+      main {
+        max-width: none;
+        padding: 0;
+      }
+
+      section,
+      .hero {
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+
+      pre {
+        white-space: pre-wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <h1>Spring Boot Web 수업 교안</h1>
+      <p class="subtitle">Embedded Tomcat · Thymeleaf · Controller · RestController</p>
+      <nav>
+        <ol>
+          <li><a href="#overview">수업 개요</a></li>
+          <li><a href="#springboot">Spring Boot란?</a></li>
+          <li><a href="#creation">프로젝트 생성</a></li>
+          <li><a href="#structure">프로젝트 구조</a></li>
+          <li><a href="#runtime">동작 원리</a></li>
+          <li><a href="#thymeleaf">Thymeleaf 화면</a></li>
+          <li><a href="#controller">Controller 요청 처리</a></li>
+          <li><a href="#forms">폼 요청 처리</a></li>
+          <li><a href="#controller-shapes">Controller 함수 형태</a></li>
+          <li><a href="#responsebody">@ResponseBody</a></li>
+          <li><a href="#restcontroller">RestController</a></li>
+          <li><a href="#practice">종합 실습</a></li>
+          <li><a href="#misunderstanding">오해 포인트</a></li>
+          <li><a href="#assignment">과제</a></li>
+          <li><a href="#quiz">마무리 퀴즈</a></li>
+        </ol>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="hero">
+        <h2>Spring Boot Web MVC 입문 교안</h2>
+        <p>
+          이 교안은 Spring Boot Web을 처음 배우는 학습자를 대상으로 합니다.
+          Spring Boot가 왜 필요한지부터 Embedded Tomcat, Thymeleaf 화면 처리,
+          Controller 요청·응답 처리, RestController 기반 JSON API 응답까지 한 흐름으로 다룹니다.
+        </p>
+        <div class="meta-grid">
+          <div class="meta-card">
+            <strong>수업 대상</strong>
+            <span>Java 기본 문법 학습자</span>
+          </div>
+          <div class="meta-card">
+            <strong>권장 시간</strong>
+            <span>3시간 30분 ~ 4시간</span>
+          </div>
+          <div class="meta-card">
+            <strong>실습 환경</strong>
+            <span>Java 17+, Maven, Spring Boot</span>
+          </div>
+          <div class="meta-card">
+            <strong>핵심 결과물</strong>
+            <span>HTML 화면 + JSON API</span>
+          </div>
+        </div>
+      </div>
+
+      <section id="overview">
+        <h2>1. 수업 개요</h2>
+        <p class="lead">
+          이번 수업의 핵심은 “Spring Boot Web 요청이 들어오면 어떤 흐름으로 Controller까지 전달되고,
+          최종적으로 HTML 또는 JSON 응답이 만들어지는가”를 이해하는 것입니다.
+        </p>
+
+        <h3>수업 목표</h3>
+        <ul class="checklist">
+          <li>Spring Boot가 무엇이고 왜 등장했는지 설명할 수 있다.</li>
+          <li>Spring Boot Web + Thymeleaf 프로젝트를 생성하고 실행할 수 있다.</li>
+          <li>내장 Tomcat, DispatcherServlet, Controller, View Resolver, Thymeleaf의 관계를 설명할 수 있다.</li>
+          <li><code>@Controller</code>를 사용해 HTML 화면을 응답할 수 있다.</li>
+          <li><code>@RequestParam</code>, <code>@PathVariable</code>, <code>@ModelAttribute</code>, <code>@RequestBody</code>로 요청 데이터를 받을 수 있다.</li>
+          <li><code>@RestController</code>로 문자열, 객체, 리스트, 상태 코드, JSON 응답을 만들 수 있다.</li>
+          <li><code>@Controller</code>와 <code>@RestController</code>의 차이를 설명할 수 있다.</li>
+        </ul>
+
+        <h3>권장 수업 흐름</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>시간</th>
+              <th>주제</th>
+              <th>주요 내용</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>20분</td>
+              <td>Spring Boot 소개</td>
+              <td>Spring Framework의 불편함, Boot 등장 배경, 목적</td>
+            </tr>
+            <tr>
+              <td>25분</td>
+              <td>프로젝트 생성</td>
+              <td>Spring Initializr, 의존성, 실행 확인</td>
+            </tr>
+            <tr>
+              <td>25분</td>
+              <td>프로젝트 구조</td>
+              <td>java, resources, templates, static, application.properties</td>
+            </tr>
+            <tr>
+              <td>35분</td>
+              <td>동작 원리</td>
+              <td>Tomcat → DispatcherServlet → Controller → Thymeleaf → HTML 응답</td>
+            </tr>
+            <tr>
+              <td>45분</td>
+              <td><code>@Controller</code></td>
+              <td>화면 반환, Model, 요청 파라미터, 폼 처리</td>
+            </tr>
+            <tr>
+              <td>40분</td>
+              <td>Controller 함수 형태</td>
+              <td>String, DTO, ModelAndView, ResponseEntity, Servlet API</td>
+            </tr>
+            <tr>
+              <td>40분</td>
+              <td><code>@RestController</code></td>
+              <td>JSON 응답, <code>@ResponseBody</code>, DTO 응답, 상태 코드</td>
+            </tr>
+            <tr>
+              <td>30분</td>
+              <td>실습과 퀴즈</td>
+              <td>화면 2개, REST API 3개, 개념 확인</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="springboot">
+        <h2>2. Spring Boot란?</h2>
+
+        <h3>2-1. Spring Framework만 사용할 때의 불편함</h3>
+        <p>
+          Spring Framework는 강력하지만, 예전 방식으로 웹 애플리케이션을 만들면 설정해야 할 것이 많았습니다.
+          간단한 웹 페이지 하나를 띄우기 위해서도 의존성, DispatcherServlet, ViewResolver, 외부 Tomcat,
+          배포 방식 등을 직접 맞춰야 했습니다.
+        </p>
+
+        <div class="box yellow teacher-note">
+          <span class="box-title">강의 질문</span>
+          “웹 페이지 하나 띄우려고 설정 파일을 몇 개나 만들어야 할까?”라고 질문하면서
+          Spring Boot의 필요성을 자연스럽게 끌어냅니다.
+        </div>
+
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>Spring Framework만 사용했을 때 필요한 작업 예시
+
+1. 의존성 직접 선택
+2. Spring MVC 설정
+3. DispatcherServlet 설정
+4. ViewResolver 설정
+5. Tomcat 같은 WAS 설치
+6. web.xml 또는 Java Config 설정
+7. 배포용 WAR 생성
+8. 외부 Tomcat에 배포</code></pre>
+        </div>
+
+        <h3>2-2. Spring Boot의 한 줄 정의</h3>
+        <div class="box blue">
+          <span class="box-title">핵심 정의</span>
+          Spring Boot는 Spring 기반 애플리케이션을 쉽고 빠르게 만들고, 바로 실행하고,
+          운영 환경에 배포하기 좋게 도와주는 도구입니다.
+        </div>
+
+        <p>
+          강의에서는 다음처럼 단순하게 설명하면 좋습니다.
+        </p>
+
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>Spring Boot = Spring을 더 쉽게 쓰기 위한 실행·설정·배포 도구</code></pre>
+        </div>
+
+        <h3>2-3. 언제, 무슨 목적으로 나왔는가?</h3>
+        <p>
+          Spring Boot는 2014년에 정식으로 등장했습니다. 등장 목적은 분명합니다.
+          Spring 애플리케이션을 만들 때 반복적으로 작성하던 설정을 줄이고,
+          내장 서버를 이용해 애플리케이션을 바로 실행할 수 있게 하며,
+          클라우드와 마이크로서비스 환경에 더 쉽게 배포할 수 있게 하는 것입니다.
+        </p>
+
+        <div class="box green">
+          <span class="box-title">강의용 요약</span>
+          Spring Boot는 “설정 지옥을 줄이고, 내장 서버로 바로 실행하며,
+          클라우드와 마이크로서비스 환경에 쉽게 배포하기 위해” 등장했습니다.
+        </div>
+
+        <h3>2-4. Spring Boot의 핵심 특징</h3>
+        <div class="three-col">
+          <div class="mini-card">
+            <h4>자동 설정</h4>
+            <p>프로젝트에 추가된 라이브러리를 보고 필요한 설정을 자동으로 적용합니다.</p>
+          </div>
+          <div class="mini-card">
+            <h4>Starter 의존성</h4>
+            <p>웹, Thymeleaf, JPA 같은 기능에 필요한 라이브러리를 묶음으로 제공합니다.</p>
+          </div>
+          <div class="mini-card">
+            <h4>내장 서버</h4>
+            <p>별도의 Tomcat 설치 없이 <code>main()</code> 실행만으로 웹 서버가 시작됩니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="creation">
+        <h2>3. Spring Boot Web + Tomcat + Thymeleaf 프로젝트 생성</h2>
+
+        <h3>3-1. 프로젝트 생성 설정</h3>
+        <p>
+          실습 프로젝트는 Spring Initializr에서 생성합니다. 수업에서는 Maven 기준으로 진행하면 초보자가 구조를 이해하기 쉽습니다.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>설정값</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Project</td>
+              <td>Maven</td>
+            </tr>
+            <tr>
+              <td>Language</td>
+              <td>Java</td>
+            </tr>
+            <tr>
+              <td>Spring Boot</td>
+              <td>현재 안정 버전</td>
+            </tr>
+            <tr>
+              <td>Group</td>
+              <td><code>com.example</code></td>
+            </tr>
+            <tr>
+              <td>Artifact</td>
+              <td><code>webclass</code></td>
+            </tr>
+            <tr>
+              <td>Package name</td>
+              <td><code>com.example.webclass</code></td>
+            </tr>
+            <tr>
+              <td>Packaging</td>
+              <td>Jar</td>
+            </tr>
+            <tr>
+              <td>Java</td>
+              <td>17 이상</td>
+            </tr>
+            <tr>
+              <td>Dependencies</td>
+              <td>Spring Web, Thymeleaf, Spring Boot DevTools</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>3-2. 의존성 의미</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>의존성</th>
+              <th>역할</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Spring Web</code></td>
+              <td>Spring MVC, 내장 Tomcat, JSON 처리 기능을 포함합니다.</td>
+            </tr>
+            <tr>
+              <td><code>Thymeleaf</code></td>
+              <td>서버에서 HTML을 동적으로 만들어 주는 템플릿 엔진입니다.</td>
+            </tr>
+            <tr>
+              <td><code>DevTools</code></td>
+              <td>개발 중 자동 재시작 등 편의 기능을 제공합니다.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>3-3. Maven pom.xml 핵심 의존성</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>&lt;dependencies&gt;
+    &lt;!-- Spring MVC + Embedded Tomcat + JSON 처리 --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- Thymeleaf 템플릿 엔진 --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- 테스트 --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+        </div>
+
+        <h3>3-4. 실행 방법</h3>
+        <div class="two-col">
+          <div class="mini-card">
+            <h4>macOS / Linux</h4>
+            <div class="code-wrap">
+              <button class="copy-btn" type="button">복사</button>
+              <pre><code>./mvnw spring-boot:run</code></pre>
+            </div>
+          </div>
+          <div class="mini-card">
+            <h4>Windows</h4>
+            <div class="code-wrap">
+              <button class="copy-btn" type="button">복사</button>
+              <pre><code>mvnw spring-boot:run</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <p>실행 후 브라우저에서 다음 주소로 접속합니다.</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>http://localhost:8080</code></pre>
+        </div>
+      </section>
+
+      <section id="structure">
+        <h2>4. 프로젝트 구조</h2>
+        <p>
+          Spring Boot 프로젝트는 보통 메인 애플리케이션 클래스를 루트 패키지에 두고,
+          그 아래에 controller, service, dto, repository 등을 배치합니다.
+          이렇게 하면 컴포넌트 스캔 범위가 자연스럽게 적용됩니다.
+        </p>
+
+        <h3>4-1. 기본 구조</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>webclass
+ ┣ src
+ ┃ ┣ main
+ ┃ ┃ ┣ java
+ ┃ ┃ ┃ ┗ com.example.webclass
+ ┃ ┃ ┃   ┣ WebclassApplication.java
+ ┃ ┃ ┃   ┣ controller
+ ┃ ┃ ┃   ┃ ┣ HomeController.java
+ ┃ ┃ ┃   ┃ ┗ ApiController.java
+ ┃ ┃ ┃   ┣ dto
+ ┃ ┃ ┃   ┃ ┗ MemberDto.java
+ ┃ ┃ ┃   ┗ service
+ ┃ ┃ ┃     ┗ MemberService.java
+ ┃ ┃ ┗ resources
+ ┃ ┃   ┣ static
+ ┃ ┃   ┃ ┣ css
+ ┃ ┃   ┃ ┗ js
+ ┃ ┃   ┣ templates
+ ┃ ┃   ┃ ┣ index.html
+ ┃ ┃   ┃ ┣ hello.html
+ ┃ ┃   ┃ ┗ member-form.html
+ ┃ ┃   ┗ application.properties
+ ┃ ┗ test
+ ┗ pom.xml</code></pre>
+        </div>
+
+        <h3>4-2. 폴더별 역할</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>경로</th>
+              <th>역할</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>src/main/java</code></td>
+              <td>Java 코드 작성 위치입니다.</td>
+            </tr>
+            <tr>
+              <td><code>WebclassApplication.java</code></td>
+              <td>Spring Boot 애플리케이션 시작점입니다.</td>
+            </tr>
+            <tr>
+              <td><code>controller</code></td>
+              <td>HTTP 요청을 받는 Controller 클래스를 둡니다.</td>
+            </tr>
+            <tr>
+              <td><code>dto</code></td>
+              <td>요청 또는 응답 데이터를 담는 객체를 둡니다.</td>
+            </tr>
+            <tr>
+              <td><code>service</code></td>
+              <td>비즈니스 로직을 처리하는 클래스를 둡니다.</td>
+            </tr>
+            <tr>
+              <td><code>src/main/resources/templates</code></td>
+              <td>Thymeleaf HTML 템플릿을 둡니다.</td>
+            </tr>
+            <tr>
+              <td><code>src/main/resources/static</code></td>
+              <td>CSS, JavaScript, 이미지 같은 정적 파일을 둡니다.</td>
+            </tr>
+            <tr>
+              <td><code>application.properties</code></td>
+              <td>포트, DB, 로그 같은 설정값을 작성합니다.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>4-3. 시작 클래스</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>package com.example.webclass;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class WebclassApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(WebclassApplication.class, args);
+    }
+}</code></pre>
+        </div>
+
+        <div class="box blue">
+          <span class="box-title">시작 흐름</span>
+          <code>main()</code> 실행 → Spring 컨테이너 생성 → 자동 설정 적용 → 내장 Tomcat 실행 → Controller 등록 → 8080 포트에서 요청 대기
+        </div>
+      </section>
+
+      <section id="runtime">
+        <h2>5. Spring Boot Web 동작 원리</h2>
+
+        <h3>5-1. 전체 요청 흐름</h3>
+        <div class="flow">
+          <div class="flow-item">1. 브라우저가 HTTP 요청을 보낸다.</div>
+          <div class="arrow">↓</div>
+          <div class="flow-item">2. 내장 Tomcat이 요청을 받는다.</div>
+          <div class="arrow">↓</div>
+          <div class="flow-item">3. DispatcherServlet이 Spring MVC 요청 처리를 시작한다.</div>
+          <div class="arrow">↓</div>
+          <div class="flow-item">4. HandlerMapping이 실행할 Controller 메서드를 찾는다.</div>
+          <div class="arrow">↓</div>
+          <div class="flow-item">5. Controller가 요청을 처리하고 Model 또는 응답 데이터를 만든다.</div>
+          <div class="arrow">↓</div>
+          <div class="flow-item">6. 화면 응답이면 Thymeleaf가 HTML을 만든다.</div>
+          <div class="arrow">↓</div>
+          <div class="flow-item">7. JSON 응답이면 객체가 JSON으로 변환된다.</div>
+          <div class="arrow">↓</div>
+          <div class="flow-item">8. 브라우저 또는 클라이언트가 응답을 받는다.</div>
+        </div>
+
+        <h3>5-2. 핵심 구성 요소</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>구성 요소</th>
+              <th>역할</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Embedded Tomcat</td>
+              <td>HTTP 요청을 받는 내장 웹 서버입니다.</td>
+            </tr>
+            <tr>
+              <td>DispatcherServlet</td>
+              <td>Spring MVC의 중앙 입구 역할을 합니다.</td>
+            </tr>
+            <tr>
+              <td>HandlerMapping</td>
+              <td>요청 URL과 HTTP 메서드에 맞는 Controller 메서드를 찾습니다.</td>
+            </tr>
+            <tr>
+              <td>Controller</td>
+              <td>요청을 처리하고 화면 이름 또는 응답 데이터를 반환합니다.</td>
+            </tr>
+            <tr>
+              <td>Model</td>
+              <td>화면에 전달할 데이터를 담습니다.</td>
+            </tr>
+            <tr>
+              <td>ViewResolver</td>
+              <td>Controller가 반환한 view 이름을 실제 HTML 템플릿과 연결합니다.</td>
+            </tr>
+            <tr>
+              <td>Thymeleaf</td>
+              <td>Model 데이터를 HTML에 넣어 최종 HTML을 만듭니다.</td>
+            </tr>
+            <tr>
+              <td>HttpMessageConverter</td>
+              <td>Java 객체를 JSON 같은 HTTP 응답 body로 변환합니다.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="box green">
+          <span class="box-title">핵심 구분</span>
+          <code>@Controller</code>는 보통 HTML 화면을 반환하고,
+          <code>@RestController</code>는 보통 JSON 데이터를 반환합니다.
+        </div>
+      </section>
+
+      <section id="thymeleaf">
+        <h2>6. Thymeleaf 화면 만들기</h2>
+
+        <p>
+          Thymeleaf는 서버에서 HTML을 완성해 브라우저에 보내는 템플릿 엔진입니다.
+          Controller가 Model에 데이터를 담으면, Thymeleaf는 그 데이터를 HTML에 출력합니다.
+        </p>
+
+        <h3>6-1. 첫 번째 Controller</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>package com.example.webclass.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class HomeController {
+
+    @GetMapping("/")
+    public String index(Model model) {
+        model.addAttribute("title", "Spring Boot Web 수업");
+        model.addAttribute("message", "Thymeleaf 화면입니다.");
+        return "index";
+    }
+}</code></pre>
+        </div>
+
+        <h3>6-2. templates/index.html</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title th:text="${title}"&gt;기본 제목&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1 th:text="${title}"&gt;제목&lt;/h1&gt;
+    &lt;p th:text="${message}"&gt;메시지&lt;/p&gt;
+
+    &lt;a href="/hello?name=홍길동"&gt;hello 페이지로 이동&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+
+        <h3>6-3. return "index"의 의미</h3>
+        <div class="box red">
+          <span class="box-title">중요</span>
+          <code>@Controller</code>에서 <code>return "index";</code>는 문자열 <code>index</code>를 브라우저에 보내는 것이 아닙니다.
+          <code>templates/index.html</code> 파일을 찾아서 렌더링하라는 뜻입니다.
+        </div>
+      </section>
+
+      <section id="controller">
+        <h2>7. Controller와 요청 처리</h2>
+
+        <h3>7-1. Controller의 기본 목적</h3>
+        <p>
+          <code>@Controller</code>는 웹 요청을 받아 처리하고, 주로 HTML 화면을 반환할 때 사용합니다.
+        </p>
+
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@Controller
+public class PageController {
+}</code></pre>
+        </div>
+
+        <h3>7-2. GET 요청 처리</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/hello")
+public String hello() {
+    return "hello";
+}</code></pre>
+        </div>
+
+        <p>
+          <code>@GetMapping("/hello")</code>는 브라우저가 <code>GET /hello</code> 요청을 보냈을 때
+          이 메서드를 실행하라는 뜻입니다.
+        </p>
+
+        <h3>7-3. Query String 처리: @RequestParam</h3>
+        <p>요청 예시는 다음과 같습니다.</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>GET /hello?name=홍길동</code></pre>
+        </div>
+
+        <p>Controller에서는 <code>@RequestParam</code>으로 query string 값을 받을 수 있습니다.</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/hello")
+public String hello(@RequestParam String name, Model model) {
+    model.addAttribute("name", name);
+    return "hello";
+}</code></pre>
+        </div>
+
+        <h4>templates/hello.html</h4>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Hello&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Hello&lt;/h1&gt;
+    &lt;p&gt;
+        안녕하세요,
+        &lt;strong th:text="${name}"&gt;이름&lt;/strong&gt;
+        님!
+    &lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+
+        <h3>7-4. URL 경로 변수 처리: @PathVariable</h3>
+        <p>요청 예시는 다음과 같습니다.</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>GET /members/10</code></pre>
+        </div>
+
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/members/{id}")
+public String memberDetail(@PathVariable Long id, Model model) {
+    model.addAttribute("id", id);
+    return "member-detail";
+}</code></pre>
+        </div>
+
+        <div class="box blue">
+          <span class="box-title">구분</span>
+          <code>@RequestParam</code>은 <code>/search?keyword=spring</code>처럼 물음표 뒤의 값을 받을 때 사용하고,
+          <code>@PathVariable</code>은 <code>/members/10</code>처럼 URL 경로 안의 값을 받을 때 사용합니다.
+        </div>
+      </section>
+
+      <section id="forms">
+        <h2>8. 폼 요청 처리</h2>
+
+        <h3>8-1. DTO 만들기</h3>
+        <p>
+          폼에서 넘어온 여러 값을 하나의 객체로 받기 위해 DTO 클래스를 만듭니다.
+        </p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>package com.example.webclass.dto;
+
+public class MemberForm {
+
+    private String name;
+    private int age;
+
+    public MemberForm() {
+    }
+
+    public MemberForm(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}</code></pre>
+        </div>
+
+        <h3>8-2. 회원 등록 폼 화면</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/members/new")
+public String memberForm() {
+    return "member-form";
+}</code></pre>
+        </div>
+
+        <h4>templates/member-form.html</h4>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;회원 등록&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;회원 등록&lt;/h1&gt;
+
+    &lt;form action="/members" method="post"&gt;
+        &lt;div&gt;
+            &lt;label&gt;이름&lt;/label&gt;
+            &lt;input type="text" name="name"&gt;
+        &lt;/div&gt;
+
+        &lt;div&gt;
+            &lt;label&gt;나이&lt;/label&gt;
+            &lt;input type="number" name="age"&gt;
+        &lt;/div&gt;
+
+        &lt;button type="submit"&gt;등록&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+
+        <h3>8-3. 폼 데이터 받기: @ModelAttribute</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@PostMapping("/members")
+public String saveMember(@ModelAttribute MemberForm form, Model model) {
+    model.addAttribute("name", form.getName());
+    model.addAttribute("age", form.getAge());
+    return "member-result";
+}</code></pre>
+        </div>
+
+        <h4>templates/member-result.html</h4>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;회원 등록 결과&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;회원 등록 결과&lt;/h1&gt;
+
+    &lt;p&gt;이름: &lt;span th:text="${name}"&gt;이름&lt;/span&gt;&lt;/p&gt;
+    &lt;p&gt;나이: &lt;span th:text="${age}"&gt;0&lt;/span&gt;&lt;/p&gt;
+
+    &lt;a href="/"&gt;홈으로&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+
+        <div class="box green">
+          <span class="box-title">폼 처리 흐름</span>
+          HTML form 제출 → <code>POST /members</code> → <code>@ModelAttribute MemberForm form</code> → 객체에 값 자동 저장 → 결과 화면 렌더링
+        </div>
+      </section>
+
+      <section id="controller-shapes">
+        <h2>9. Controller의 다양한 함수 형태</h2>
+
+        <h3>9-1. 화면 이름 반환</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/page")
+public String page() {
+    return "page";
+}</code></pre>
+        </div>
+        <p><code>templates/page.html</code>을 찾아서 렌더링합니다.</p>
+
+        <h3>9-2. Model에 데이터 담기</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/greeting")
+public String greeting(Model model) {
+    model.addAttribute("message", "반갑습니다.");
+    return "greeting";
+}</code></pre>
+        </div>
+
+        <h3>9-3. 요청 파라미터 받기</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/search")
+public String search(@RequestParam String keyword, Model model) {
+    model.addAttribute("keyword", keyword);
+    return "search-result";
+}</code></pre>
+        </div>
+
+        <h3>9-4. 선택 파라미터와 기본값</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/welcome")
+public String welcome(
+        @RequestParam(defaultValue = "손님") String name,
+        Model model
+) {
+    model.addAttribute("name", name);
+    return "welcome";
+}</code></pre>
+        </div>
+
+        <h3>9-5. URL 경로 값 받기</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/boards/{boardId}/posts/{postId}")
+public String postDetail(
+        @PathVariable Long boardId,
+        @PathVariable Long postId,
+        Model model
+) {
+    model.addAttribute("boardId", boardId);
+    model.addAttribute("postId", postId);
+    return "post-detail";
+}</code></pre>
+        </div>
+
+        <h3>9-6. 폼 객체 받기</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@PostMapping("/members/form")
+public String submitForm(@ModelAttribute MemberForm form, Model model) {
+    model.addAttribute("member", form);
+    return "member-result";
+}</code></pre>
+        </div>
+
+        <h3>9-7. Servlet API 직접 사용</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/raw")
+public String raw(HttpServletRequest request, HttpServletResponse response, Model model) {
+    String name = request.getParameter("name");
+    model.addAttribute("name", name);
+    return "raw-result";
+}</code></pre>
+        </div>
+
+        <div class="box yellow">
+          <span class="box-title">강의 포인트</span>
+          Servlet API를 직접 사용할 수는 있지만, 실무에서는 가능한 한
+          <code>@RequestParam</code>, <code>@PathVariable</code>, <code>@ModelAttribute</code>, <code>@RequestBody</code> 같은
+          Spring MVC 방식의 파라미터 바인딩을 우선 사용합니다.
+        </div>
+
+        <h3>9-8. ModelAndView 반환</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/model-and-view")
+public ModelAndView modelAndView() {
+    ModelAndView mav = new ModelAndView("mav-page");
+    mav.addObject("message", "ModelAndView 예제입니다.");
+    return mav;
+}</code></pre>
+        </div>
+
+        <h3>9-9. redirect</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@PostMapping("/login")
+public String login(@RequestParam String username) {
+    return "redirect:/";
+}</code></pre>
+        </div>
+        <p><code>redirect:/</code>는 브라우저에게 “이 주소로 다시 요청하라”고 알려주는 응답입니다.</p>
+
+        <h3>9-10. forward</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/old")
+public String oldPage() {
+    return "forward:/new";
+}</code></pre>
+        </div>
+        <p><code>forward:/new</code>는 서버 내부에서 다른 경로로 요청을 전달합니다. 브라우저 주소는 바뀌지 않습니다.</p>
+      </section>
+
+      <section id="responsebody">
+        <h2>10. @Controller와 @ResponseBody</h2>
+
+        <h3>10-1. 문자열 자체를 응답하고 싶을 때</h3>
+        <p>
+          <code>@Controller</code>에서 문자열을 반환하면 기본적으로 view 이름으로 해석됩니다.
+          문자열 자체를 HTTP 응답 body로 보내고 싶다면 <code>@ResponseBody</code>를 붙입니다.
+        </p>
+
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@Controller
+public class TextController {
+
+    @ResponseBody
+    @GetMapping("/text")
+    public String text() {
+        return "hello text";
+    }
+}</code></pre>
+        </div>
+
+        <div class="box blue">
+          <span class="box-title">차이</span>
+          <code>@Controller + String 반환</code> → view 이름<br />
+          <code>@Controller + @ResponseBody + String 반환</code> → 문자열 자체를 응답 body로 반환
+        </div>
+
+        <h3>10-2. 객체를 JSON으로 반환</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@ResponseBody
+@GetMapping("/member-json")
+public MemberForm memberJson() {
+    return new MemberForm("홍길동", 20);
+}</code></pre>
+        </div>
+
+        <p>응답 결과는 다음과 같은 JSON 형태가 됩니다.</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>{
+  "name": "홍길동",
+  "age": 20
+}</code></pre>
+        </div>
+      </section>
+
+      <section id="restcontroller">
+        <h2>11. RestController의 목적과 응답 방법</h2>
+
+        <h3>11-1. RestController란?</h3>
+        <p>
+          <code>@RestController</code>는 <code>@Controller</code>와 <code>@ResponseBody</code>를 합친 개념입니다.
+          클래스 안의 메서드 반환값은 기본적으로 view 이름이 아니라 HTTP 응답 body로 처리됩니다.
+        </p>
+
+        <div class="box green">
+          <span class="box-title">한 줄 정리</span>
+          <code>@Controller</code>는 화면을 만들고, <code>@RestController</code>는 데이터를 보냅니다.
+        </div>
+
+        <h3>11-2. 기본 RestController</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>package com.example.webclass.controller;
+
+import com.example.webclass.dto.MemberForm;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ApiController {
+
+    @GetMapping("/api/hello")
+    public String helloApi() {
+        return "hello api";
+    }
+
+    @GetMapping("/api/member")
+    public MemberForm member() {
+        return new MemberForm("김철수", 25);
+    }
+}</code></pre>
+        </div>
+
+        <h3>11-3. 문자열 응답</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/api/text")
+public String text() {
+    return "plain text response";
+}</code></pre>
+        </div>
+
+        <h3>11-4. 객체 JSON 응답</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/api/members/1")
+public MemberForm memberOne() {
+    return new MemberForm("이영희", 22);
+}</code></pre>
+        </div>
+
+        <h3>11-5. 리스트 JSON 응답</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/api/members")
+public List&lt;MemberForm&gt; members() {
+    return List.of(
+            new MemberForm("홍길동", 20),
+            new MemberForm("김철수", 25),
+            new MemberForm("이영희", 22)
+    );
+}</code></pre>
+        </div>
+
+        <h3>11-6. @PathVariable로 REST API 만들기</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/api/members/{id}")
+public MemberForm findMember(@PathVariable Long id) {
+    return new MemberForm("회원" + id, 20);
+}</code></pre>
+        </div>
+
+        <h3>11-7. @RequestParam으로 검색 API 만들기</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/api/search")
+public String search(@RequestParam String keyword) {
+    return "검색어: " + keyword;
+}</code></pre>
+        </div>
+
+        <h3>11-8. @RequestBody로 JSON 요청 받기</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@PostMapping("/api/members")
+public MemberForm createMember(@RequestBody MemberForm form) {
+    return form;
+}</code></pre>
+        </div>
+
+        <p>요청 예시는 다음과 같습니다.</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>POST /api/members
+Content-Type: application/json
+
+{
+  "name": "박민수",
+  "age": 30
+}</code></pre>
+        </div>
+
+        <h3>11-9. ResponseEntity로 상태 코드 제어</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/api/status")
+public ResponseEntity&lt;String&gt; status() {
+    return ResponseEntity
+            .status(201)
+            .body("created");
+}</code></pre>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>상황</th>
+              <th>예시 코드</th>
+              <th>의미</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>성공</td>
+              <td><code>ResponseEntity.ok(body)</code></td>
+              <td>HTTP 200 OK</td>
+            </tr>
+            <tr>
+              <td>생성</td>
+              <td><code>ResponseEntity.status(201).body(body)</code></td>
+              <td>HTTP 201 Created</td>
+            </tr>
+            <tr>
+              <td>삭제</td>
+              <td><code>ResponseEntity.noContent().build()</code></td>
+              <td>HTTP 204 No Content</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>11-10. @Controller와 @RestController 비교</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>@Controller</th>
+              <th>@RestController</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>주 목적</td>
+              <td>HTML 화면 반환</td>
+              <td>데이터 반환</td>
+            </tr>
+            <tr>
+              <td>문자열 반환</td>
+              <td>view 이름으로 해석</td>
+              <td>문자열 자체를 body로 응답</td>
+            </tr>
+            <tr>
+              <td>주 사용처</td>
+              <td>웹 페이지, 관리자 화면, 폼 화면</td>
+              <td>REST API, JSON API</td>
+            </tr>
+            <tr>
+              <td>JSON 반환</td>
+              <td><code>@ResponseBody</code> 필요</td>
+              <td>기본 적용</td>
+            </tr>
+            <tr>
+              <td>예시</td>
+              <td><code>return "index";</code> → index.html</td>
+              <td><code>return "hello";</code> → hello 문자열 응답</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="practice">
+        <h2>12. 종합 실습: 화면 + API 함께 만들기</h2>
+
+        <h3>12-1. 실습 목표</h3>
+        <ul>
+          <li><code>GET /</code> → 메인 화면</li>
+          <li><code>GET /members/new</code> → 회원 등록 폼</li>
+          <li><code>POST /members</code> → 회원 등록 결과 화면</li>
+          <li><code>GET /api/hello</code> → 문자열 API</li>
+          <li><code>GET /api/members</code> → 회원 목록 JSON API</li>
+          <li><code>POST /api/members</code> → JSON 요청을 받아 JSON 응답</li>
+        </ul>
+
+        <h3>12-2. MemberDto</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>package com.example.webclass.dto;
+
+public class MemberDto {
+
+    private String name;
+    private int age;
+
+    public MemberDto() {
+    }
+
+    public MemberDto(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}</code></pre>
+        </div>
+
+        <h3>12-3. 화면 Controller</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>package com.example.webclass.controller;
+
+import com.example.webclass.dto.MemberDto;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+@Controller
+public class MemberPageController {
+
+    @GetMapping("/")
+    public String home(Model model) {
+        model.addAttribute("title", "Spring Boot Web 수업");
+        return "index";
+    }
+
+    @GetMapping("/members/new")
+    public String form() {
+        return "member-form";
+    }
+
+    @PostMapping("/members")
+    public String save(@ModelAttribute MemberDto member, Model model) {
+        model.addAttribute("member", member);
+        return "member-result";
+    }
+}</code></pre>
+        </div>
+
+        <h3>12-4. API Controller</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>package com.example.webclass.controller;
+
+import com.example.webclass.dto.MemberDto;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api")
+public class MemberApiController {
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "hello api";
+    }
+
+    @GetMapping("/members")
+    public List&lt;MemberDto&gt; members() {
+        return List.of(
+                new MemberDto("홍길동", 20),
+                new MemberDto("김철수", 25),
+                new MemberDto("이영희", 22)
+        );
+    }
+
+    @GetMapping("/members/{id}")
+    public MemberDto member(@PathVariable Long id) {
+        return new MemberDto("회원" + id, 20);
+    }
+
+    @PostMapping("/members")
+    public ResponseEntity&lt;MemberDto&gt; create(@RequestBody MemberDto member) {
+        return ResponseEntity.status(201).body(member);
+    }
+}</code></pre>
+        </div>
+
+        <h3>12-5. index.html</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title th:text="${title}"&gt;Spring Boot Web&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1 th:text="${title}"&gt;Spring Boot Web&lt;/h1&gt;
+
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="/members/new"&gt;회원 등록&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/api/hello"&gt;API Hello&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/api/members"&gt;API 회원 목록&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+
+        <h3>12-6. member-form.html</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;회원 등록&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;회원 등록&lt;/h1&gt;
+
+    &lt;form action="/members" method="post"&gt;
+        &lt;p&gt;
+            이름:
+            &lt;input type="text" name="name"&gt;
+        &lt;/p&gt;
+        &lt;p&gt;
+            나이:
+            &lt;input type="number" name="age"&gt;
+        &lt;/p&gt;
+        &lt;button type="submit"&gt;등록&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+
+        <h3>12-7. member-result.html</h3>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;회원 등록 결과&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;회원 등록 결과&lt;/h1&gt;
+
+    &lt;p&gt;이름: &lt;span th:text="${member.name}"&gt;이름&lt;/span&gt;&lt;/p&gt;
+    &lt;p&gt;나이: &lt;span th:text="${member.age}"&gt;0&lt;/span&gt;&lt;/p&gt;
+
+    &lt;a href="/"&gt;홈으로&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+      </section>
+
+      <section id="misunderstanding">
+        <h2>13. 강의 중 꼭 강조할 오해 포인트</h2>
+
+        <div class="box red">
+          <span class="box-title">오해 1. return "index"는 문자열 응답이다?</span>
+          <p>아닙니다. <code>@Controller</code>에서는 보통 <code>templates/index.html</code>을 찾으라는 view 이름입니다.</p>
+        </div>
+
+        <div class="box red">
+          <span class="box-title">오해 2. @RestController에서도 HTML 파일이 자동으로 반환된다?</span>
+          <p>아닙니다. <code>@RestController</code>에서 <code>return "index";</code>를 하면 브라우저에는 <code>index</code>라는 문자열이 그대로 응답됩니다.</p>
+        </div>
+
+        <div class="box red">
+          <span class="box-title">오해 3. @RequestParam과 @PathVariable은 같다?</span>
+          <p>다릅니다. <code>@RequestParam</code>은 query string, <code>@PathVariable</code>은 URL 경로 값을 받습니다.</p>
+        </div>
+
+        <div class="box red">
+          <span class="box-title">오해 4. @ModelAttribute와 @RequestBody는 같다?</span>
+          <p>다릅니다. <code>@ModelAttribute</code>는 HTML form 요청에 자주 쓰고, <code>@RequestBody</code>는 JSON body 요청에 자주 씁니다.</p>
+        </div>
+      </section>
+
+      <section id="assignment">
+        <h2>14. 수업 중 실습 과제</h2>
+
+        <h3>과제 1. 자기소개 화면 만들기</h3>
+        <p>요구사항:</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>GET /profile?name=홍길동&amp;job=개발자</code></pre>
+        </div>
+        <p>결과 화면:</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>이름: 홍길동
+직업: 개발자</code></pre>
+        </div>
+        <p>힌트:</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/profile")
+public String profile(
+        @RequestParam String name,
+        @RequestParam String job,
+        Model model
+) {
+    model.addAttribute("name", name);
+    model.addAttribute("job", job);
+    return "profile";
+}</code></pre>
+        </div>
+
+        <h3>과제 2. 상품 상세 화면 만들기</h3>
+        <p>요구사항:</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>GET /products/100</code></pre>
+        </div>
+        <p>결과 화면:</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>상품 번호: 100</code></pre>
+        </div>
+        <p>힌트:</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/products/{id}")
+public String product(@PathVariable Long id, Model model) {
+    model.addAttribute("id", id);
+    return "product";
+}</code></pre>
+        </div>
+
+        <h3>과제 3. REST API 만들기</h3>
+        <p>요구사항:</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>GET /api/products/1</code></pre>
+        </div>
+        <p>응답:</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>{
+  "id": 1,
+  "name": "노트북",
+  "price": 1500000
+}</code></pre>
+        </div>
+
+        <h4>ProductDto</h4>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>public class ProductDto {
+
+    private Long id;
+    private String name;
+    private int price;
+
+    public ProductDto() {
+    }
+
+    public ProductDto(Long id, String name, int price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+}</code></pre>
+        </div>
+
+        <h4>Controller</h4>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>@GetMapping("/api/products/{id}")
+public ProductDto product(@PathVariable Long id) {
+    return new ProductDto(id, "노트북", 1500000);
+}</code></pre>
+        </div>
+      </section>
+
+      <section id="quiz">
+        <h2>15. 마무리 퀴즈</h2>
+
+        <h3>문제 1</h3>
+        <p>Spring Boot가 등장한 주된 이유로 가장 적절한 것은?</p>
+        <ol type="A">
+          <li>Java 문법을 없애기 위해</li>
+          <li>Spring 설정과 배포를 단순화하고 빠르게 실행하기 위해</li>
+          <li>HTML을 대체하기 위해</li>
+          <li>데이터베이스를 없애기 위해</li>
+        </ol>
+        <span class="quiz-answer">정답: B</span>
+
+        <h3>문제 2</h3>
+        <p><code>@Controller</code>에서 다음 코드는 무엇을 의미하는가?</p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>return "hello";</code></pre>
+        </div>
+        <span class="quiz-answer">정답: templates/hello.html 화면을 렌더링하라는 의미</span>
+
+        <h3>문제 3</h3>
+        <p><code>/members/10</code>에서 <code>10</code>을 받기 위해 사용하는 애노테이션은?</p>
+        <span class="quiz-answer">정답: @PathVariable</span>
+
+        <h3>문제 4</h3>
+        <p><code>/search?keyword=spring</code>에서 <code>spring</code>을 받기 위해 사용하는 애노테이션은?</p>
+        <span class="quiz-answer">정답: @RequestParam</span>
+
+        <h3>문제 5</h3>
+        <p>JSON 요청 body를 Java 객체로 받기 위해 사용하는 애노테이션은?</p>
+        <span class="quiz-answer">정답: @RequestBody</span>
+
+        <h3>문제 6</h3>
+        <p><code>@RestController</code>의 특징은?</p>
+        <span class="quiz-answer">정답: 반환값을 view 이름이 아니라 HTTP 응답 body로 처리한다.</span>
+      </section>
+
+      <div class="footer">
+        <h2>최종 정리</h2>
+        <p>
+          Spring Boot는 Spring을 쉽게 실행하고 배포하기 위한 도구입니다.
+          Spring Boot Web은 내장 Tomcat을 사용해서 별도의 WAS 설치 없이 웹 애플리케이션을 실행할 수 있습니다.
+        </p>
+        <p>
+          <code>@Controller</code>는 HTML 화면을 반환할 때 주로 사용하고,
+          Thymeleaf는 서버에서 HTML을 동적으로 만들어 줍니다.
+          <code>@RestController</code>는 JSON API를 만들 때 주로 사용하며,
+          객체를 반환하면 Spring이 자동으로 JSON으로 변환해 줍니다.
+        </p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>요청 데이터 처리 방식
+
+@RequestParam   → query string
+@PathVariable   → URL 경로 값
+@ModelAttribute → HTML form 데이터
+@RequestBody    → JSON body
+ResponseEntity  → 상태 코드, 헤더, body 제어</code></pre>
+        </div>
+        <p>
+          핵심 흐름은 다음 한 줄로 정리할 수 있습니다.
+        </p>
+        <div class="code-wrap">
+          <button class="copy-btn" type="button">복사</button>
+          <pre><code>요청 → Tomcat → DispatcherServlet → Controller → View 또는 JSON 응답</code></pre>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.querySelectorAll('.copy-btn').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const code = button.nextElementSibling.innerText;
+        try {
+          await navigator.clipboard.writeText(code);
+          const original = button.innerText;
+          button.innerText = '복사됨';
+          setTimeout(() => {
+            button.innerText = original;
+          }, 1200);
+        } catch (error) {
+          button.innerText = '실패';
+          setTimeout(() => {
+            button.innerText = '복사';
+          }, 1200);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
